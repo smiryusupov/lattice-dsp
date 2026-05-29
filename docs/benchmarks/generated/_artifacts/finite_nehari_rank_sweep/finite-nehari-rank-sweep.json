@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1020-oem-x86_64-with-glibc2.39",
+    "rows": 32,
+    "cols": 32,
+    "tail_terms": 63,
+    "ranks": [
+      1,
+      2,
+      3,
+      4,
+      6
+    ],
+    "seed": 7,
+    "description": "Finite-dimensional Nehari/AAK teaching benchmark. The SVD error equals sigma_next for the unconstrained rank-r matrix problem; the Hankelized error is a separate structured approximation diagnostic."
+  },
+  "rows": [
+    {
+      "rank": 1,
+      "time_s": 0.0008791200816631317,
+      "sigma_next": 0.259615353113201,
+      "unconstrained_hankel_error": 0.2596153531132108,
+      "hankelized_hankel_error": 0.20835263298668186,
+      "hankelized_over_sigma_next": 0.8025435725899968,
+      "relative_tail_error": 0.052846958585844546
+    },
+    {
+      "rank": 2,
+      "time_s": 0.0007235039956867695,
+      "sigma_next": 0.21558068163118513,
+      "unconstrained_hankel_error": 0.21558068163117142,
+      "hankelized_hankel_error": 0.20322641235062072,
+      "hankelized_over_sigma_next": 0.9426930595678324,
+      "relative_tail_error": 0.04359105065594021
+    },
+    {
+      "rank": 3,
+      "time_s": 0.0006885170005261898,
+      "sigma_next": 0.013444487095612911,
+      "unconstrained_hankel_error": 0.01344448709564734,
+      "hankelized_hankel_error": 0.004465660530267139,
+      "hankelized_over_sigma_next": 0.33215551463650367,
+      "relative_tail_error": 0.001140774917841622
+    },
+    {
+      "rank": 4,
+      "time_s": 0.00047022290527820587,
+      "sigma_next": 0.0007848416603726097,
+      "unconstrained_hankel_error": 0.0007848416616534477,
+      "hankelized_hankel_error": 0.00017550587319859883,
+      "hankelized_over_sigma_next": 0.22361946626950976,
+      "relative_tail_error": 4.216615785383684e-05
+    },
+    {
+      "rank": 6,
+      "time_s": 0.00014583696611225605,
+      "sigma_next": 2.5705101494341395e-08,
+      "unconstrained_hankel_error": 6.567579041249781e-11,
+      "hankelized_hankel_error": 8.8167268045948e-12,
+      "hankelized_over_sigma_next": 0.0003429952146477879,
+      "relative_tail_error": 2.6850550908928443e-12
+    }
+  ]
+}

@@ -1,82 +1,131 @@
-# Python bytecode/cache
+# -----------------------------------------------------------------------------
+# lattice-dsp: local files that should not be committed
+# -----------------------------------------------------------------------------
+
+# Operating system / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+*~
+.vscode/
+.idea/
+*.code-workspace
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+ENV/
+.python-version
+pip-wheel-metadata/
+
+# Python bytecode and tool caches
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
 .mypy_cache/
+.pyre/
+.pytype/
 .ruff_cache/
+.tox/
+.nox/
+.cache/
+.ipynb_checkpoints/
+
+# Test and coverage outputs
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
+.pytest_cache/
+junit*.xml
 
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
-# Build/install artifacts
+# Build, packaging, and install artifacts
 build/
 dist/
+site/
 *.egg-info/
 .eggs/
-_skbuild/
+*.egg
 *.whl
+MANIFEST
 
-# Compiled native extensions
+# Compiled Python/C/C++ extension artifacts
 *.so
 *.pyd
 *.dll
 *.dylib
+*.a
+*.lib
+*.o
+*.obj
 
 # CMake / native build files
-CMakeCache.txt
-CMakeFiles/
-cmake-build-*/
+# Use repo-root Makefile here so docs/Makefile can still be tracked.
+/Makefile
+/CMakeCache.txt
+/CMakeFiles/
+/cmake_install.cmake
+/install_manifest.txt
 compile_commands.json
-Makefile
+cmake-build-*/
+_skbuild/
 *.ninja
 .ninja_*
-install_manifest.txt
 
-# Benchmark outputs
-benchmark-results.json
-block-levinson-benchmark.json
-echo-benchmark.json
-adaptive-period-sweep.json
-adaptive-period-sweep.csv
-model-reduction-results.json
-*-benchmark.json
-*-results.json
-*-sweep.json
-*-sweep.csv
-reports/
+# Sphinx / documentation build outputs
+# Keep docs source files, docs/api, docs/examples/generated, and docs/benchmarks/generated.
+docs/_build/
+docs/_build_*/
+docs/.doctrees/
+docs/_doctrees/
 
-# Logs and temporary files
-*.log
-*.tmp
-*.temp
-*.bak
-*.swp
-*.swo
-.DS_Store
+# Read the Docs local build/checkout artifacts, not .readthedocs.yaml itself
+_readthedocs/
+readthedocs-build/
 
-# IDE/editor files
-.vscode/
-.idea/
-*.code-workspace
+# Generated example, benchmark, and report artifacts
+/reports/
+/example-artifacts/
+/artifacts/
+/benchmark-results.json
+/block-levinson-benchmark.json
+/echo-benchmark.json
+/adaptive-period-sweep.json
+/adaptive-period-sweep.csv
+/model-reduction-results.json
+/*-benchmark.json
+/*-results.json
+/*-sweep.json
+/*-sweep.csv
 
-# Jupyter notebooks
-.ipynb_checkpoints/
+# Generated media/data files from interoperability and audio recipes
+*.wav
+*.flac
+*.mp3
+*.ogg
+*.aiff
+*.aif
+*.mat
+*.npy
+*.npz
 
-# Local environment/config files
-.env
-.env.*
-!.env.example
-
-# Profiling/performance outputs
+# Local profiling/performance outputs
 *.prof
 *.pstats
 perf.data
 perf.data.old
 callgrind.out.*
+*.trace
+
+# Logs
+*.log
+logs/

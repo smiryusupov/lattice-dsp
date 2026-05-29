@@ -24,6 +24,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
   "Topic :: Scientific/Engineering :: Mathematics",
@@ -40,7 +41,7 @@ docs = ["sphinx>=7", "myst-parser>=2"]
 [project.urls]
 Homepage = "https://github.com/smiryusupov/lattice-dsp"
 Issues = "https://github.com/smiryusupov/lattice-dsp/issues"
-Documentation = "https://github.com/smiryusupov/lattice-dsp#readme"
+Documentation = "https://lattice-dsp.readthedocs.io/"
 
 [tool.scikit-build]
 cmake.version = ">=3.18"
