@@ -1,5 +1,5 @@
 Interoperability recipes
-=======================
+========================
 
 ``lattice-dsp`` is intentionally dependency-light.  The core package does not
 import SciPy, python-control, MATLAB engines, Pyroomacoustics, eSpeak/eSpeak NG,
