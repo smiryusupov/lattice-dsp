@@ -43,13 +43,26 @@ from dataclasses import dataclass
 from pathlib import Path
 from collections.abc import Iterable
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
 
 import lattice_dsp as ld
+
+
+def _load_pyplot():
+    """Import matplotlib only when plot files are being generated.
+
+    The computational stress-case helpers are imported by tests that should not
+    need plotting dependencies.  Keeping matplotlib lazy lets the numeric tests
+    run in minimal development environments while the example still writes
+    figures when the optional examples dependencies are installed.
+    """
+
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    return plt
 
 
 @dataclass(frozen=True)
@@ -779,6 +792,7 @@ def write_case_metadata(
 
 
 def plot_error_curves(out_dir: Path, rows: list[dict[str, object]]) -> None:
+    plt = _load_pyplot()
     cases = sorted({str(row["case"]) for row in rows})
     for metric, ylabel, filename in [
         ("relative_h2_error", "relative H2 / Markov error", "mimo_reduction_stress_h2_errors.png"),
@@ -816,6 +830,7 @@ def plot_error_curves(out_dir: Path, rows: list[dict[str, object]]) -> None:
 
 
 def plot_hankel_singular_values(out_dir: Path, hsv_by_case: dict[str, np.ndarray]) -> None:
+    plt = _load_pyplot()
     fig, ax = plt.subplots(figsize=(7.0, 4.6))
     for case, hsv in hsv_by_case.items():
         n = min(80, hsv.size)
@@ -837,6 +852,7 @@ def plot_hankel_singular_values(out_dir: Path, hsv_by_case: dict[str, np.ndarray
 
 
 def plot_pick_eigenvalues(out_dir: Path, diagnostics: dict[str, dict[str, object]]) -> None:
+    plt = _load_pyplot()
     fig, ax = plt.subplots(figsize=(7.0, 4.6))
     for case, diag in diagnostics.items():
         eig = np.asarray(diag["pick_eigenvalues"], dtype=float)
@@ -853,6 +869,7 @@ def plot_pick_eigenvalues(out_dir: Path, diagnostics: dict[str, dict[str, object
 
 
 def plot_timing_curves(out_dir: Path, rows: list[dict[str, object]]) -> None:
+    plt = _load_pyplot()
     cases = sorted({str(row["case"]) for row in rows})
     fig, axes = plt.subplots(1, len(cases), figsize=(14, 4.2), sharey=False)
     if len(cases) == 1:
@@ -877,6 +894,7 @@ def plot_timing_curves(out_dir: Path, rows: list[dict[str, object]]) -> None:
 
 
 def plot_first_markov_blocks(out_dir: Path, cases: list[StressCase]) -> None:
+    plt = _load_pyplot()
     fig, axes = plt.subplots(1, len(cases), figsize=(12.5, 3.6))
     if len(cases) == 1:
         axes = [axes]
