@@ -16,7 +16,10 @@ import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 
-from benchmark_visuals import create_benchmark_visuals
+try:
+    from tools.benchmark_visuals import create_benchmark_visuals
+except ImportError:  # pragma: no cover - supports direct script execution from tools/
+    from benchmark_visuals import create_benchmark_visuals
 
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".svg", ".webp"}
 DATA_SUFFIXES = {".csv", ".json", ".txt", ".md", ".npy", ".npz"}

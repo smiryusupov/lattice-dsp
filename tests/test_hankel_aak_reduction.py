@@ -20,7 +20,10 @@ def test_hankel_singular_values_rank_one_exponential():
 
 
 def test_hankel_singular_values_match_numpy_svd():
-    h = np.array([1.0, 0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625])
+    # Use a deliberately non-geometric sequence here.  The geometric/rank-one
+    # case is covered separately above; comparing all tiny singular values of a
+    # nearly rank-deficient Hankel matrix is LAPACK/backend sensitive on macOS.
+    h = np.array([1.0, 0.45, -0.2, 0.125, 0.05, -0.02, 0.01])
     rows = cols = 3
     hankel = np.array([[h[1], h[2], h[3]], [h[2], h[3], h[4]], [h[3], h[4], h[5]]])
     expected = np.linalg.svd(hankel, compute_uv=False)
