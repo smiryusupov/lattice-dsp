@@ -1,0 +1,154 @@
+{
+  "best_by_erle": {
+    "erle_db": 22.345854839032512,
+    "input_mse": 0.6051726694630739,
+    "max_s": 0.0068908981047570705,
+    "median_s": 0.0068908981047570705,
+    "min_s": 0.0068908981047570705,
+    "mse_improvement_db": 22.345854839032512,
+    "name": "lattice_iir_plus_spectral_residual_suppressor",
+    "output_mse": 0.003526093486605688,
+    "residual_power_db": -24.527061775220176,
+    "segmental_erle_median_db": 21.552262585792526
+  },
+  "cases": [
+    {
+      "erle_db": 0.0,
+      "input_mse": 0.6051726694630739,
+      "max_s": 0.0,
+      "median_s": 0.0,
+      "min_s": 0.0,
+      "mse_improvement_db": 0.0,
+      "name": "no_cancellation",
+      "output_mse": 0.6051726694630739,
+      "residual_power_db": -2.1812069361876656,
+      "segmental_erle_median_db": 0.0
+    },
+    {
+      "erle_db": 3.0695505737587365,
+      "input_mse": 0.6051726694630739,
+      "max_s": 9.628012776374817e-06,
+      "median_s": 9.628012776374817e-06,
+      "min_s": 9.628012776374817e-06,
+      "mse_improvement_db": 3.0695505737587365,
+      "name": "toy_residual_suppressor_only",
+      "output_mse": 0.2984861944604066,
+      "residual_power_db": -5.250757509946402,
+      "segmental_erle_median_db": 3.0916877110048624
+    },
+    {
+      "erle_db": 13.801886261865208,
+      "input_mse": 0.6051726694630739,
+      "max_s": 0.005115094827488065,
+      "median_s": 0.005115094827488065,
+      "min_s": 0.005115094827488065,
+      "mse_improvement_db": 13.801886261865208,
+      "name": "spectral_residual_suppressor_only",
+      "output_mse": 0.025216841006193754,
+      "residual_power_db": -15.983093198052874,
+      "segmental_erle_median_db": 13.030501672333028
+    },
+    {
+      "erle_db": 18.04495849397512,
+      "input_mse": 0.6051726694630739,
+      "max_s": 0.029495939146727324,
+      "median_s": 0.029495939146727324,
+      "min_s": 0.029495939146727324,
+      "mse_improvement_db": 18.04495849397512,
+      "name": "fir_nlms_baseline",
+      "output_mse": 0.009492562319092464,
+      "residual_power_db": -20.226165430162787,
+      "segmental_erle_median_db": 16.917756375665974
+    },
+    {
+      "erle_db": 15.847867229335957,
+      "input_mse": 0.6051726694630739,
+      "max_s": 0.002861213870346546,
+      "median_s": 0.002861213870346546,
+      "min_s": 0.002861213870346546,
+      "mse_improvement_db": 15.847867229335957,
+      "name": "lattice_iir_only",
+      "output_mse": 0.015743184438948937,
+      "residual_power_db": -18.02907416552362,
+      "segmental_erle_median_db": 17.877993842432986
+    },
+    {
+      "erle_db": 18.326068235158964,
+      "input_mse": 0.6051726694630739,
+      "max_s": 0.0026363579090684652,
+      "median_s": 0.0026363579090684652,
+      "min_s": 0.0026363579090684652,
+      "mse_improvement_db": 18.326068235158964,
+      "name": "lattice_iir_plus_toy_residual_suppressor",
+      "output_mse": 0.008897591910163469,
+      "residual_power_db": -20.507275171346627,
+      "segmental_erle_median_db": 19.48715575941922
+    },
+    {
+      "erle_db": 22.345854839032512,
+      "input_mse": 0.6051726694630739,
+      "max_s": 0.0068908981047570705,
+      "median_s": 0.0068908981047570705,
+      "min_s": 0.0068908981047570705,
+      "mse_improvement_db": 22.345854839032512,
+      "name": "lattice_iir_plus_spectral_residual_suppressor",
+      "output_mse": 0.003526093486605688,
+      "residual_power_db": -24.527061775220176,
+      "segmental_erle_median_db": 21.552262585792526
+    }
+  ],
+  "metadata": {
+    "final_hybrid_reflection": [
+      0.25231837311491073,
+      -0.19979521433236302,
+      0.1811471477392066,
+      -0.12088275637314089
+    ],
+    "final_lattice_reflection": [
+      0.25231837311491073,
+      -0.19979521433236302,
+      0.1811471477392066,
+      -0.12088275637314089
+    ],
+    "fir_order": 64,
+    "fir_weight_norm": 0.9759896046552373,
+    "has_openmp": true,
+    "iir_order": 4,
+    "near_end_power_ratio": 0.02,
+    "noise_snr_db": 30.0,
+    "nonlinear_strength": 0.08,
+    "nonlinearity": "tanh",
+    "platform": "Linux-6.17.0-1020-oem-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "reflection_update_period": 8,
+    "repeats": 1,
+    "residual_gain": 0.7,
+    "sample_rate": 16000,
+    "samples": 16000,
+    "scale_reflection_mu_by_period": true,
+    "seed": 1234,
+    "spectral_echo_aware_strength": 0.85,
+    "spectral_exponent": 1.0,
+    "spectral_floor": 0.08,
+    "spectral_frame_size": 512,
+    "spectral_hop_size": null,
+    "spectral_mode": "echo_aware",
+    "spectral_noise_percentile": 20.0,
+    "spectral_over_subtract": 1.25,
+    "spectral_reference_key": "echo_estimate",
+    "spectral_smoothing": 0.65,
+    "target_reflection": [
+      0.35,
+      -0.25,
+      0.15,
+      -0.08
+    ],
+    "target_taps": [
+      0.2,
+      -0.1,
+      0.05,
+      0.0,
+      0.75
+    ]
+  }
+}

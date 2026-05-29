@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lattice_dsp.matrix_lattice &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../lattice_dsp.html">lattice_dsp</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for lattice_dsp.matrix_lattice</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Matrix-valued lattice/all-pass utilities.</span>
+
+<span class="sd">This module is intentionally a foundation layer, not a full wireless</span>
+<span class="sd">precoding framework.  It provides the reusable pieces needed to work with</span>
+<span class="sd">complex matrix reflection coefficients whose singular values are bounded by</span>
+<span class="sd">one.  Those contractive matrices parameterize lossless/lattice stages and are</span>
+<span class="sd">useful for compact MIMO/time-domain DSP representations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">try</span><span class="p">:</span>  <span class="c1"># pragma: no cover - exercised through the compiled extension when built.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix_lattice_frequency_response</span> <span class="k">as</span> <span class="n">_core_matrix_lattice_frequency_response</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">_core_matrix_lattice_frequency_response</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_square_complex_matrix</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a square 2-D complex matrix&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must contain only finite values&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="matrix_spectral_norm">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.matrix_spectral_norm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_spectral_norm</span><span class="p">(</span><span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the largest singular value of a complex matrix.&quot;&quot;&quot;</span>
+
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="s2">&quot;matrix&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="is_matrix_reflection_stable">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.is_matrix_reflection_stable">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_matrix_reflection_stable</span><span class="p">(</span>
+    <span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``True`` when ``||K||_2 &lt; 1 - margin``.</span>
+
+<span class="sd">    For matrix lattice/all-pass stages, the scalar ``|k| &lt; 1`` stability test</span>
+<span class="sd">    generalizes to a strict contraction: all singular values of ``K`` must be</span>
+<span class="sd">    below one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">margin</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">margin</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;margin must be finite and in [0, 1)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matrix_spectral_norm</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">margin</span></div>
+
+
+
+<div class="viewcode-block" id="project_matrix_reflection">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.project_matrix_reflection">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">project_matrix_reflection</span><span class="p">(</span>
+    <span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Project a square complex matrix to a strict spectral-norm contraction.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">margin</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">margin</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;margin must be finite and in [0, 1)&quot;</span><span class="p">)</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="s2">&quot;matrix&quot;</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">limit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nextafter</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">margin</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">((</span><span class="n">u</span> <span class="o">*</span> <span class="n">s</span><span class="p">)</span> <span class="o">@</span> <span class="n">vh</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="contractive_matrix_from_raw">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.contractive_matrix_from_raw">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">contractive_matrix_from_raw</span><span class="p">(</span>
+    <span class="n">raw</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map an unconstrained complex matrix to a stable matrix reflection.</span>
+
+<span class="sd">    This is the matrix analogue of using ``tanh`` to bound scalar reflection</span>
+<span class="sd">    coefficients.  The singular vectors are retained and singular values are</span>
+<span class="sd">    mapped through ``(1 - margin) * tanh(s)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">margin</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">margin</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;margin must be finite and in [0, 1)&quot;</span><span class="p">)</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">margin</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">((</span><span class="n">u</span> <span class="o">*</span> <span class="n">s</span><span class="p">)</span> <span class="o">@</span> <span class="n">vh</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="unitary_polar_factor">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.unitary_polar_factor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">unitary_polar_factor</span><span class="p">(</span><span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the unitary polar factor of a square complex matrix.&quot;&quot;&quot;</span>
+
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="s2">&quot;matrix&quot;</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">u</span> <span class="o">@</span> <span class="n">vh</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="psd_matrix_sqrt">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.psd_matrix_sqrt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">psd_matrix_sqrt</span><span class="p">(</span><span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">clip_negative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hermitian positive-semidefinite matrix square root.&quot;&quot;&quot;</span>
+
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="s2">&quot;matrix&quot;</span><span class="p">)</span>
+    <span class="n">hermitian</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">mat</span> <span class="o">+</span> <span class="n">mat</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">hermitian</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">clip_negative</span><span class="p">:</span>
+        <span class="n">eigvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">eigvals</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">eigvals</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1e-12</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;matrix has negative eigenvalues and is not PSD&quot;</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="p">(</span><span class="n">eigvecs</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eigvals</span><span class="p">))</span> <span class="o">@</span> <span class="n">eigvecs</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">root</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="matrix_lattice_stage_blocks">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.matrix_lattice_stage_blocks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_lattice_stage_blocks</span><span class="p">(</span>
+    <span class="n">reflection</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the four block matrices ``[T11, T12, T21, T22]`` for one stage.</span>
+
+<span class="sd">    For a contractive matrix reflection ``K``, the lossless stage is</span>
+
+<span class="sd">    ``[[K, sqrt(I - K K^H)], [sqrt(I - K^H K), -K^H]]``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">project_matrix_reflection</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_matrix_reflection_stable</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reflection matrix must satisfy spectral_norm(K) &lt; 1 - margin&quot;</span><span class="p">)</span>
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">t11</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="n">t12</span> <span class="o">=</span> <span class="n">psd_matrix_sqrt</span><span class="p">(</span><span class="n">eye</span> <span class="o">-</span> <span class="n">k</span> <span class="o">@</span> <span class="n">k</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">t21</span> <span class="o">=</span> <span class="n">psd_matrix_sqrt</span><span class="p">(</span><span class="n">eye</span> <span class="o">-</span> <span class="n">k</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">t22</span> <span class="o">=</span> <span class="o">-</span><span class="n">k</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">t11</span><span class="p">,</span> <span class="n">t12</span><span class="p">,</span> <span class="n">t21</span><span class="p">,</span> <span class="n">t22</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_frequency_response_numpy</span><span class="p">(</span><span class="n">stage_blocks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">residue</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">n_freq</span> <span class="o">=</span> <span class="n">omega</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_freq</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">omega</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># stage_blocks[0] is the outermost stage; apply inner stages first.</span>
+        <span class="k">for</span> <span class="n">t11</span><span class="p">,</span> <span class="n">t12</span><span class="p">,</span> <span class="n">t21</span><span class="p">,</span> <span class="n">t22</span> <span class="ow">in</span> <span class="n">stage_blocks</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">zg</span> <span class="o">=</span> <span class="n">z</span> <span class="o">*</span> <span class="n">g</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">eye</span> <span class="o">-</span> <span class="n">t22</span> <span class="o">@</span> <span class="n">zg</span><span class="p">,</span> <span class="n">t21</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">t11</span> <span class="o">+</span> <span class="n">t12</span> <span class="o">@</span> <span class="n">zg</span> <span class="o">@</span> <span class="n">x</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="MatrixLatticeAllPass">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MatrixLatticeAllPass</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complex matrix-valued lattice/all-pass filter representation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reflections:</span>
+<span class="sd">        Sequence of square complex matrix reflection coefficients.  Each matrix</span>
+<span class="sd">        must be a strict contraction, i.e. ``||K_i||_2 &lt; 1``.</span>
+<span class="sd">    residue:</span>
+<span class="sd">        Final unitary matrix.  If omitted, the identity matrix is used.</span>
+<span class="sd">    margin:</span>
+<span class="sd">        Stability margin for reflection matrices.</span>
+<span class="sd">    project:</span>
+<span class="sd">        If true, reflection matrices are projected to the stable set and the</span>
+<span class="sd">        residue is replaced by its unitary polar factor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">reflections</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">residue</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span>
+    <span class="n">stage_blocks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reflections</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span>
+        <span class="n">residue</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">margin</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">margin</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;margin must be finite and in [0, 1)&quot;</span><span class="p">)</span>
+        <span class="n">mats</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s2">&quot;reflection&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">reflections</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mats</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">residue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;at least one reflection or an explicit residue is required&quot;</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">residue</span><span class="p">,</span> <span class="s2">&quot;residue&quot;</span><span class="p">)</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="n">mats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mats</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all reflection matrices must have the same square shape&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+                <span class="n">mats</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">project_matrix_reflection</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mats</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mats</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_matrix_reflection_stable</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;each reflection matrix must satisfy spectral_norm(K) &lt; 1 - margin&quot;</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="k">if</span> <span class="n">residue</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_as_square_complex_matrix</span><span class="p">(</span><span class="n">residue</span><span class="p">,</span> <span class="s2">&quot;residue&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;residue shape must match reflection matrices&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">unitary_polar_factor</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">matrix_lattice_stage_blocks</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mats</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="k">if</span> <span class="n">mats</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;reflections&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mats</span><span class="p">))</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;residue&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;margin&quot;</span><span class="p">,</span> <span class="n">margin</span><span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;stage_blocks&quot;</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reflections</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<div class="viewcode-block" id="MatrixLatticeAllPass.parameter_count">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass.parameter_count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameter_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">real_scalars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">include_residue</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return coefficient count for reporting/feedback estimates.&quot;&quot;&quot;</span>
+
+        <span class="n">complex_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span>
+        <span class="k">if</span> <span class="n">include_residue</span><span class="p">:</span>
+            <span class="n">complex_count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">complex_count</span> <span class="k">if</span> <span class="n">real_scalars</span> <span class="k">else</span> <span class="n">complex_count</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MatrixLatticeAllPass.max_reflection_singular_value">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass.max_reflection_singular_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_reflection_singular_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">reflections</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">matrix_spectral_norm</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reflections</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MatrixLatticeAllPass.frequency_response">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass.frequency_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frequency_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the matrix all-pass response at radian frequencies.&quot;&quot;&quot;</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage_blocks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;internal stage blocks are not initialized&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_core_matrix_lattice_frequency_response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_core_matrix_lattice_frequency_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_blocks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">residue</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n_threads</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_frequency_response_numpy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_blocks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">residue</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MatrixLatticeAllPass.unitarity_error">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass.unitarity_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unitarity_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Maximum ``||G(w)^H G(w) - I||_F`` over supplied frequencies.&quot;&quot;&quot;</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_response</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span>
+        <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">g</span> <span class="o">-</span> <span class="n">eye</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="s2">&quot;fro&quot;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">err</span></div>
+
+
+<div class="viewcode-block" id="MatrixLatticeAllPass.to_online_filter">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass.to_online_filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_online_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OnlineMatrixLatticeAllPass</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a causal streaming runtime for this all-pass lattice.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">OnlineMatrixLatticeAllPass</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MatrixLatticeAllPass.impulse_response">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.MatrixLatticeAllPass.impulse_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">impulse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the causal matrix impulse response of the online realization.</span>
+
+<span class="sd">        The returned array has shape ``(n_samples, outputs, inputs)``.  Entry</span>
+<span class="sd">        ``h[t, i, j]`` is the output in channel ``i`` at delay ``t`` after a</span>
+<span class="sd">        unit impulse in input channel ``j``.  The response is truncated to the</span>
+<span class="sd">        requested length; matrix-lattice all-pass responses are generally IIR,</span>
+<span class="sd">        so longer lengths expose more of the decaying tail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_samples</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_samples must be a positive integer&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">input_channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">):</span>
+            <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_online_filter</span><span class="p">()</span>
+            <span class="n">impulse</span> <span class="o">=</span> <span class="n">zero</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">impulse</span><span class="p">[</span><span class="n">input_channel</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">input_channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">process_sample</span><span class="p">(</span><span class="n">impulse</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sample_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                <span class="n">h</span><span class="p">[</span><span class="n">sample_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="n">input_channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">process_sample</span><span class="p">(</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">h</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_OnlineMatrixLatticeStage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One causal stage used internally by OnlineMatrixLatticeAllPass.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_OnlineMatrixLatticeStage</span> <span class="o">|</span> <span class="n">_OnlineMatrixLatticeResidue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t12</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t21</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t22</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">block</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner</span> <span class="o">=</span> <span class="n">inner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t11</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">delayed_inner_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t11</span> <span class="o">@</span> <span class="n">sample</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">t12</span> <span class="o">@</span> <span class="n">delayed_inner_output</span>
+        <span class="n">inner_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t21</span> <span class="o">@</span> <span class="n">sample</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">t22</span> <span class="o">@</span> <span class="n">delayed_inner_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inner</span><span class="o">.</span><span class="n">process_sample</span><span class="p">(</span><span class="n">inner_input</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_OnlineMatrixLatticeResidue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Terminal unitary matrix used internally by OnlineMatrixLatticeAllPass.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residue</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">residue</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residue</span> <span class="o">@</span> <span class="n">sample</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="OnlineMatrixLatticeAllPass">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.OnlineMatrixLatticeAllPass">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OnlineMatrixLatticeAllPass</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Causal streaming realization of :class:`MatrixLatticeAllPass`.</span>
+
+<span class="sd">    The existing :class:`MatrixLatticeAllPass` object defines the transfer</span>
+<span class="sd">    function.  This runtime wrapper realizes the same Schur/lattice cascade in</span>
+<span class="sd">    time, with one vector delay per section.  For an input vector ``u[n]`` the</span>
+<span class="sd">    output at time ``n`` depends only on ``u[n]`` and previous internal states;</span>
+<span class="sd">    future samples are never inspected.</span>
+
+<span class="sd">    The finite prefix energy of a processed block can differ from the input</span>
+<span class="sd">    energy because some energy remains in the delay states.  Over a long stream,</span>
+<span class="sd">    or after appending enough zero samples to let the tail decay, the</span>
+<span class="sd">    input-output energy agrees up to numerical precision for a lossless/all-pass</span>
+<span class="sd">    lattice.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">MatrixLatticeAllPass</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lattice</span><span class="p">,</span> <span class="n">MatrixLatticeAllPass</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;lattice must be a MatrixLatticeAllPass instance&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span> <span class="o">=</span> <span class="n">lattice</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">lattice</span><span class="o">.</span><span class="n">dimension</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">lattice</span><span class="o">.</span><span class="n">order</span>
+        <span class="n">inner</span><span class="p">:</span> <span class="n">_OnlineMatrixLatticeStage</span> <span class="o">|</span> <span class="n">_OnlineMatrixLatticeResidue</span> <span class="o">=</span> <span class="n">_OnlineMatrixLatticeResidue</span><span class="p">(</span><span class="n">lattice</span><span class="o">.</span><span class="n">residue</span><span class="p">)</span>
+        <span class="c1"># stage_blocks[0] is the outermost section in the frequency-response</span>
+        <span class="c1"># recursion, so build the runtime cascade from the innermost section out.</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">lattice</span><span class="o">.</span><span class="n">stage_blocks</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">inner</span> <span class="o">=</span> <span class="n">_OnlineMatrixLatticeStage</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">inner</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outer</span> <span class="o">=</span> <span class="n">inner</span>
+
+<div class="viewcode-block" id="OnlineMatrixLatticeAllPass.reset">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.OnlineMatrixLatticeAllPass.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset all section delay states to zero.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outer</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vec</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sample must have shape (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="si">}</span><span class="s2">,)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sample must contain only finite values&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OnlineMatrixLatticeAllPass.process_sample">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.OnlineMatrixLatticeAllPass.process_sample">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process one vector sample causally and update internal states.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outer</span><span class="o">.</span><span class="n">process_sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coerce_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="OnlineMatrixLatticeAllPass.process">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.OnlineMatrixLatticeAllPass.process">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">drain</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process a sequence of vector samples.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x:</span>
+<span class="sd">            Array with shape ``(samples, channels)``.  One-dimensional input is</span>
+<span class="sd">            accepted only for a one-channel lattice.</span>
+<span class="sd">        drain:</span>
+<span class="sd">            Number of trailing zero-vector samples to append to expose the</span>
+<span class="sd">            decaying all-pass tail.  The returned array has ``samples + drain``</span>
+<span class="sd">            rows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">drain</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;drain must be nonnegative&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x must have shape (samples, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x must have shape (samples, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x must contain only finite values&quot;</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">drain</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tail_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">drain</span><span class="p">)):</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">tail_idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sample</span><span class="p">(</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="online_matrix_lattice_allpass_process">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.online_matrix_lattice_allpass_process">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">online_matrix_lattice_allpass_process</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span>
+    <span class="n">reflections</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span>
+    <span class="n">residue</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
+    <span class="n">project</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">drain</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience wrapper for causal matrix-lattice all-pass processing.&quot;&quot;&quot;</span>
+
+    <span class="n">lattice</span> <span class="o">=</span> <span class="n">MatrixLatticeAllPass</span><span class="p">(</span><span class="n">reflections</span><span class="p">,</span> <span class="n">residue</span><span class="o">=</span><span class="n">residue</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">OnlineMatrixLatticeAllPass</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">drain</span><span class="o">=</span><span class="n">drain</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="matrix_lattice_impulse_response_convolution">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.matrix_lattice_impulse_response_convolution">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_lattice_impulse_response_convolution</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span>
+    <span class="n">impulse_response</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">drain</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a truncated causal MIMO impulse response in the time domain.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x:</span>
+<span class="sd">        Input array with shape ``(samples, inputs)``.</span>
+<span class="sd">    impulse_response:</span>
+<span class="sd">        Matrix impulse response with shape ``(taps, outputs, inputs)``.</span>
+<span class="sd">    drain:</span>
+<span class="sd">        Number of trailing zero-input samples to append to the returned output.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This helper is deliberately time-domain.  It is useful for validating the</span>
+<span class="sd">    causal streaming runtime against a finite impulse-response truncation and</span>
+<span class="sd">    for building finite-block adjoint diagnostics without FFT-domain circular</span>
+<span class="sd">    convolution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">impulse_response</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;impulse_response must have shape (taps, outputs, inputs)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x must have shape (samples, </span><span class="si">{</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span> <span class="o">!=</span> <span class="n">drain</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;drain must be a nonnegative integer&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x must contain only finite values&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;impulse_response must contain only finite values&quot;</span><span class="p">)</span>
+
+    <span class="n">n_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_out</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">delay</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_out</span> <span class="o">-</span> <span class="n">delay</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">delay</span> <span class="p">:</span> <span class="n">delay</span> <span class="o">+</span> <span class="n">limit</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span> <span class="o">@</span> <span class="n">h</span><span class="p">[</span><span class="n">delay</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="matrix_lattice_finite_adjoint">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.matrix_lattice_finite_adjoint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_lattice_finite_adjoint</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]],</span>
+    <span class="n">impulse_response</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">output_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply the finite-block adjoint of a truncated causal MIMO response.</span>
+
+<span class="sd">    If ``h[k]`` denotes a causal matrix impulse response, forward convolution is</span>
+
+<span class="sd">    ``y[n] = sum_k h[k] x[n-k]``.</span>
+
+<span class="sd">    This helper applies the corresponding finite-block adjoint</span>
+
+<span class="sd">    ``x_adj[n] = sum_k h[k]^H y[n+k]``</span>
+
+<span class="sd">    using only time-domain sums.  The operation is generally **noncausal** as a</span>
+<span class="sd">    synthesis/inverse step because it depends on future output samples.  It is</span>
+<span class="sd">    intended for finite-record diagnostics such as paraunitary reconstruction</span>
+<span class="sd">    tests, where the whole transformed record is available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">impulse_response</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;impulse_response must have shape (taps, outputs, inputs)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y must have shape (samples, </span><span class="si">{</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out_len</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">output_length</span><span class="p">)</span> <span class="o">==</span> <span class="n">output_length</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">output_length</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">output_length</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;output_length must be a nonnegative integer or None&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;y must contain only finite values&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;impulse_response must contain only finite values&quot;</span><span class="p">)</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">out_len</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">delay</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">out_len</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">delay</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">out</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">delay</span> <span class="p">:</span> <span class="n">delay</span> <span class="o">+</span> <span class="n">limit</span><span class="p">]</span> <span class="o">@</span> <span class="n">h</span><span class="p">[</span><span class="n">delay</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="mimo_state_space_frequency_response">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.mimo_state_space_frequency_response">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mimo_state_space_frequency_response</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">C</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">D</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluate a discrete-time MIMO state-space frequency response.</span>
+
+<span class="sd">    The convention matches :func:`lattice_dsp.mimo_state_space_markov_response`:</span>
+
+<span class="sd">    ``H(z) = D + C z^-1 (I - A z^-1)^-1 B``.</span>
+
+<span class="sd">    Parameters are converted to dense NumPy arrays.  The returned array has</span>
+<span class="sd">    shape ``(n_frequency, outputs, inputs)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A must be a square matrix&quot;</span><span class="p">)</span>
+    <span class="n">n_state</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_state</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;B must have shape (state, inputs)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_state</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;C must have shape (outputs, state)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;D must have shape (outputs, inputs)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;state-space matrices and frequencies must be finite&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">w</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_state</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">ac</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bc</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dc</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+        <span class="n">zinv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">wi</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_state</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc</span> <span class="o">+</span> <span class="n">cc</span> <span class="o">@</span> <span class="p">(</span><span class="n">zinv</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">eye</span> <span class="o">-</span> <span class="n">zinv</span> <span class="o">*</span> <span class="n">ac</span><span class="p">,</span> <span class="n">bc</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_square_response_stack</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must have shape (frequency, channels, channels)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">real</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">imag</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must contain only finite values&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="fit_static_matrix_gains">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.fit_static_matrix_gains">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_static_matrix_gains</span><span class="p">(</span>
+    <span class="n">target_response</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span>
+    <span class="n">lattice_response</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+    <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="n">regularization</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit static matrix gains around a matrix-lattice response.</span>
+
+<span class="sd">    The model is</span>
+
+<span class="sd">    ``target_response[w] ~= left_gain @ lattice_response[w] @ right_gain``.</span>
+
+<span class="sd">    ``mode=&#39;left&#39;`` fixes ``right_gain = I``; ``mode=&#39;right&#39;`` fixes</span>
+<span class="sd">    ``left_gain = I``; ``mode=&#39;both&#39;`` alternates least-squares updates for both</span>
+<span class="sd">    factors.  This is a diagnostic used to separate all-pass/lattice mismatch</span>
+<span class="sd">    from static nonunitary gain mismatch.  It is not a dynamic realization</span>
+<span class="sd">    solver.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">target</span> <span class="o">=</span> <span class="n">_as_square_response_stack</span><span class="p">(</span><span class="n">target_response</span><span class="p">,</span> <span class="s2">&quot;target_response&quot;</span><span class="p">)</span>
+    <span class="n">lattice</span> <span class="o">=</span> <span class="n">_as_square_response_stack</span><span class="p">(</span><span class="n">lattice_response</span><span class="p">,</span> <span class="s2">&quot;lattice_response&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">lattice</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;target_response and lattice_response must have the same shape&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mode must be &#39;left&#39;, &#39;right&#39;, or &#39;both&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_iter</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_iter must be at least 1&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">regularization</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">regularization</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;regularization must be finite and nonnegative&quot;</span><span class="p">)</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve_left</span><span class="p">(</span><span class="n">right</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">regularization</span> <span class="o">*</span> <span class="n">eye</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">lattice</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">u</span> <span class="o">@</span> <span class="n">right</span>
+            <span class="n">s1</span> <span class="o">+=</span> <span class="n">h</span> <span class="o">@</span> <span class="n">x</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">s2</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">x</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">s1</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve_right</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">regularization</span> <span class="o">*</span> <span class="n">eye</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">lattice</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">left</span> <span class="o">@</span> <span class="n">u</span>
+            <span class="n">s1</span> <span class="o">+=</span> <span class="n">y</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">y</span>
+            <span class="n">s2</span> <span class="o">+=</span> <span class="n">y</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">h</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">@</span> <span class="n">s2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">response_for</span><span class="p">(</span><span class="n">left_gain</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">right_gain</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">left_gain</span> <span class="o">@</span> <span class="n">u</span> <span class="o">@</span> <span class="n">right_gain</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">lattice</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="n">left</span> <span class="o">=</span> <span class="n">eye</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">eye</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span><span class="p">:</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">solve_left</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">solve_right</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">candidate_pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="n">left_gain</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">right_gain</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candidate_pairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">_relative_frobenius_error</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">response_for</span><span class="p">(</span><span class="n">left_gain</span><span class="p">,</span> <span class="n">right_gain</span><span class="p">)),</span> <span class="n">left_gain</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">right_gain</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="p">)</span>
+
+        <span class="n">record</span><span class="p">(</span><span class="n">eye</span><span class="p">,</span> <span class="n">eye</span><span class="p">)</span>
+        <span class="n">record</span><span class="p">(</span><span class="n">solve_left</span><span class="p">(</span><span class="n">eye</span><span class="p">),</span> <span class="n">eye</span><span class="p">)</span>
+        <span class="n">record</span><span class="p">(</span><span class="n">eye</span><span class="p">,</span> <span class="n">solve_right</span><span class="p">(</span><span class="n">eye</span><span class="p">))</span>
+
+        <span class="c1"># A right-only least-squares initialization converges much more</span>
+        <span class="c1"># reliably than starting the bilinear ALS from two identities when the</span>
+        <span class="c1"># true target has a substantial static right rotation.</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">solve_right</span><span class="p">(</span><span class="n">eye</span><span class="p">)</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">solve_left</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)):</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">solve_right</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+            <span class="c1"># ``left @ U @ right`` has a scalar ambiguity.  Normalize the two</span>
+            <span class="c1"># factors to comparable Frobenius norms without changing the</span>
+            <span class="c1"># product.</span>
+            <span class="n">left_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+            <span class="n">right_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">left_norm</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">right_norm</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">right_norm</span> <span class="o">/</span> <span class="n">left_norm</span><span class="p">))</span>
+                <span class="n">left</span> <span class="o">*=</span> <span class="n">alpha</span>
+                <span class="n">right</span> <span class="o">/=</span> <span class="n">alpha</span>
+            <span class="n">record</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">solve_left</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+            <span class="n">record</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidate_pairs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">compensated</span> <span class="o">=</span> <span class="n">response_for</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+    <span class="n">raw_relative_error</span> <span class="o">=</span> <span class="n">_relative_frobenius_error</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">lattice</span><span class="p">)</span>
+    <span class="n">compensated_relative_error</span> <span class="o">=</span> <span class="n">_relative_frobenius_error</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">compensated</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
+        <span class="s2">&quot;left_gain&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">left</span><span class="p">),</span>
+        <span class="s2">&quot;right_gain&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">right</span><span class="p">),</span>
+        <span class="s2">&quot;compensated_response&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">compensated</span><span class="p">),</span>
+        <span class="s2">&quot;raw_relative_error&quot;</span><span class="p">:</span> <span class="n">raw_relative_error</span><span class="p">,</span>
+        <span class="s2">&quot;compensated_relative_error&quot;</span><span class="p">:</span> <span class="n">compensated_relative_error</span><span class="p">,</span>
+        <span class="s2">&quot;left_gain_condition&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">left</span><span class="p">)),</span>
+        <span class="s2">&quot;right_gain_condition&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">right</span><span class="p">)),</span>
+        <span class="s2">&quot;iterations&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_iter</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span> <span class="k">else</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="polar_factor_response">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.polar_factor_response">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">polar_factor_response</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">complex</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the unitary polar factor of each square response matrix.&quot;&quot;&quot;</span>
+
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;response must have shape (frequency, channels, channels)&quot;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">vh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span> <span class="o">@</span> <span class="n">vh</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_relative_frobenius_error</span><span class="p">(</span><span class="n">reference</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">estimate</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">reference</span> <span class="o">-</span> <span class="n">estimate</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">reference</span><span class="p">),</span> <span class="mf">1e-30</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_state_space_markov_response_numpy</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">D</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_samples must be at least 2&quot;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span>
+    <span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">):</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span> <span class="o">@</span> <span class="n">power</span> <span class="o">@</span> <span class="n">B</span>
+        <span class="n">power</span> <span class="o">=</span> <span class="n">power</span> <span class="o">@</span> <span class="n">A</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="matrix_lattice_scaffold_from_markov">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.matrix_lattice_scaffold_from_markov">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_lattice_scaffold_from_markov</span><span class="p">(</span>
+    <span class="n">markov</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.55</span><span class="p">,</span>
+    <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MatrixLatticeAllPass</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a stable matrix-lattice all-pass scaffold from MIMO Markov matrices.</span>
+
+<span class="sd">    This is an initializer/diagnostic, not an exact realization theorem.  Early</span>
+<span class="sd">    Markov matrices supply coupling directions; each is projected to a strict</span>
+<span class="sd">    matrix-reflection contraction.  The residue is the unitary polar factor of</span>
+<span class="sd">    the direct term ``M_0``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">markov</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;markov must have shape (samples, channels, channels)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;order must be nonnegative&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gain</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">gain</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;gain must be a finite nonnegative value&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">margin</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">margin</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;margin must be finite and in [0, 1)&quot;</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">reflections</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">scaled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">channels</span><span class="p">,</span> <span class="n">channels</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="k">if</span> <span class="n">norm</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span> <span class="o">*</span> <span class="n">raw</span> <span class="o">/</span> <span class="n">norm</span>
+        <span class="n">reflections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">contractive_matrix_from_raw</span><span class="p">(</span><span class="n">scaled</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">))</span>
+    <span class="n">residue</span> <span class="o">=</span> <span class="n">unitary_polar_factor</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-12</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">MatrixLatticeAllPass</span><span class="p">(</span><span class="n">reflections</span><span class="p">,</span> <span class="n">residue</span><span class="o">=</span><span class="n">residue</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="experimental_mimo_state_space_to_matrix_lattice">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.matrix_lattice.experimental_mimo_state_space_to_matrix_lattice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">experimental_mimo_state_space_to_matrix_lattice</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">C</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">D</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">n_markov</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+    <span class="n">n_freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+    <span class="n">candidate_gains</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fit_static_gains</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">static_gain_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+    <span class="n">static_gain_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">n_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Experimental square MIMO state-space to matrix-lattice all-pass fit.</span>
+
+<span class="sd">    The fitted object is a :class:`MatrixLatticeAllPass`, so the target is the</span>
+<span class="sd">    unitary/polar part of the state-space response, not the full nonunitary gain</span>
+<span class="sd">    response.  The routine builds Markov-initialized lattice scaffolds for a</span>
+<span class="sd">    grid of reflection gains and returns the candidate with the smallest</span>
+<span class="sd">    relative Frobenius error against the target polar factor.  When</span>
+<span class="sd">    ``fit_static_gains`` is true, the routine also fits static left/right gain</span>
+<span class="sd">    matrices around the selected lattice response,</span>
+<span class="sd">    ``H(w) ~= L @ G_lattice(w) @ R``.  This separates all-pass scaffold quality</span>
+<span class="sd">    from nonunitary static gain mismatch.</span>
+
+<span class="sd">    This is a practical diagnostic/initializer for matrix-lattice</span>
+<span class="sd">    realization experiments.  It is not a full matrix AAK/Nehari solver and it is not a</span>
+<span class="sd">    proof that an arbitrary stable MIMO state-space model has been exactly</span>
+<span class="sd">    realized in matrix-lattice coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;order must be nonnegative&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_markov</span> <span class="o">&lt;=</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_markov must be larger than order + 1&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_freq</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_freq must be at least 8&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">margin</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">margin</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">margin</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;margin must be finite and in [0, 1)&quot;</span><span class="p">)</span>
+    <span class="n">gains</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">candidate_gains</span> <span class="k">if</span> <span class="n">candidate_gains</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mi">9</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gains</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">((</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">g</span><span class="p">))</span> <span class="ow">or</span> <span class="n">g</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gains</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;candidate_gains must contain finite nonnegative values&quot;</span><span class="p">)</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="c1"># Reuse validation in the response helper and then enforce square transfer matrices.</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_freq</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">h_state</span> <span class="o">=</span> <span class="n">mimo_state_space_frequency_response</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">h_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">h_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;matrix-lattice realization requires a square MIMO transfer matrix&quot;</span><span class="p">)</span>
+
+    <span class="n">markov</span> <span class="o">=</span> <span class="n">_state_space_markov_response_numpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_markov</span><span class="p">))</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">polar_factor_response</span><span class="p">(</span><span class="n">h_state</span><span class="p">)</span>
+    <span class="n">singular_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">h_state</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">gain_condition_span</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">singular_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">singular_values</span><span class="p">),</span> <span class="mf">1e-30</span><span class="p">))</span>
+
+    <span class="n">candidates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">best</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">gain</span> <span class="ow">in</span> <span class="n">gains</span><span class="p">:</span>
+        <span class="n">lattice</span> <span class="o">=</span> <span class="n">matrix_lattice_scaffold_from_markov</span><span class="p">(</span><span class="n">markov</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="n">gain</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">lattice</span><span class="o">.</span><span class="n">frequency_response</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="n">n_threads</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">_relative_frobenius_error</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;gain&quot;</span><span class="p">:</span> <span class="n">gain</span><span class="p">,</span>
+            <span class="s2">&quot;polar_factor_relative_error&quot;</span><span class="p">:</span> <span class="n">err</span><span class="p">,</span>
+            <span class="s2">&quot;max_reflection_singular_value&quot;</span><span class="p">:</span> <span class="n">lattice</span><span class="o">.</span><span class="n">max_reflection_singular_value</span><span class="p">(),</span>
+            <span class="s2">&quot;unitarity_error&quot;</span><span class="p">:</span> <span class="n">lattice</span><span class="o">.</span><span class="n">unitarity_error</span><span class="p">(</span><span class="n">omega</span><span class="p">),</span>
+            <span class="s2">&quot;lattice&quot;</span><span class="p">:</span> <span class="n">lattice</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">best</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;polar_factor_relative_error&quot;</span><span class="p">]):</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="n">candidate</span>
+
+    <span class="k">assert</span> <span class="n">best</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">best_lattice</span> <span class="o">=</span> <span class="n">best</span><span class="p">[</span><span class="s2">&quot;lattice&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">best_lattice</span><span class="p">,</span> <span class="n">MatrixLatticeAllPass</span><span class="p">)</span>
+    <span class="n">best_response</span> <span class="o">=</span> <span class="n">best_lattice</span><span class="o">.</span><span class="n">frequency_response</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="n">n_threads</span><span class="p">)</span>
+    <span class="n">state_response_relative_error</span> <span class="o">=</span> <span class="n">_relative_frobenius_error</span><span class="p">(</span><span class="n">h_state</span><span class="p">,</span> <span class="n">best_response</span><span class="p">)</span>
+    <span class="n">static_gain_fit</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">static_gain_relative_error</span> <span class="o">=</span> <span class="n">state_response_relative_error</span>
+    <span class="n">static_gain_improvement</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">static_gain_left_condition</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">static_gain_right_condition</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">gain_compensated_response</span> <span class="o">=</span> <span class="n">best_response</span>
+    <span class="k">if</span> <span class="n">fit_static_gains</span><span class="p">:</span>
+        <span class="n">static_gain_fit</span> <span class="o">=</span> <span class="n">fit_static_matrix_gains</span><span class="p">(</span>
+            <span class="n">h_state</span><span class="p">,</span>
+            <span class="n">best_response</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">static_gain_mode</span><span class="p">,</span>
+            <span class="n">n_iter</span><span class="o">=</span><span class="n">static_gain_iterations</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">static_gain_relative_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">static_gain_fit</span><span class="p">[</span><span class="s2">&quot;compensated_relative_error&quot;</span><span class="p">])</span>
+        <span class="n">static_gain_improvement</span> <span class="o">=</span> <span class="n">state_response_relative_error</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">static_gain_relative_error</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span>
+        <span class="n">static_gain_left_condition</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">static_gain_fit</span><span class="p">[</span><span class="s2">&quot;left_gain_condition&quot;</span><span class="p">])</span>
+        <span class="n">static_gain_right_condition</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">static_gain_fit</span><span class="p">[</span><span class="s2">&quot;right_gain_condition&quot;</span><span class="p">])</span>
+        <span class="n">gain_compensated_response</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">static_gain_fit</span><span class="p">[</span><span class="s2">&quot;compensated_response&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;polar_factor_relative_error&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">0.25</span><span class="p">:</span>
+        <span class="n">diagnostic_classification</span> <span class="o">=</span> <span class="s2">&quot;good_allpass_polar_fit&quot;</span>
+    <span class="k">elif</span> <span class="n">fit_static_gains</span> <span class="ow">and</span> <span class="n">static_gain_improvement</span> <span class="o">&gt;=</span> <span class="mf">2.0</span> <span class="ow">and</span> <span class="n">static_gain_relative_error</span> <span class="o">&lt;</span> <span class="n">state_response_relative_error</span><span class="p">:</span>
+        <span class="n">diagnostic_classification</span> <span class="o">=</span> <span class="s2">&quot;mostly_static_gain_or_nonunitary_mismatch&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diagnostic_classification</span> <span class="o">=</span> <span class="s2">&quot;poor_lattice_scaffold_fit&quot;</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;experimental_mimo_state_space_to_matrix_lattice&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;experimental_polar_allpass_fit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">),</span>
+        <span class="s2">&quot;dimension&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">h_state</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="s2">&quot;selected_gain&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;gain&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;candidate_gains&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gains</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="s2">&quot;candidate_errors&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">cand</span><span class="p">[</span><span class="s2">&quot;polar_factor_relative_error&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="s2">&quot;candidate_max_reflection_singular_values&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">cand</span><span class="p">[</span><span class="s2">&quot;max_reflection_singular_value&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;polar_factor_relative_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;polar_factor_relative_error&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;unitarity_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">best</span><span class="p">[</span><span class="s2">&quot;unitarity_error&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;max_reflection_singular_value&quot;</span><span class="p">:</span> <span class="n">best_lattice</span><span class="o">.</span><span class="n">max_reflection_singular_value</span><span class="p">(),</span>
+        <span class="s2">&quot;target_gain_condition_span&quot;</span><span class="p">:</span> <span class="n">gain_condition_span</span><span class="p">,</span>
+        <span class="s2">&quot;state_response_relative_error&quot;</span><span class="p">:</span> <span class="n">state_response_relative_error</span><span class="p">,</span>
+        <span class="s2">&quot;fit_static_gains&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">fit_static_gains</span><span class="p">),</span>
+        <span class="s2">&quot;static_gain_mode&quot;</span><span class="p">:</span> <span class="n">static_gain_mode</span><span class="p">,</span>
+        <span class="s2">&quot;static_gain_relative_error&quot;</span><span class="p">:</span> <span class="n">static_gain_relative_error</span><span class="p">,</span>
+        <span class="s2">&quot;static_gain_improvement&quot;</span><span class="p">:</span> <span class="n">static_gain_improvement</span><span class="p">,</span>
+        <span class="s2">&quot;static_gain_left_condition&quot;</span><span class="p">:</span> <span class="n">static_gain_left_condition</span><span class="p">,</span>
+        <span class="s2">&quot;static_gain_right_condition&quot;</span><span class="p">:</span> <span class="n">static_gain_right_condition</span><span class="p">,</span>
+        <span class="s2">&quot;static_gain_fit&quot;</span><span class="p">:</span> <span class="n">static_gain_fit</span><span class="p">,</span>
+        <span class="s2">&quot;diagnostic_classification&quot;</span><span class="p">:</span> <span class="n">diagnostic_classification</span><span class="p">,</span>
+        <span class="s2">&quot;frequency_grid&quot;</span><span class="p">:</span> <span class="n">omega</span><span class="p">,</span>
+        <span class="s2">&quot;state_response&quot;</span><span class="p">:</span> <span class="n">h_state</span><span class="p">,</span>
+        <span class="s2">&quot;target_polar_response&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">,</span>
+        <span class="s2">&quot;lattice_response&quot;</span><span class="p">:</span> <span class="n">best_response</span><span class="p">,</span>
+        <span class="s2">&quot;gain_compensated_response&quot;</span><span class="p">:</span> <span class="n">gain_compensated_response</span><span class="p">,</span>
+        <span class="s2">&quot;lattice&quot;</span><span class="p">:</span> <span class="n">best_lattice</span><span class="p">,</span>
+        <span class="s2">&quot;reflections&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">best_lattice</span><span class="o">.</span><span class="n">reflections</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">),</span>
+        <span class="s2">&quot;residue&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">best_lattice</span><span class="o">.</span><span class="n">residue</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">),</span>
+        <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="s2">&quot;experimental all-pass/polar fit; not an exact matrix AAK/Nehari solver&quot;</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;MatrixLatticeAllPass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OnlineMatrixLatticeAllPass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contractive_matrix_from_raw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;experimental_mimo_state_space_to_matrix_lattice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fit_static_matrix_gains&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_matrix_reflection_stable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matrix_lattice_scaffold_from_markov&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matrix_lattice_stage_blocks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matrix_lattice_finite_adjoint&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matrix_lattice_impulse_response_convolution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;online_matrix_lattice_allpass_process&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matrix_spectral_norm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mimo_state_space_frequency_response&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;polar_factor_response&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;project_matrix_reflection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;psd_matrix_sqrt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unitary_polar_factor&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>AAK Schmidt-pair diagnostics for SISO Hankel approximation &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Finite-section SISO AAK/Nehari certificate" href="aak_siso_certificate_demo.html" />
+    <link rel="prev" title="Exact rational-tail validation for finite Nehari candidates" href="finite_nehari_exact_rational_tail.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="finite_nehari_exact_rational_tail.html" title="previous chapter">Exact rational-tail validation for finite Nehari candidates</a></li>
+      <li>Next: <a href="aak_siso_certificate_demo.html" title="next chapter">Finite-section SISO AAK/Nehari certificate</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="aak-schmidt-pair-diagnostics-for-siso-hankel-approximation">
+<h1>AAK Schmidt-pair diagnostics for SISO Hankel approximation<a class="headerlink" href="#aak-schmidt-pair-diagnostics-for-siso-hankel-approximation" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Visualize the first neglected Hankel singular direction that drives the AAK/Nehari approximation barrier.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>The finite Nehari toy and rational-bridge tutorials show the singular values and a practical
+recurrence fit.  This tutorial focuses on the next AAK object: the finite Schmidt pair at
+the first neglected singular value.  In the scalar AAK theory, analogous singular-vector
+data carries the structure used to build an optimal rational approximant.</p>
+<p>This page is still finite-dimensional and diagnostic.  It does not expose a production
+<code class="docutils literal notranslate"><span class="pre">aak_reduce_iir</span></code> routine.  Instead, it shows what such a routine would need to control:
+the critical singular direction, the finite rank-r barrier, the Hankelized approximation,
+and the resulting rational poles.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>For a finite Hankel matrix <code class="docutils literal notranslate"><span class="pre">H</span></code> with singular value decomposition</p>
+<div class="math notranslate nohighlight">
+\[H = U\Sigma V^T,\]</div>
+<p>the first neglected mode after a rank-<code class="docutils literal notranslate"><span class="pre">r</span></code> approximation is the finite Schmidt pair
+<code class="docutils literal notranslate"><span class="pre">(u_{r+1},</span> <span class="pre">v_{r+1})</span></code> satisfying</p>
+<div class="math notranslate nohighlight">
+\[H v_{r+1}=\sigma_{r+1}u_{r+1},\qquad
+H^T u_{r+1}=\sigma_{r+1}v_{r+1}.\]</div>
+<p>The scalar AAK/Nehari theory can be viewed as the infinite-dimensional rational analogue of
+this finite singular-direction picture.</p>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Look for the highlighted first neglected singular value, small Schmidt-pair residuals, and how the rational fits improve as the rank crosses the critical modes.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/aak_siso_schmidt_pair_demo.py
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>finite Hankel matrix: 48 x 48
+target rank: 3
+leading singular values: [6.126638, 0.177066, 0.130905, 0.003221, 0.0, 0.0, 0.0, 0.0]
+critical sigma: 3.220680e-03
+rank-r SVD error: 3.220680e-03
+left Schmidt residual: 3.058e-16
+right Schmidt residual: 3.345e-16
+rank=2: sigma_next=1.309e-01, tail_error=3.358e-02, rational_error=8.731e-02, pole_radius=0.8856
+rank=3: sigma_next=3.221e-03, tail_error=2.639e-04, rational_error=3.433e-03, pole_radius=0.9082
+rank=4: sigma_next=4.723e-08, tail_error=2.791e-13, rational_error=3.322e-13, pole_radius=0.9100
+</pre></div>
+</div>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/aak_schmidt_pair_vectors.png"><img alt="aak schmidt pair vectors" src="../../_images/aak_schmidt_pair_vectors.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_schmidt_pair_vectors.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../../_images/aak_schmidt_rational_poles.png"><img alt="aak schmidt rational poles" src="../../_images/aak_schmidt_rational_poles.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_schmidt_rational_poles.png</span></code></span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="../../_images/aak_schmidt_singular_values.png"><img alt="aak schmidt singular values" src="../../_images/aak_schmidt_singular_values.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_schmidt_singular_values.png</span></code></span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../../_images/aak_schmidt_tail_and_rational_fit.png"><img alt="aak schmidt tail and rational fit" src="../../_images/aak_schmidt_tail_and_rational_fit.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_schmidt_tail_and_rational_fit.png</span></code></span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="generated-data-files">
+<h2>Generated data files<a class="headerlink" href="#generated-data-files" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/6129d65355e84edee65fdf9435b72def/aak_siso_schmidt_pair_summary.csv"><code class="xref download docutils literal notranslate"><span class="pre">aak_siso_schmidt_pair_summary.csv</span></code></a></p></li>
+</ul>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Tutorial: Schmidt-pair diagnostics for finite SISO AAK/Nehari intuition.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">The finite Nehari tutorials introduced the Hankel matrix of an anticausal tail</span>
+<span class="linenos">  4</span><span class="sd">and a rational bridge from a Hankelized approximation to a recursive model.</span>
+<span class="linenos">  5</span><span class="sd">This tutorial focuses on the object that makes AAK theory more than ordinary</span>
+<span class="linenos">  6</span><span class="sd">matrix approximation: the singular vector pair, or finite Schmidt pair, at the</span>
+<span class="linenos">  7</span><span class="sd">first neglected Hankel singular value.</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="sd">For a finite Hankel matrix ``H`` and a target rank ``r``, the singular pair</span>
+<span class="linenos"> 10</span><span class="sd">``(u_{r+1}, v_{r+1})`` satisfies approximately</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span><span class="sd">    H v_{r+1} = sigma_{r+1} u_{r+1},</span>
+<span class="linenos"> 13</span><span class="sd">    H.T u_{r+1} = sigma_{r+1} v_{r+1}.</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="sd">The singular value ``sigma_{r+1}`` is the finite Eckart--Young barrier for</span>
+<span class="linenos"> 16</span><span class="sd">unconstrained rank-r approximation.  In the infinite-dimensional scalar AAK</span>
+<span class="linenos"> 17</span><span class="sd">story, analogous Schmidt vectors have rational/inner-outer structure and are</span>
+<span class="linenos"> 18</span><span class="sd">used to construct an optimal rational approximant.  This example is deliberately</span>
+<span class="linenos"> 19</span><span class="sd">finite-dimensional: it visualizes the critical singular direction and compares</span>
+<span class="linenos"> 20</span><span class="sd">it with the finite Nehari and rational-bridge approximations.</span>
+<span class="linenos"> 21</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="linenos"> 26</span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="linenos"> 27</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 28</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 29</span>
+<span class="linenos"> 30</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 31</span>
+<span class="linenos"> 32</span><span class="k">try</span><span class="p">:</span>
+<span class="linenos"> 33</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">examples.finite_nehari_rational_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 34</span>        <span class="n">fit_rational_tail</span><span class="p">,</span>
+<span class="linenos"> 35</span>        <span class="n">rational_tail_response</span><span class="p">,</span>
+<span class="linenos"> 36</span>        <span class="n">relative_error</span><span class="p">,</span>
+<span class="linenos"> 37</span>        <span class="n">synthetic_anticausal_tail</span><span class="p">,</span>
+<span class="linenos"> 38</span>    <span class="p">)</span>
+<span class="linenos"> 39</span><span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>  <span class="c1"># pragma: no cover - script execution from examples/</span>
+<span class="linenos"> 40</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">finite_nehari_rational_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 41</span>        <span class="n">fit_rational_tail</span><span class="p">,</span>
+<span class="linenos"> 42</span>        <span class="n">rational_tail_response</span><span class="p">,</span>
+<span class="linenos"> 43</span>        <span class="n">relative_error</span><span class="p">,</span>
+<span class="linenos"> 44</span>        <span class="n">synthetic_anticausal_tail</span><span class="p">,</span>
+<span class="linenos"> 45</span>    <span class="p">)</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span>
+<span class="linenos"> 48</span><span class="k">def</span><span class="w"> </span><span class="nf">artifact_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="linenos"> 49</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LATTICE_DSP_ARTIFACT_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/example-artifacts&quot;</span><span class="p">))</span>
+<span class="linenos"> 50</span>    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 51</span>    <span class="k">return</span> <span class="n">path</span>
+<span class="linenos"> 52</span>
+<span class="linenos"> 53</span>
+<span class="linenos"> 54</span><span class="k">def</span><span class="w"> </span><span class="nf">hankel_from_tail</span><span class="p">(</span><span class="n">tail</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="linenos"> 55</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Build ``H[i, j] = tail[i + j]`` from a one-sided anticausal tail.&quot;&quot;&quot;</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span>    <span class="n">tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 58</span>    <span class="k">if</span> <span class="n">tail</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+<span class="linenos"> 59</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tail must be one-dimensional&quot;</span><span class="p">)</span>
+<span class="linenos"> 60</span>    <span class="k">if</span> <span class="n">rows</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">cols</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 61</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rows and cols must be positive&quot;</span><span class="p">)</span>
+<span class="linenos"> 62</span>    <span class="k">if</span> <span class="n">tail</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">rows</span> <span class="o">+</span> <span class="n">cols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+<span class="linenos"> 63</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tail is too short for the requested Hankel matrix&quot;</span><span class="p">)</span>
+<span class="linenos"> 64</span>    <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">rows</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="linenos"> 65</span>    <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">cols</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+<span class="linenos"> 66</span>    <span class="k">return</span> <span class="n">tail</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span>
+<span class="linenos"> 67</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span><span class="k">def</span><span class="w"> </span><span class="nf">svd_rank_approximation</span><span class="p">(</span><span class="n">hankel</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="linenos"> 70</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return SVD pieces and the unconstrained rank-r SVD approximation.&quot;&quot;&quot;</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span>    <span class="k">if</span> <span class="n">rank</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 73</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rank must be non-negative&quot;</span><span class="p">)</span>
+<span class="linenos"> 74</span>    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">hankel</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 75</span>    <span class="k">if</span> <span class="n">rank</span> <span class="o">&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+<span class="linenos"> 76</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rank cannot exceed the numerical SVD dimension&quot;</span><span class="p">)</span>
+<span class="linenos"> 77</span>    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 78</span>        <span class="n">approx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">hankel</span><span class="p">)</span>
+<span class="linenos"> 79</span>    <span class="k">else</span><span class="p">:</span>
+<span class="linenos"> 80</span>        <span class="n">approx</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">[:,</span> <span class="p">:</span><span class="n">rank</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[:</span><span class="n">rank</span><span class="p">])</span> <span class="o">@</span> <span class="n">vh</span><span class="p">[:</span><span class="n">rank</span><span class="p">,</span> <span class="p">:]</span>
+<span class="linenos"> 81</span>    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vh</span><span class="p">,</span> <span class="n">approx</span>
+<span class="linenos"> 82</span>
+<span class="linenos"> 83</span>
+<span class="linenos"> 84</span><span class="k">def</span><span class="w"> </span><span class="nf">schmidt_pair_diagnostics</span><span class="p">(</span><span class="n">tail</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="linenos"> 85</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute finite Schmidt-pair diagnostics for the first neglected mode.&quot;&quot;&quot;</span>
+<span class="linenos"> 86</span>
+<span class="linenos"> 87</span>    <span class="n">hankel</span> <span class="o">=</span> <span class="n">hankel_from_tail</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
+<span class="linenos"> 88</span>    <span class="n">u</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">vh</span><span class="p">,</span> <span class="n">approx</span> <span class="o">=</span> <span class="n">svd_rank_approximation</span><span class="p">(</span><span class="n">hankel</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+<span class="linenos"> 89</span>    <span class="k">if</span> <span class="n">rank</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+<span class="linenos"> 90</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rank must leave at least one neglected singular value&quot;</span><span class="p">)</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span>    <span class="n">sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">rank</span><span class="p">])</span>
+<span class="linenos"> 93</span>    <span class="n">left</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span> <span class="n">rank</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="linenos"> 94</span>    <span class="n">right</span> <span class="o">=</span> <span class="n">vh</span><span class="p">[</span><span class="n">rank</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span>    <span class="c1"># Stabilize the sign for tutorial plots.</span>
+<span class="linenos"> 97</span>    <span class="n">pivot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">right</span><span class="p">))</span>
+<span class="linenos"> 98</span>    <span class="k">if</span> <span class="n">right</span><span class="p">[</span><span class="n">pivot</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 99</span>        <span class="n">left</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.0</span>
+<span class="linenos">100</span>        <span class="n">right</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">1.0</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span>    <span class="n">residual_left</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">hankel</span> <span class="o">@</span> <span class="n">right</span> <span class="o">-</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">left</span><span class="p">))</span>
+<span class="linenos">103</span>    <span class="n">residual_right</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">hankel</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">left</span> <span class="o">-</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">right</span><span class="p">))</span>
+<span class="linenos">104</span>    <span class="n">rank_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">hankel</span> <span class="o">-</span> <span class="n">approx</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>    <span class="k">return</span> <span class="p">{</span>
+<span class="linenos">107</span>        <span class="s2">&quot;hankel&quot;</span><span class="p">:</span> <span class="n">hankel</span><span class="p">,</span>
+<span class="linenos">108</span>        <span class="s2">&quot;singular_values&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span>
+<span class="linenos">109</span>        <span class="s2">&quot;critical_sigma&quot;</span><span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+<span class="linenos">110</span>        <span class="s2">&quot;left_schmidt_vector&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">,</span>
+<span class="linenos">111</span>        <span class="s2">&quot;right_schmidt_vector&quot;</span><span class="p">:</span> <span class="n">right</span><span class="p">,</span>
+<span class="linenos">112</span>        <span class="s2">&quot;left_residual&quot;</span><span class="p">:</span> <span class="n">residual_left</span><span class="p">,</span>
+<span class="linenos">113</span>        <span class="s2">&quot;right_residual&quot;</span><span class="p">:</span> <span class="n">residual_right</span><span class="p">,</span>
+<span class="linenos">114</span>        <span class="s2">&quot;rank_svd_error&quot;</span><span class="p">:</span> <span class="n">rank_error</span><span class="p">,</span>
+<span class="linenos">115</span>        <span class="s2">&quot;rank_approximation&quot;</span><span class="p">:</span> <span class="n">approx</span><span class="p">,</span>
+<span class="linenos">116</span>    <span class="p">}</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span>
+<span class="linenos">119</span><span class="k">def</span><span class="w"> </span><span class="nf">write_summary</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">120</span>    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">121</span>        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="linenos">122</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+<span class="linenos">123</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="linenos">124</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">127</span>    <span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+<span class="linenos">128</span>
+<span class="linenos">129</span>    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">artifact_dir</span><span class="p">()</span>
+<span class="linenos">130</span>    <span class="n">rows</span> <span class="o">=</span> <span class="n">cols</span> <span class="o">=</span> <span class="mi">48</span>
+<span class="linenos">131</span>    <span class="n">target_rank</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos">132</span>    <span class="n">tail</span> <span class="o">=</span> <span class="n">synthetic_anticausal_tail</span><span class="p">(</span><span class="n">rows</span> <span class="o">+</span> <span class="n">cols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span>    <span class="n">diag</span> <span class="o">=</span> <span class="n">schmidt_pair_diagnostics</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">target_rank</span><span class="p">)</span>
+<span class="linenos">135</span>    <span class="n">singular_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s2">&quot;singular_values&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">136</span>    <span class="n">left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s2">&quot;left_schmidt_vector&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">137</span>    <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s2">&quot;right_schmidt_vector&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">138</span>
+<span class="linenos">139</span>    <span class="n">ranks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="linenos">140</span>    <span class="n">summary</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">141</span>    <span class="n">tail_approximations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">142</span>    <span class="n">rational_responses</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">143</span>    <span class="n">fitted_poles</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">144</span>
+<span class="linenos">145</span>    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>
+<span class="linenos">146</span>        <span class="n">nehari</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">finite_nehari_approximate_tail</span><span class="p">(</span><span class="n">tail</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">)</span>
+<span class="linenos">147</span>        <span class="n">approx_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nehari</span><span class="p">[</span><span class="s2">&quot;approximated_tail&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">148</span>        <span class="n">denominator</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">poles</span> <span class="o">=</span> <span class="n">fit_rational_tail</span><span class="p">(</span><span class="n">approx_tail</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+<span class="linenos">149</span>        <span class="n">rational</span> <span class="o">=</span> <span class="n">rational_tail_response</span><span class="p">(</span><span class="n">denominator</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">tail</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="linenos">150</span>
+<span class="linenos">151</span>        <span class="n">tail_approximations</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span> <span class="o">=</span> <span class="n">approx_tail</span>
+<span class="linenos">152</span>        <span class="n">rational_responses</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span> <span class="o">=</span> <span class="n">rational</span>
+<span class="linenos">153</span>        <span class="n">fitted_poles</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span> <span class="o">=</span> <span class="n">poles</span>
+<span class="linenos">154</span>
+<span class="linenos">155</span>        <span class="n">summary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<span class="linenos">156</span>            <span class="p">{</span>
+<span class="linenos">157</span>                <span class="s2">&quot;rank&quot;</span><span class="p">:</span> <span class="n">rank</span><span class="p">,</span>
+<span class="linenos">158</span>                <span class="s2">&quot;sigma_next&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">nehari</span><span class="p">[</span><span class="s2">&quot;sigma_next&quot;</span><span class="p">]),</span>
+<span class="linenos">159</span>                <span class="s2">&quot;finite_nehari_tail_relative_error&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">nehari</span><span class="p">[</span><span class="s2">&quot;relative_tail_error&quot;</span><span class="p">]),</span>
+<span class="linenos">160</span>                <span class="s2">&quot;rational_vs_original_relative_error&quot;</span><span class="p">:</span> <span class="n">relative_error</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">rational</span><span class="p">),</span>
+<span class="linenos">161</span>                <span class="s2">&quot;rational_vs_hankelized_relative_error&quot;</span><span class="p">:</span> <span class="n">relative_error</span><span class="p">(</span><span class="n">approx_tail</span><span class="p">,</span> <span class="n">rational</span><span class="p">),</span>
+<span class="linenos">162</span>                <span class="s2">&quot;max_pole_radius&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">poles</span><span class="p">)))</span> <span class="k">if</span> <span class="n">poles</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="linenos">163</span>            <span class="p">}</span>
+<span class="linenos">164</span>        <span class="p">)</span>
+<span class="linenos">165</span>
+<span class="linenos">166</span>    <span class="n">summary_path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_siso_schmidt_pair_summary.csv&quot;</span>
+<span class="linenos">167</span>    <span class="n">write_summary</span><span class="p">(</span><span class="n">summary_path</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
+<span class="linenos">168</span>
+<span class="linenos">169</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;finite Hankel matrix:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rows</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">cols</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">170</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;target rank:&quot;</span><span class="p">,</span> <span class="n">target_rank</span><span class="p">)</span>
+<span class="linenos">171</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;leading singular values:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">singular_values</span><span class="p">[:</span><span class="mi">8</span><span class="p">]])</span>
+<span class="linenos">172</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;critical sigma:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s1">&#39;critical_sigma&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">173</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rank-r SVD error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s1">&#39;rank_svd_error&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">174</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;left Schmidt residual:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s1">&#39;left_residual&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">175</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;right Schmidt residual:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="s1">&#39;right_residual&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">176</span>    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
+<span class="linenos">177</span>        <span class="nb">print</span><span class="p">(</span>
+<span class="linenos">178</span>            <span class="s2">&quot;rank=</span><span class="si">{rank}</span><span class="s2">: sigma_next=</span><span class="si">{sigma_next:.3e}</span><span class="s2">, tail_error=</span><span class="si">{finite_nehari_tail_relative_error:.3e}</span><span class="s2">, &quot;</span>
+<span class="linenos">179</span>            <span class="s2">&quot;rational_error=</span><span class="si">{rational_vs_original_relative_error:.3e}</span><span class="s2">, pole_radius=</span><span class="si">{max_pole_radius:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">)</span>
+<span class="linenos">180</span>        <span class="p">)</span>
+<span class="linenos">181</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">summary_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">182</span>
+<span class="linenos">183</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos">184</span>        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos">185</span>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="linenos">186</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matplotlib is not installed; skipped figures&quot;</span><span class="p">)</span>
+<span class="linenos">187</span>        <span class="k">return</span>
+<span class="linenos">188</span>
+<span class="linenos">189</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="linenos">190</span>    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+<span class="linenos">191</span>    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">singular_values</span><span class="p">[:</span><span class="mi">20</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Hankel singular values&quot;</span><span class="p">)</span>
+<span class="linenos">192</span>    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">target_rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">diag</span><span class="p">[</span><span class="s2">&quot;critical_sigma&quot;</span><span class="p">]],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;first neglected sigma&quot;</span><span class="p">)</span>
+<span class="linenos">193</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Finite Schmidt-pair diagnostic: first neglected Hankel mode&quot;</span><span class="p">)</span>
+<span class="linenos">194</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+<span class="linenos">195</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;singular value&quot;</span><span class="p">)</span>
+<span class="linenos">196</span>    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">197</span>    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">198</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">199</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_schmidt_singular_values.png&quot;</span>
+<span class="linenos">200</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">201</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">202</span>
+<span class="linenos">203</span>    <span class="n">fig2</span><span class="p">,</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="linenos">204</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">left</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;left vector u&quot;</span><span class="p">)</span>
+<span class="linenos">205</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">right</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">right</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;right vector v&quot;</span><span class="p">)</span>
+<span class="linenos">206</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Critical finite Schmidt pair at sigma_{r+1}&quot;</span><span class="p">)</span>
+<span class="linenos">207</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;coefficient index&quot;</span><span class="p">)</span>
+<span class="linenos">208</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;singular-vector component&quot;</span><span class="p">)</span>
+<span class="linenos">209</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">210</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">211</span>    <span class="n">fig2</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">212</span>    <span class="n">path2</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_schmidt_pair_vectors.png&quot;</span>
+<span class="linenos">213</span>    <span class="n">fig2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path2</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">214</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">215</span>
+<span class="linenos">216</span>    <span class="n">fig3</span><span class="p">,</span> <span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="linenos">217</span>    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">41</span><span class="p">)</span>
+<span class="linenos">218</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tail</span><span class="p">[:</span><span class="mi">40</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;target tail&quot;</span><span class="p">)</span>
+<span class="linenos">219</span>    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>
+<span class="linenos">220</span>        <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tail_approximations</span><span class="p">[</span><span class="n">rank</span><span class="p">][:</span><span class="mi">40</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> Hankelized&quot;</span><span class="p">)</span>
+<span class="linenos">221</span>        <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">rational_responses</span><span class="p">[</span><span class="n">rank</span><span class="p">][:</span><span class="mi">40</span><span class="p">],</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> rational&quot;</span><span class="p">)</span>
+<span class="linenos">222</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Schmidt-pair context: tail, Hankelized approximations, rational fits&quot;</span><span class="p">)</span>
+<span class="linenos">223</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;tail coefficient index&quot;</span><span class="p">)</span>
+<span class="linenos">224</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;coefficient value&quot;</span><span class="p">)</span>
+<span class="linenos">225</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">226</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="linenos">227</span>    <span class="n">fig3</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">228</span>    <span class="n">path3</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_schmidt_tail_and_rational_fit.png&quot;</span>
+<span class="linenos">229</span>    <span class="n">fig3</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path3</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">230</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path3</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">231</span>
+<span class="linenos">232</span>    <span class="n">fig4</span><span class="p">,</span> <span class="n">ax4</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.6</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">))</span>
+<span class="linenos">233</span>    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="linenos">234</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;unit circle&quot;</span><span class="p">)</span>
+<span class="linenos">235</span>    <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="n">poles</span> <span class="ow">in</span> <span class="n">fitted_poles</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="linenos">236</span>        <span class="n">ax4</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">poles</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">poles</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> poles&quot;</span><span class="p">)</span>
+<span class="linenos">237</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">238</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="linenos">239</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="linenos">240</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Poles of rational fits from Hankelized tails&quot;</span><span class="p">)</span>
+<span class="linenos">241</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">)</span>
+<span class="linenos">242</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;imaginary&quot;</span><span class="p">)</span>
+<span class="linenos">243</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">244</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="linenos">245</span>    <span class="n">fig4</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">246</span>    <span class="n">path4</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_schmidt_rational_poles.png&quot;</span>
+<span class="linenos">247</span>    <span class="n">fig4</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path4</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">248</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path4</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">249</span>
+<span class="linenos">250</span>
+<span class="linenos">251</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">252</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/aak_siso_schmidt_pair_demo.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

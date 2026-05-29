@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API reference overview &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="api-reference-overview">
+<h1>API reference overview<a class="headerlink" href="#api-reference-overview" title="Link to this heading">¶</a></h1>
+<p>This is a lightweight hand-written API map until generated documentation is set up.</p>
+<section id="core-filters">
+<h2>Core filters<a class="headerlink" href="#core-filters" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeIIR(reflection,</span> <span class="pre">numerator)</span></code>: stable reflection-parameterized IIR with direct-form reference processing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderIIR(reflection,</span> <span class="pre">ladder_taps)</span></code>: true synthesis lattice-ladder realization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">process_batch(reflection,</span> <span class="pre">numerator,</span> <span class="pre">x,</span> <span class="pre">realization=&quot;lattice&quot;)</span></code>: independent row-wise batch processing, OpenMP-enabled when available.</p></li>
+</ul>
+</section>
+<section id="adaptive-filters">
+<h2>Adaptive filters<a class="headerlink" href="#adaptive-filters" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderNLMS</span></code>: fixed-denominator adaptive numerator/ladder NLMS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveLatticeLadderNLMS</span></code>: adaptive numerator and bounded reflection update.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_process_batch(...)</span></code>: independent adaptive trials, OpenMP-enabled across rows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveNotch</span></code>: adaptive second-order notch prototype.</p></li>
+</ul>
+</section>
+<section id="conversion-and-diagnostics">
+<h2>Conversion and diagnostics<a class="headerlink" href="#conversion-and-diagnostics" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reflection_to_denominator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_to_reflection</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numerator_to_ladder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ladder_to_numerator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bounded_reflection_from_raw</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_reflection_jacobian</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_raw_jacobian</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_raw_jacobian_finite_difference</span></code></p></li>
+</ul>
+</section>
+<section id="tuning">
+<h2>Tuning<a class="headerlink" href="#tuning" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tune_reflection_update_period</span></code>: choose a speed/quality point for adaptive reflection updates from validation signals.</p></li>
+</ul>
+</section>
+<section id="synthetic-signals-and-echo-metrics">
+<h2>Synthetic signals and echo metrics<a class="headerlink" href="#synthetic-signals-and-echo-metrics" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_echo_problem(...)</span></code>: reproducible synthetic reference/microphone/clean-target arrays for controlled echo-like experiments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EchoProblem</span></code>: returned dataclass.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iir_filter(...)</span></code>: NumPy reference IIR implementation used by the synthetic generator.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">echo_metrics(microphone,</span> <span class="pre">enhanced,</span> <span class="pre">clean_target)</span></code>: returns synthetic ERLE, MSE improvement, residual power, and segmental ERLE values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">erle_db(before_error,</span> <span class="pre">after_error)</span></code>: computes echo/error power reduction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">segmental_erle_db(...)</span></code>: returns frame-wise ERLE values.</p></li>
+</ul>
+</section>
+<section id="small-application-helpers">
+<h2>Small application helpers<a class="headerlink" href="#small-application-helpers" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HybridEchoCanceller</span></code>: adaptive linear lattice/IIR stage plus optional residual processor.  This is a synthetic/demo helper, not production AEC.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EchoCancellationResult</span></code>: output container with echo estimate, residual, enhanced residual, final filter parameters, and metrics.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ResidualAttenuator</span></code>: fixed-gain residual attenuator used as a minimal baseline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SpectralResidualSuppressor</span></code>: deterministic STFT-domain suppressor for dependency-free experiments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make_residual_processor_from_model</span></code>: wrap user objects with <code class="docutils literal notranslate"><span class="pre">predict</span></code> or callable protocols.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mse</span></code>, <code class="docutils literal notranslate"><span class="pre">improvement_db</span></code>: small metric helpers.</p></li>
+</ul>
+</section>
+<section id="ar-estimation-utilities">
+<h2>AR estimation utilities<a class="headerlink" href="#ar-estimation-utilities" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">autocorrelation(x,</span> <span class="pre">max_lag,</span> <span class="pre">biased=True)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levinson_durbin_reflection(autocorr,</span> <span class="pre">order,</span> <span class="pre">regularization=1e-12)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levinson_durbin_denominator(autocorr,</span> <span class="pre">order,</span> <span class="pre">regularization=1e-12)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levinson_durbin_error(autocorr,</span> <span class="pre">order,</span> <span class="pre">regularization=1e-12)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burg_reflection(x,</span> <span class="pre">order,</span> <span class="pre">regularization=1e-12)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burg_denominator(x,</span> <span class="pre">order,</span> <span class="pre">regularization=1e-12)</span></code></p></li>
+</ul>
+</section>
+<section id="rls-adaptive-filtering">
+<h2>RLS adaptive filtering<a class="headerlink" href="#rls-adaptive-filtering" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderRLS(reflection,</span> <span class="pre">initial_taps,</span> <span class="pre">forgetting_factor=0.995,</span> <span class="pre">initial_inverse_covariance=1000.0)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rls_process_batch(reflection,</span> <span class="pre">initial_taps,</span> <span class="pre">x,</span> <span class="pre">desired,</span> <span class="pre">...)</span></code></p></li>
+</ul>
+</section>
+<section id="streaming-helpers">
+<h2>Streaming helpers<a class="headerlink" href="#streaming-helpers" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BlockProcessor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveBlockProcessor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BlockResult</span></code></p></li>
+</ul>
+</section>
+<section id="matrix-lattice-mimo-all-pass">
+<h2>Matrix lattice / MIMO all-pass<a class="headerlink" href="#matrix-lattice-mimo-all-pass" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MatrixLatticeAllPass(reflections,</span> <span class="pre">residue=None,</span> <span class="pre">margin=1e-9,</span> <span class="pre">project=False)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contractive_matrix_from_raw(raw,</span> <span class="pre">margin=1e-6)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">project_matrix_reflection(matrix,</span> <span class="pre">margin=1e-6)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_matrix_reflection_stable(matrix,</span> <span class="pre">margin=1e-9)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matrix_lattice_stage_blocks(reflection,</span> <span class="pre">margin=1e-9,</span> <span class="pre">project=False)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unitary_polar_factor(matrix)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">psd_matrix_sqrt(matrix)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_core.matrix_lattice_frequency_response(stage_blocks,</span> <span class="pre">residue,</span> <span class="pre">omega,</span> <span class="pre">n_threads=0)</span></code></p></li>
+</ul>
+<p>The C++ frequency-response function is normally reached through
+<code class="docutils literal notranslate"><span class="pre">MatrixLatticeAllPass.frequency_response()</span></code>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/api_reference.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

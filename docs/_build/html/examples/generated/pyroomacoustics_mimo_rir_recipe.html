@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Pyroomacoustics MIMO RIR interoperability recipe &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="External WAV and eSpeak/eSpeak NG interoperability recipe" href="external_audio_wav_recipe.html" />
+    <link rel="prev" title="Choosing the right lattice-dsp algorithm" href="algorithm_selection_demo.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="algorithm_selection_demo.html" title="previous chapter">Choosing the right lattice-dsp algorithm</a></li>
+      <li>Next: <a href="external_audio_wav_recipe.html" title="next chapter">External WAV and eSpeak/eSpeak NG interoperability recipe</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pyroomacoustics-mimo-rir-interoperability-recipe">
+<h1>Pyroomacoustics MIMO RIR interoperability recipe<a class="headerlink" href="#pyroomacoustics-mimo-rir-interoperability-recipe" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Convert Pyroomacoustics-style room impulse responses to the MIMO Markov tensor shape used by lattice-dsp.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>Room-acoustics simulators can produce one impulse response for each
+microphone/source pair.  This recipe keeps Pyroomacoustics outside the
+package dependency tree while documenting the data convention used to
+bring those paths into MIMO block-Hankel reduction.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>The mapping is</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>room.rir[microphone][source][tap]
+     -&gt; markov[tap, microphone, source]
+</pre></div>
+</div>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Use the printed shape and relative Markov-response error to verify the conversion and reduced MIMO model.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/pyroomacoustics_mimo_rir_recipe.py
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>converted shape: (96, 2, 2)
+mapping: markov[tap, microphone, source]
+</pre></div>
+</div>
+</section>
+<section id="captured-stderr">
+<h2>Captured stderr<a class="headerlink" href="#captured-stderr" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
+  File &quot;examples/pyroomacoustics_mimo_rir_recipe.py&quot;, line 124, in &lt;module&gt;
+    main()
+  File &quot;examples/pyroomacoustics_mimo_rir_recipe.py&quot;, line 111, in main
+    print(&quot;reduced order:&quot;, result[&quot;order&quot;])
+                            ~~~~~~^^^^^^^^^
+KeyError: &#39;order&#39;
+</pre></div>
+</div>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Recipe: use Pyroomacoustics-style MIMO room impulse responses.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">This example is dependency-free: it does not import Pyroomacoustics.  Instead it</span>
+<span class="linenos">  4</span><span class="sd">uses a small fake object with the same ``room.rir[mic][source]`` structure used</span>
+<span class="linenos">  5</span><span class="sd">by Pyroomacoustics after room impulse responses are computed.</span>
+<span class="linenos">  6</span>
+<span class="linenos">  7</span><span class="sd">In a real Pyroomacoustics script, build the room and compute its RIRs there, then</span>
+<span class="linenos">  8</span><span class="sd">pass the resulting room object to ``markov_from_pyroom_rir`` below.</span>
+<span class="linenos">  9</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 10</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="k">def</span><span class="w"> </span><span class="nf">markov_from_pyroom_rir</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">n_markov</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="linenos"> 19</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert ``room.rir[mic][source]`` impulse responses to a MIMO Markov tensor.</span>
+<span class="linenos"> 20</span>
+<span class="linenos"> 21</span><span class="sd">    Parameters</span>
+<span class="linenos"> 22</span><span class="sd">    ----------</span>
+<span class="linenos"> 23</span><span class="sd">    room:</span>
+<span class="linenos"> 24</span><span class="sd">        Any object with a Pyroomacoustics-style ``rir`` attribute.</span>
+<span class="linenos"> 25</span><span class="sd">    n_markov:</span>
+<span class="linenos"> 26</span><span class="sd">        Optional number of taps to keep.  If omitted, the longest RIR length is</span>
+<span class="linenos"> 27</span><span class="sd">        used and shorter channels are zero-padded.</span>
+<span class="linenos"> 28</span><span class="sd">    dtype:</span>
+<span class="linenos"> 29</span><span class="sd">        Output dtype.</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="sd">    Returns</span>
+<span class="linenos"> 32</span><span class="sd">    -------</span>
+<span class="linenos"> 33</span><span class="sd">    numpy.ndarray</span>
+<span class="linenos"> 34</span><span class="sd">        Array with shape ``(n_taps, n_mics, n_sources)``.</span>
+<span class="linenos"> 35</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span>    <span class="n">n_outputs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">rir</span><span class="p">)</span>
+<span class="linenos"> 38</span>    <span class="k">if</span> <span class="n">n_outputs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 39</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;room.rir must contain at least one microphone&quot;</span><span class="p">)</span>
+<span class="linenos"> 40</span>    <span class="n">n_inputs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">rir</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="linenos"> 41</span>    <span class="k">if</span> <span class="n">n_inputs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 42</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;room.rir[0] must contain at least one source&quot;</span><span class="p">)</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span>    <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">rir</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">u</span><span class="p">])</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_outputs</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_inputs</span><span class="p">)]</span>
+<span class="linenos"> 45</span>    <span class="n">n_taps</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_markov</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_markov</span><span class="p">)</span>
+<span class="linenos"> 46</span>    <span class="k">if</span> <span class="n">n_taps</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 47</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_markov must be positive&quot;</span><span class="p">)</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span>    <span class="n">markov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_taps</span><span class="p">,</span> <span class="n">n_outputs</span><span class="p">,</span> <span class="n">n_inputs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+<span class="linenos"> 50</span>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_outputs</span><span class="p">):</span>
+<span class="linenos"> 51</span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">rir</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="o">!=</span> <span class="n">n_inputs</span><span class="p">:</span>
+<span class="linenos"> 52</span>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all microphones must have the same number of source RIRs&quot;</span><span class="p">)</span>
+<span class="linenos"> 53</span>        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_inputs</span><span class="p">):</span>
+<span class="linenos"> 54</span>            <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">rir</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">u</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+<span class="linenos"> 55</span>            <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_taps</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="linenos"> 56</span>            <span class="n">markov</span><span class="p">[:</span><span class="n">n</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+<span class="linenos"> 57</span>    <span class="k">return</span> <span class="n">markov</span>
+<span class="linenos"> 58</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="k">class</span><span class="w"> </span><span class="nc">FakePyroomRoom</span><span class="p">:</span>
+<span class="linenos"> 61</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Small stand-in for the Pyroomacoustics ``room.rir`` data structure.&quot;&quot;&quot;</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rir</span><span class="p">):</span>
+<span class="linenos"> 64</span>        <span class="bp">self</span><span class="o">.</span><span class="n">rir</span> <span class="o">=</span> <span class="n">rir</span>
+<span class="linenos"> 65</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span><span class="k">def</span><span class="w"> </span><span class="nf">damped_room_path</span><span class="p">(</span><span class="n">delay</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_taps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="linenos"> 68</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a simple delayed, damped synthetic room path for the recipe.&quot;&quot;&quot;</span>
+<span class="linenos"> 69</span>
+<span class="linenos"> 70</span>    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_taps</span><span class="p">)</span>
+<span class="linenos"> 71</span>    <span class="n">tail</span> <span class="o">=</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">decay</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_taps</span> <span class="o">-</span> <span class="n">delay</span><span class="p">)</span>
+<span class="linenos"> 72</span>    <span class="n">h</span><span class="p">[</span><span class="n">delay</span><span class="p">:]</span> <span class="o">=</span> <span class="n">tail</span>
+<span class="linenos"> 73</span>    <span class="k">return</span> <span class="n">h</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>
+<span class="linenos"> 76</span><span class="k">def</span><span class="w"> </span><span class="nf">make_fake_room</span><span class="p">(</span><span class="n">n_taps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FakePyroomRoom</span><span class="p">:</span>
+<span class="linenos"> 77</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a 2-microphone, 2-source nested RIR list.&quot;&quot;&quot;</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span>    <span class="n">rir</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 80</span>        <span class="p">[</span>
+<span class="linenos"> 81</span>            <span class="n">damped_room_path</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">0.91</span><span class="p">,</span> <span class="n">n_taps</span><span class="o">=</span><span class="n">n_taps</span><span class="p">),</span>
+<span class="linenos"> 82</span>            <span class="n">damped_room_path</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">0.88</span><span class="p">,</span> <span class="n">n_taps</span><span class="o">=</span><span class="n">n_taps</span><span class="p">),</span>
+<span class="linenos"> 83</span>        <span class="p">],</span>
+<span class="linenos"> 84</span>        <span class="p">[</span>
+<span class="linenos"> 85</span>            <span class="n">damped_room_path</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.42</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">0.89</span><span class="p">,</span> <span class="n">n_taps</span><span class="o">=</span><span class="n">n_taps</span><span class="p">),</span>
+<span class="linenos"> 86</span>            <span class="n">damped_room_path</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.82</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">0.92</span><span class="p">,</span> <span class="n">n_taps</span><span class="o">=</span><span class="n">n_taps</span><span class="p">),</span>
+<span class="linenos"> 87</span>        <span class="p">],</span>
+<span class="linenos"> 88</span>    <span class="p">]</span>
+<span class="linenos"> 89</span>    <span class="k">return</span> <span class="n">FakePyroomRoom</span><span class="p">(</span><span class="n">rir</span><span class="p">)</span>
+<span class="linenos"> 90</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 93</span>    <span class="n">room</span> <span class="o">=</span> <span class="n">make_fake_room</span><span class="p">()</span>
+<span class="linenos"> 94</span>    <span class="n">markov</span> <span class="o">=</span> <span class="n">markov_from_pyroom_rir</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">n_markov</span><span class="o">=</span><span class="mi">96</span><span class="p">)</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">finite_hankel_reduce_mimo</span><span class="p">(</span>
+<span class="linenos"> 97</span>        <span class="n">markov</span><span class="p">,</span>
+<span class="linenos"> 98</span>        <span class="n">reduced_order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="linenos"> 99</span>        <span class="n">block_rows</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+<span class="linenos">100</span>        <span class="n">block_cols</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+<span class="linenos">101</span>    <span class="p">)</span>
+<span class="linenos">102</span>    <span class="n">approx</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">mimo_state_space_markov_response</span><span class="p">(</span>
+<span class="linenos">103</span>        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">],</span> <span class="n">markov</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">104</span>    <span class="p">)</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>    <span class="n">relative_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">markov</span> <span class="o">-</span> <span class="n">approx</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">markov</span><span class="p">))</span>
+<span class="linenos">107</span>    <span class="n">hsv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;hankel_singular_values&quot;</span><span class="p">])</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;converted shape:&quot;</span><span class="p">,</span> <span class="n">markov</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="linenos">110</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mapping: markov[tap, microphone, source]&quot;</span><span class="p">)</span>
+<span class="linenos">111</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;reduced order:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">])</span>
+<span class="linenos">112</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stable reduced model:&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;stable&quot;</span><span class="p">]))</span>
+<span class="linenos">113</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;leading block-Hankel singular values:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">hsv</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos">114</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;relative Markov-response error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_error</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">115</span>
+<span class="linenos">116</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Real Pyroomacoustics usage sketch:&quot;</span><span class="p">)</span>
+<span class="linenos">117</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  # import pyroomacoustics as pra&quot;</span><span class="p">)</span>
+<span class="linenos">118</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  # room = pra.ShoeBox(...); room.add_source(...); room.add_microphone_array(...)&quot;</span><span class="p">)</span>
+<span class="linenos">119</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  # room.compute_rir()&quot;</span><span class="p">)</span>
+<span class="linenos">120</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  # markov = markov_from_pyroom_rir(room, n_markov=512)&quot;</span><span class="p">)</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span>
+<span class="linenos">123</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">124</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/pyroomacoustics_mimo_rir_recipe.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

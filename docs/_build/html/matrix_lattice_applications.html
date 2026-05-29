@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Matrix lattice application examples &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="matrix-lattice-application-examples">
+<h1>Matrix lattice application examples<a class="headerlink" href="#matrix-lattice-application-examples" title="Link to this heading">¶</a></h1>
+<p>The matrix-lattice layer is deliberately general.  It is not a 5G or wireless
+framework.  It provides compact, stable, matrix-valued all-pass primitives whose
+frequency response is unitary when every matrix reflection coefficient is a
+strict contraction.</p>
+<p>This makes it useful anywhere a multichannel transform should be stable,
+invertible, and energy preserving.</p>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/matrix_unitary_response_compression.py
+python<span class="w"> </span>examples/paraunitary_filter_bank_demo.py
+python<span class="w"> </span>examples/ml_unitary_convolution_demo.py
+python<span class="w"> </span>examples/multichannel_audio_decorrelator.py
+</pre></div>
+</div>
+</section>
+<section id="compact-unitary-response-representation">
+<h2>Compact unitary response representation<a class="headerlink" href="#compact-unitary-response-representation" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">matrix_unitary_response_compression.py</span></code> compares storing a dense complex matrix
+at every frequency bin with storing a low-order matrix-lattice representation.
+This is a generic MIMO/unitary-response compression demo.  The same idea can
+appear in array processing, filter banks, communications, and learned
+frequency-dependent transforms.</p>
+</section>
+<section id="paraunitary-perfect-reconstruction-transforms">
+<h2>Paraunitary / perfect reconstruction transforms<a class="headerlink" href="#paraunitary-perfect-reconstruction-transforms" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">paraunitary_filter_bank_demo.py</span></code> uses the causal online matrix-lattice runtime
+for the forward analysis transform.  The corresponding reconstruction check uses
+a finite-record adjoint of the measured/truncated impulse response.  The forward
+path is streaming and causal; the adjoint reconstruction is a finite-record
+diagnostic and is generally noncausal because it depends on the whole transformed
+record.</p>
+</section>
+<section id="ml-adjacent-unitary-convolution-blocks">
+<h2>ML-adjacent unitary convolution blocks<a class="headerlink" href="#ml-adjacent-unitary-convolution-blocks" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ml_unitary_convolution_demo.py</span></code> demonstrates a norm-preserving multichannel
+convolution-like transform using causal forward processing plus a finite-record
+adjoint diagnostic.  Orthogonal/unitary layers are useful in ML because they can
+keep forward and adjoint maps well-conditioned.  This example is a NumPy
+primitive demo, not a training framework, and the adjoint/reconstruction step is
+not presented as an online inverse filter.</p>
+</section>
+<section id="multichannel-audio-decorrelation">
+<h2>Multichannel audio decorrelation<a class="headerlink" href="#multichannel-audio-decorrelation" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">multichannel_audio_decorrelator.py</span></code> uses a real-coefficient matrix-lattice
+all-pass filter to reduce zero-lag inter-channel correlation while preserving
+total energy.  This is useful for spatial-audio and multichannel decorrelation
+experiments.</p>
+</section>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading">¶</a></h2>
+<p>Good package scope:</p>
+<ul class="simple">
+<li><p>matrix reflection coefficients and stability checks;</p></li>
+<li><p>causal streaming matrix-lattice forward processing;</p></li>
+<li><p>unitary/paraunitary frequency-response evaluation;</p></li>
+<li><p>finite-record adjoint diagnostics for reconstruction tests;</p></li>
+<li><p>compact matrix-valued all-pass representations;</p></li>
+<li><p>examples for multichannel DSP and ML-stable transforms.</p></li>
+</ul>
+<p>Out of scope for the core package:</p>
+<ul class="simple">
+<li><p>complete 5G/MIMO-OFDM simulators;</p></li>
+<li><p>production acoustic echo cancellation;</p></li>
+<li><p>end-to-end neural-network training systems.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/matrix_lattice_applications.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

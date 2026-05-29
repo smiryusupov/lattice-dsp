@@ -1,0 +1,2 @@
+full_order,reduced_order,channels,lattice_order,reduced_state_radius,retained_hankel_energy,relative_markov_error,lattice_max_reflection_singular_value,lattice_unitarity_error,polar_factor_relative_error,reduced_response_gain_condition_span,note
+12,6,3,6,0.8562200269446656,0.9971840614264031,0.003629735316306805,0.5005152059881238,1.0964383662266187e-14,1.37283703312287,124.73501227320024,"matrix-lattice scaffold, not exact realization"

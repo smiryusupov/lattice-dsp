@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tangential Schur and J-inner diagnostics &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tangential Schur verification map" href="tangential_schur_verification.html" />
+    <link rel="prev" title="Matrix lattice all-pass filters" href="matrix_lattice.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="matrix_lattice.html" title="previous chapter">Matrix lattice all-pass filters</a></li>
+      <li>Next: <a href="tangential_schur_verification.html" title="next chapter">Tangential Schur verification map</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="tangential-schur-and-j-inner-diagnostics">
+<h1>Tangential Schur and J-inner diagnostics<a class="headerlink" href="#tangential-schur-and-j-inner-diagnostics" title="Link to this heading">¶</a></h1>
+<p>This algorithm page states what the implemented tangential-Schur utilities do in
+computational terms.  For the mathematical background, see
+<a class="reference internal" href="../theory/tangential_schur.html"><span class="doc">Tangential Schur, Pick matrices, and J-inner factors</span></a>.</p>
+<section id="problem-represented-by-the-api">
+<h2>Problem represented by the API<a class="headerlink" href="#problem-represented-by-the-api" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RightTangentialSchurData</span></code> stores finite interpolation conditions</p>
+<div class="math notranslate nohighlight">
+\[S(z_i)U_i = V_i,
+\qquad S(z)\in\mathbb{C}^{p\times q},
+\qquad \lVert S\rVert_\infty \le 1.\]</div>
+<p>The API supports one or more tangential columns at each point.  A rank-one datum
+uses <code class="docutils literal notranslate"><span class="pre">u_i</span></code> and <code class="docutils literal notranslate"><span class="pre">v_i</span></code> vectors; a higher-multiplicity datum uses matrices
+<code class="docutils literal notranslate"><span class="pre">U_i</span></code> and <code class="docutils literal notranslate"><span class="pre">V_i</span></code>.</p>
+</section>
+<section id="pick-certificate">
+<h2>Pick certificate<a class="headerlink" href="#pick-certificate" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">right_tangential_pick_matrix</span></code> builds the block matrix</p>
+<div class="math notranslate nohighlight">
+\[P_{ij}=
+\frac{U_i^H U_j - V_i^H V_j}
+     {1-\overline{z_i}z_j}.\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">is_tangential_schur_solvable</span></code> checks the finite definite certificate
+<span class="math notranslate nohighlight">\(P\succeq 0\)</span> by Hermitian eigenvalues.  This is an offline data test; it
+does not construct a streaming filter.</p>
+</section>
+<section id="residual-checks">
+<h2>Residual checks<a class="headerlink" href="#residual-checks" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">tangential_interpolation_residual</span></code> and <code class="docutils literal notranslate"><span class="pre">max_tangential_residual</span></code> evaluate a
+candidate constant matrix, a pointwise array of matrices, or a callable transfer
+function against the data:</p>
+<div class="math notranslate nohighlight">
+\[R_i = S(z_i)U_i - V_i.\]</div>
+<p>These helpers are useful in examples because they make the exact interpolation
+claim explicit.</p>
+</section>
+<section id="constant-solution-sanity-path">
+<h2>Constant-solution sanity path<a class="headerlink" href="#constant-solution-sanity-path" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">constant_schur_solution</span></code> solves the special case</p>
+<div class="math notranslate nohighlight">
+\[S_0[U_1\;\cdots\;U_n] = [V_1\;\cdots\;V_n]\]</div>
+<p>and verifies that the recovered constant matrix is contractive.  This is not a
+general finite Schur synthesis algorithm.  It is a stable baseline for tests and
+examples where the true solution is intentionally known.</p>
+</section>
+<section id="j-inner-factor-diagnostics">
+<h2>J-inner factor diagnostics<a class="headerlink" href="#j-inner-factor-diagnostics" title="Link to this heading">¶</a></h2>
+<p>For strict rank-one data, <code class="docutils literal notranslate"><span class="pre">TangentialPotapovFactor</span></code> forms</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\Theta(z)=I+(b_a(z)-1)P_\xi,
+\qquad
+\xi=\begin{bmatrix}v\\u\end{bmatrix},\end{split}\]</div>
+<p>with</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}J=\begin{bmatrix}I_p&amp;0\\0&amp;-I_q\end{bmatrix},
+\qquad
+\xi^H J\xi &lt; 0.\end{split}\]</div>
+<p>The implemented checks are:</p>
+<div class="math notranslate nohighlight">
+\[\Theta(e^{j\omega})^H J\Theta(e^{j\omega}) \approx J,
+\qquad
+\Theta(a)\xi \approx 0.\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">PotapovProduct</span></code> multiplies elementary factors that share the same signature
+and checks the same boundary J-inner residual.</p>
+</section>
+<section id="potapov-blaschke-factors-versus-lossless-filters">
+<h2>Potapov–Blaschke factors versus lossless filters<a class="headerlink" href="#potapov-blaschke-factors-versus-lossless-filters" title="Link to this heading">¶</a></h2>
+<p>The scalar Blaschke factor</p>
+<div class="math notranslate nohighlight">
+\[b_a(z)=\frac{z-a}{1-\overline a z}\]</div>
+<p>has unit modulus on the unit circle.  The elementary Potapov factor replaces the
+scalar <code class="docutils literal notranslate"><span class="pre">1</span></code> direction by a <span class="math notranslate nohighlight">\(J\)</span>-orthogonal projection onto the graph vector
+<span class="math notranslate nohighlight">\(\xi=[v;u]\)</span>.  Therefore it is not just a plotting device: it is the
+finite-dimensional object that makes the Schur step compatible with a
+<span class="math notranslate nohighlight">\(J\)</span>-inner linear-fractional transformation.</p>
+<p>The package uses this in a diagnostic role.  <code class="docutils literal notranslate"><span class="pre">OnlineMatrixLatticeAllPass</span></code> is
+the causal signal-processing runtime for square stable all-pass/lossless
+filters.  <code class="docutils literal notranslate"><span class="pre">TangentialPotapovFactor</span></code> is the interpolation-side object used to
+check the <span class="math notranslate nohighlight">\(J\)</span>-inner algebra that underlies such lossless constructions.
+The two are related through lossless/J-inner system theory, but the current
+module does not automatically convert arbitrary tangential-Schur data into a
+minimal causal matrix-lattice realization.</p>
+</section>
+<section id="schur-parameters-and-scope-versus-manifold-algorithms">
+<h2>Schur parameters and scope versus manifold algorithms<a class="headerlink" href="#schur-parameters-and-scope-versus-manifold-algorithms" title="Link to this heading">¶</a></h2>
+<p>Scalar lattice filters use reflection/PARCOR coefficients as Schur parameters.
+In tangential multivariable Schur algorithms, the chosen interpolation points,
+directions, and contractive values form chart coordinates for lossless systems.
+The Hanzon–Olivi–Peeters/Marmorat line uses recursive linear-fractional Schur
+steps and balanced state-space realizations to parametrize manifolds of
+fixed-degree stable all-pass systems.</p>
+<p>This package does not implement that full recursive manifold algorithm.  It
+implements the finite definite Pick certificate, constant-solution helper, and
+rank-one Potapov/J-inner factors.  In other words, this is a tested baseline in
+the same mathematical language, not a complete chart-selection or balanced-
+realization solver.</p>
+</section>
+<section id="rkhs-interpretation-of-the-pick-certificate">
+<h2>RKHS interpretation of the Pick certificate<a class="headerlink" href="#rkhs-interpretation-of-the-pick-certificate" title="Link to this heading">¶</a></h2>
+<p>For a Schur function <span class="math notranslate nohighlight">\(S\)</span>, positivity of</p>
+<div class="math notranslate nohighlight">
+\[K_S(z,w)=\frac{I-S(z)^HS(w)}{1-\overline z w}\]</div>
+<p>is the reproducing-kernel Hilbert-space statement behind the Pick test.  The
+implemented right-tangential Pick matrix is the finite Gram matrix</p>
+<div class="math notranslate nohighlight">
+\[P_{ij}=U_i^H K_S(z_i,z_j)U_j.\]</div>
+<p>Once <span class="math notranslate nohighlight">\(V_i=S(z_i)U_i\)</span> is substituted, this gives the code formula</p>
+<div class="math notranslate nohighlight">
+\[P_{ij}=\frac{U_i^HU_j-V_i^HV_j}{1-\overline z_i z_j}.\]</div>
+<p>This RKHS view is useful for interpreting numerical eigenvalues: a small minimum
+eigenvalue means the finite data are close to an extremal interpolation problem,
+not necessarily that a time-domain filter is unstable.</p>
+</section>
+<section id="deep-verification-suite">
+<h2>Deep verification suite<a class="headerlink" href="#deep-verification-suite" title="Link to this heading">¶</a></h2>
+<p>The accompanying verification page <a class="reference internal" href="tangential_schur_verification.html"><span class="doc">Tangential Schur verification map</span></a> records
+the mathematical invariants used by the test suite.  The most important checks
+are scalar Pick reduction, random constant MIMO contractions, diagonal MIMO as a
+direct sum of scalar Pick blocks, nonconstant scalar Schur data generated by a
+Blaschke factor, unitary congruence under tangential-column basis changes,
+near-boundary conditioning diagnostics, and J-inner residual checks for
+individual Potapov factors and products.</p>
+<p>This is intentionally stronger than a single example.  The package tests both
+positive and negative cases: feasible data, infeasible data, constant-compatible
+data, feasible-but-not-constant data, and invalid shapes/signatures.</p>
+</section>
+<section id="data-use-status">
+<h2>Data-use status<a class="headerlink" href="#data-use-status" title="Link to this heading">¶</a></h2>
+<p>These routines are <strong>offline finite-data diagnostics</strong>.  They are not causal
+predictors and they do not consume a time stream.  Their role in the package is
+to expose the Schur/Pick/J-inner structure that sits behind matrix-lattice and
+all-pass examples.</p>
+</section>
+<section id="verification-examples">
+<h2>Verification examples<a class="headerlink" href="#verification-examples" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../examples/generated/tangential_schur_pick_jinner.html"><span class="doc">Tangential Schur Pick and J-inner diagnostics</span></a> checks Pick PSD,
+constant-solution residuals, graph-vector annihilation, and J-inner boundary
+residuals.</p></li>
+<li><p><a class="reference internal" href="../examples/generated/diagonal_tangential_schur_equals_scalar.html"><span class="doc">Diagonal tangential Schur equals independent scalar Pick problems</span></a> checks
+that diagonal MIMO tangential data reduce to independent scalar Pick problems.</p></li>
+</ul>
+</section>
+<section id="model-reduction-stress-case-connection">
+<h2>Model-reduction stress-case connection<a class="headerlink" href="#model-reduction-stress-case-connection" title="Link to this heading">¶</a></h2>
+<p>The tutorial <a class="reference internal" href="../examples/generated/mimo_model_reduction_stress_cases.html"><span class="doc">MIMO model-reduction stress cases</span></a> uses
+these routines as a finite sampled certificate on MIMO model-reduction data.  For
+right-tangential samples <code class="docutils literal notranslate"><span class="pre">F(z_i)u_i</span></code>, the response is scaled by <code class="docutils literal notranslate"><span class="pre">gamma</span></code> until
+the Pick matrix is positive semidefinite.  This gives a Schur-feasibility
+diagnostic for the sampled data and a tangential residual for reduced models.
+The same page also plots H2/Markov error, finite-Hankel spectral-norm tail
+error, and timing/backend information for the MIMO reducers.  It is
+deliberately described as a diagnostic layer, not as a complete
+tangential-Schur model-reduction algorithm.</p>
+</section>
+<section id="benchmark-connection">
+<h2>Benchmark connection<a class="headerlink" href="#benchmark-connection" title="Link to this heading">¶</a></h2>
+<p>The benchmark <a class="reference internal" href="../benchmarks/generated/tangential_schur_mimo.html"><span class="doc">MIMO tangential-Schur/Pick and J-inner benchmark</span></a> measures the
+same finite objects at small MIMO sizes: Pick-matrix construction,
+PSD/eigenvalue checks, constant Schur recovery, Potapov product evaluation, and
+J-inner residuals.  It also benchmarks the diagonal-MIMO reduction against
+independent scalar Pick blocks, so the performance page mirrors the mathematical
+sanity check used in the examples.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/tangential_schur.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

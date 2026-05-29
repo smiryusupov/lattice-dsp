@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Scalar lattice and lattice-ladder IIR filters &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adaptive lattice filters: NLMS and RLS" href="adaptive_filters.html" />
+    <link rel="prev" title="The lattice DSP concept map" href="concept_map.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="concept_map.html" title="previous chapter">The lattice DSP concept map</a></li>
+      <li>Next: <a href="adaptive_filters.html" title="next chapter">Adaptive lattice filters: NLMS and RLS</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="scalar-lattice-and-lattice-ladder-iir-filters">
+<h1>Scalar lattice and lattice-ladder IIR filters<a class="headerlink" href="#scalar-lattice-and-lattice-ladder-iir-filters" title="Link to this heading">¶</a></h1>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">¶</a></h2>
+<p>A direct-form IIR denominator</p>
+<div class="math notranslate nohighlight">
+\[A(z) = 1 + a_1 z^{-1} + \cdots + a_p z^{-p}\]</div>
+<p>is stable only if all roots of <code class="docutils literal notranslate"><span class="pre">A(z)</span></code> lie inside the unit circle.  Adaptive
+updates to <code class="docutils literal notranslate"><span class="pre">a_i</span></code> can easily move poles outside the unit circle.  Lattice
+filters use reflection coefficients, also called PARCOR coefficients, instead.
+For the scalar all-pole case, the sufficient stability condition is simple:</p>
+<div class="math notranslate nohighlight">
+\[|k_i| &lt; 1 \quad \text{for every stage } i.\]</div>
+<p>This is the central reason for using lattice parameterizations in this package.
+The package also exposes <code class="docutils literal notranslate"><span class="pre">bounded_reflection_from_raw</span></code> so unconstrained raw
+optimization variables can be mapped through <code class="docutils literal notranslate"><span class="pre">tanh</span></code> into stable reflection
+coefficients.</p>
+</section>
+<section id="reflection-to-denominator-recursion">
+<h2>Reflection-to-denominator recursion<a class="headerlink" href="#reflection-to-denominator-recursion" title="Link to this heading">¶</a></h2>
+<p>The conversion implemented by <code class="docutils literal notranslate"><span class="pre">reflection_to_denominator</span></code> is the standard
+step-up recursion.  Let <code class="docutils literal notranslate"><span class="pre">a^(m)</span></code> be the order-<code class="docutils literal notranslate"><span class="pre">m</span></code> denominator.  Given
+reflection coefficient <code class="docutils literal notranslate"><span class="pre">k_m</span></code>:</p>
+<div class="math notranslate nohighlight">
+\[a_i^{(m)} = a_i^{(m-1)} + k_m a_{m-i}^{(m-1)},\quad i=1,\ldots,m-1,\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[a_m^{(m)} = k_m.\]</div>
+<p>The inverse conversion, implemented by <code class="docutils literal notranslate"><span class="pre">denominator_to_reflection</span></code>, is the
+step-down recursion.  It peels off the last reflection coefficient and reduces
+the denominator order.  If any step would violate stability, the corresponding
+reflection coefficient exposes that violation.</p>
+</section>
+<section id="causality-and-state">
+<h2>Causality and state<a class="headerlink" href="#causality-and-state" title="Link to this heading">¶</a></h2>
+<p>The scalar runtime filters in this package are causal, stateful IIR filters.
+<code class="docutils literal notranslate"><span class="pre">LatticeIIR.process_sample(x)</span></code> and <code class="docutils literal notranslate"><span class="pre">LatticeLadderIIR.process_sample(x)</span></code>
+consume one current input sample, update an internal state, and return the
+current output.  The vector <code class="docutils literal notranslate"><span class="pre">process</span></code> helpers simply call the same
+sample-by-sample recurrence from left to right.  They do not look ahead in the
+input sequence.</p>
+<p>This is different from AR coefficient estimators such as Burg or
+Levinson-Durbin.  Those routines estimate a denominator from a finite data
+record or autocorrelation sequence.  Once the coefficients have been estimated,
+the resulting IIR or prediction-error filter can be run causally.</p>
+</section>
+<section id="lattice-ladder-realization">
+<h2>Lattice-ladder realization<a class="headerlink" href="#lattice-ladder-realization" title="Link to this heading">¶</a></h2>
+<p>The lattice part represents the stable recursive denominator.  Ladder taps then
+combine intermediate forward/backward prediction errors to realize a numerator.
+The package provides conversions between conventional numerator coefficients and
+ladder taps:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">numerator_to_ladder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ladder_to_numerator</span></code></p></li>
+</ul>
+<p>This makes it possible to compare the lattice-ladder output with conventional
+<code class="docutils literal notranslate"><span class="pre">scipy.signal.lfilter</span></code> while preserving the stable recursive parameterization.</p>
+</section>
+<section id="analytic-jacobians">
+<h2>Analytic Jacobians<a class="headerlink" href="#analytic-jacobians" title="Link to this heading">¶</a></h2>
+<p>For optimization experiments, <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> includes analytic Jacobians from
+reflection/raw parameters to denominator coefficients:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_reflection_jacobian</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_raw_jacobian</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_raw_jacobian_finite_difference</span></code></p></li>
+</ul>
+<p>The finite-difference version is included as a debugging oracle for the analytic
+form.</p>
+</section>
+<section id="relevant-apis">
+<h2>Relevant APIs<a class="headerlink" href="#relevant-apis" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeIIR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderIIR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reflection_to_denominator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">denominator_to_reflection</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bounded_reflection_from_raw</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numerator_to_ladder</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ladder_to_numerator</span></code></p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/reflection_conversion.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/lattice_ladder_realization.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/stability_vs_direct_iir.py</span></code></p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<p>Classic background for lattice filters, PARCOR coefficients, and stable
+all-pole modeling is covered in linear-prediction and adaptive-filtering texts;
+see <a class="reference internal" href="../references.html"><span class="doc">References and further reading</span></a>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/lattice_filters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

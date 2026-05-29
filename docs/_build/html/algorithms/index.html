@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Algorithms &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The lattice DSP concept map" href="concept_map.html" />
+    <link rel="prev" title="Tangential Schur, Pick matrices, and J-inner factors" href="../theory/tangential_schur.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Algorithms overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../theory/tangential_schur.html" title="previous chapter">Tangential Schur, Pick matrices, and J-inner factors</a></li>
+      <li>Next: <a href="concept_map.html" title="next chapter">The lattice DSP concept map</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="algorithms">
+<h1>Algorithms<a class="headerlink" href="#algorithms" title="Link to this heading">¶</a></h1>
+<p>This section explains the algorithms behind <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code>.  Start with
+<a class="reference internal" href="../theory/choosing_algorithms.html"><span class="doc">Choosing an algorithm</span></a> if you are choosing an API by task.  Start with the
+concept map if the terminology is unfamiliar: it shows how Schur recursions,
+Szegő polynomials, Christoffel-Darboux identities, all-pass completions,
+Hankel/Padé approximation, and matrix/MIMO lattice filters fit together.  The
+emphasis is on stable recursive parameterizations and on multichannel
+extensions that are uncommon in Python-first DSP packages.</p>
+<p>The scalar path starts with reflection/PARCOR coefficients and lattice-ladder
+IIR realizations.  The adaptive path uses those coordinates to demonstrate
+recursive identification without treating denominator coefficients as free,
+unconstrained parameters.  The H∞/minimax LMS tutorial adds a complementary
+robust-filtering viewpoint: adaptive filters can be judged by worst-case
+disturbance energy gain, not only average squared error.  The spectral path connects AR/Burg/Levinson tools to periodogram and Capon
+diagnostics.  The model-reduction path explains why Hankel operators, Nehari
+approximation, and AAK theory motivate the finite-section SISO reduction APIs.  The matrix/MIMO path explores matrix all-pass, paraunitary, and multichannel AR examples as tutorial and diagnostic material.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#how-the-classical-ideas-fit-together">How the classical ideas fit together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#the-core-object-a-stable-recursive-filter">1. The core object: a stable recursive filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#schur-recursion-stability-by-reflection-coefficients">2. Schur recursion: stability by reflection coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#szego-polynomials-the-orthogonal-polynomial-view">3. Szegő polynomials: the orthogonal-polynomial view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#christoffel-darboux-why-prediction-errors-and-kernels-appear">4. Christoffel-Darboux: why prediction errors and kernels appear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#orthogonal-filters-lattice-stages-as-rotations-reflections">5. Orthogonal filters: lattice stages as rotations/reflections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#all-pass-completion-from-a-stable-denominator-to-a-lossless-system">6. All-pass completion: from a stable denominator to a lossless system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#hankel-forms-and-pade-rational-approximation-and-model-reduction">7. Hankel forms and Padé: rational approximation and model reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#matrix-mimo-generalization-contractions-replace-scalar-coefficients">8. Matrix/MIMO generalization: contractions replace scalar coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#where-each-concept-appears-in-the-package">9. Where each concept appears in the package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#suggested-reading-order">Suggested reading order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#reflection-to-denominator-recursion">Reflection-to-denominator recursion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#causality-and-state">Causality and state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#lattice-ladder-realization">Lattice-ladder realization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#analytic-jacobians">Analytic Jacobians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#relevant-apis">Relevant APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#nlms-style-updates">NLMS-style updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#update-period-scaling">Update period scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#h-viewpoint">H∞ viewpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#rls-style-updates">RLS-style updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#openmp-batch-path">OpenMP batch path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#relevant-apis">Relevant APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#the-historical-surprise">The historical surprise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#adaptive-filter-model">Adaptive-filter model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#finite-horizon-gain-diagnostic">Finite-horizon gain diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#how-to-read-the-tutorial">How to read the tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#connection-to-lattice-filters">Connection to lattice filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#run-the-tutorial">Run the tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#autoregressive-model">Autoregressive model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#autocorrelation">Autocorrelation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#levinson-durbin-recursion">Levinson-Durbin recursion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#burg-recursion">Burg recursion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#batch-estimation-versus-causal-filtering">Batch estimation versus causal filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#relevant-apis">Relevant APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html#periodogram">Periodogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html#ar-and-burg-spectra">AR and Burg spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html#capon-mvdr-spectrum">Capon / MVDR spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#why-model-reduction-is-subtle-for-iir-filters">Why model reduction is subtle for IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#the-hankel-viewpoint">The Hankel viewpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#nehari-approximation">Nehari approximation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#aak-theory">AAK theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#exact-rational-tail-validation">Exact rational-tail validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#what-is-implemented-now">What is implemented now</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#why-speedups-can-be-large-for-many-poles">Why speedups can be large for many poles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#how-this-differs-from-the-baseline-benchmark">How this differs from the baseline benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#pade-hankel-and-local-moment-matching">Padé, Hankel, and local moment matching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#why-this-matters-for-the-package-niche">Why this matters for the package niche</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#implemented-model-reduction-stack">Implemented model-reduction stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#tutorial-outputs">Tutorial outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#finite-candidate-selection">Finite candidate selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#high-level-finite-section-reduction-helper">High-level finite-section reduction helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#mimo-stress-examples-and-tangential-schur-diagnostics">MIMO stress examples and tangential-Schur diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html#mimo-to-matrix-lattice-bridge-diagnostics">MIMO to matrix-lattice bridge diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#problem-setting">Problem setting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#dense-block-toeplitz-baseline">Dense block-Toeplitz baseline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#batch-estimation-versus-causal-var-use">Batch estimation versus causal VAR use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#online-mimo-lattice-prediction">Online MIMO lattice prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#block-levinson-durbin-recursion">Block Levinson-Durbin recursion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#diagonal-and-coupled-sanity-checks">Diagonal and coupled sanity checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#relationship-to-matrix-lattice-all-pass-filters">Relationship to matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#important-api-symbols">Important API symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#examples-and-benchmark">Examples and benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#stage-block-construction">Stage block construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#stable-parameter-generation-and-projection">Stable parameter generation and projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#causality-status">Causality status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#frequency-response-and-runtime">Frequency response and runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#streaming-coupled-filtering-and-finite-record-adjoints">Streaming coupled filtering and finite-record adjoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#diagonal-mimo-sanity-check">Diagonal MIMO sanity check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#advanced-context-tangential-schur-and-potapov-blaschke-factors">Advanced context: tangential Schur and Potapov–Blaschke factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#finite-block-hankel-mimo-reduction">Finite block-Hankel MIMO reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#why-this-is-useful">Why this is useful</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#relevant-apis">Relevant APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#problem-represented-by-the-api">Problem represented by the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#pick-certificate">Pick certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#residual-checks">Residual checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#constant-solution-sanity-path">Constant-solution sanity path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#j-inner-factor-diagnostics">J-inner factor diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#potapov-blaschke-factors-versus-lossless-filters">Potapov–Blaschke factors versus lossless filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#schur-parameters-and-scope-versus-manifold-algorithms">Schur parameters and scope versus manifold algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#rkhs-interpretation-of-the-pick-certificate">RKHS interpretation of the Pick certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#deep-verification-suite">Deep verification suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#data-use-status">Data-use status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#verification-examples">Verification examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#model-reduction-stress-case-connection">Model-reduction stress-case connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html#benchmark-connection">Benchmark connection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#problem-and-certificate">Problem and certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#verification-cases">Verification cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#j-inner-arithmetic">J-inner arithmetic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#rkhs-and-algorithm-lineage-checks">RKHS and algorithm-lineage checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#what-is-deliberately-not-tested-as-solved">What is deliberately not tested as solved</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#reproducibility-and-tolerance-policy">Reproducibility and tolerance policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html#related-pages">Related pages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html#summary-table">Summary table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html#runtime-categories">Runtime categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html#why-the-diagonal-and-coupled-checks-both-matter">Why the diagonal and coupled checks both matter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html#connection-to-tests">Connection to tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html#tangential-schur-pick-baseline-for-matrix-lattice-claims">Tangential Schur/Pick baseline for matrix-lattice claims</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html#why-block-apis-matter">Why block APIs matter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html#blockprocessor"><code class="docutils literal notranslate"><span class="pre">BlockProcessor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html#adaptiveblockprocessor"><code class="docutils literal notranslate"><span class="pre">AdaptiveBlockProcessor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html#relevant-apis">Relevant APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

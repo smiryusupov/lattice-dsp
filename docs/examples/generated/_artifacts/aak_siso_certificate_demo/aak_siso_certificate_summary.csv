@@ -1,0 +1,2 @@
+rank,sigma_next,rank_svd_error,schmidt_left_residual,schmidt_right_residual,hankelized_tail_error,rational_error,max_pole_radius,accepted
+3,1.123664075616626e-16,6.575994191370236e-16,1.3349072889439016e-16,1.279036315525512e-16,4.624221699243308e-15,4.613114437502995e-15,0.7600000000000016,True

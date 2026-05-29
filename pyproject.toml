@@ -1,0 +1,57 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.12"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "lattice-dsp"
+version = "0.1.0"
+description = "Efficient stable IIR lattice filters, adaptive lattice-ladder DSP, and matrix/MIMO lattice experiments for Python"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Shohruh Miryusupov" }]
+keywords = ["dsp", "iir", "lattice-filter", "lattice-ladder", "adaptive-filter", "matrix-lattice", "mimo", "multichannel-ar", "block-levinson", "tangential-schur", "j-inner", "potapov", "parcor", "reflection-coefficients", "spectral-estimation", "pybind11", "openmp"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["numpy>=1.23"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5", "pre-commit>=3.5", "build>=1.2", "twine>=5"]
+examples = ["matplotlib>=3.7", "scipy>=1.10"]
+benchmark = ["scipy>=1.10"]
+docs = ["sphinx>=7", "myst-parser>=2"]
+
+[project.urls]
+Homepage = "https://github.com/smiryusupov/lattice-dsp"
+Issues = "https://github.com/smiryusupov/lattice-dsp/issues"
+Documentation = "https://github.com/smiryusupov/lattice-dsp#readme"
+
+[tool.scikit-build]
+cmake.version = ">=3.18"
+wheel.packages = ["lattice_dsp"]
+
+[tool.scikit-build.sdist]
+exclude = ["docs/_build/**", "reports/**", "**/*.wav", "**/*.pyc", "**/__pycache__/**", ".pytest_cache/**"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "B"]
+ignore = ["E501"]

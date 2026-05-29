@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Finite-section SISO AAK/Nehari certificate &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Selecting a finite SISO AAK/Nehari rational candidate" href="aak_siso_candidate_selection.html" />
+    <link rel="prev" title="AAK Schmidt-pair diagnostics for SISO Hankel approximation" href="aak_siso_schmidt_pair_demo.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="aak_siso_schmidt_pair_demo.html" title="previous chapter">AAK Schmidt-pair diagnostics for SISO Hankel approximation</a></li>
+      <li>Next: <a href="aak_siso_candidate_selection.html" title="next chapter">Selecting a finite SISO AAK/Nehari rational candidate</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="finite-section-siso-aak-nehari-certificate">
+<h1>Finite-section SISO AAK/Nehari certificate<a class="headerlink" href="#finite-section-siso-aak-nehari-certificate" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Use Schmidt-pair identities to certify the finite AAK/Nehari target and attach the rational candidate.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>This is the first tutorial whose structure is deliberately AAK/Nehari-shaped.  It builds a
+finite Hankel matrix from an exact rational anticausal tail, computes the first neglected
+Schmidt pair, checks the singular-vector identities, and attaches the finite Nehari/rational
+candidate for the same rank.</p>
+<p>The tutorial is intentionally finite-section.  It is closer to the AAK/Nehari construction
+than the earlier rank sweeps because it verifies the Schmidt-pair equations directly, but it
+is still not advertised as a full infinite-dimensional Hardy-space solver.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>For target rank <code class="docutils literal notranslate"><span class="pre">r</span></code>, the finite certificate reports the first neglected singular value</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{r+1}.\]</div>
+<p>It also checks the finite Schmidt-pair equations</p>
+<div class="math notranslate nohighlight">
+\[H v_{r+1}=\sigma_{r+1}u_{r+1},\qquad
+H^T u_{r+1}=\sigma_{r+1}v_{r+1}.\]</div>
+<p>On an exact rank-three rational tail, the rank-three certificate should recover the stable
+poles and produce residuals near machine precision.</p>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Look for small Schmidt-pair residuals, rank-3 pole recovery, tiny rational error, and poles inside the unit disk.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/aak_siso_certificate_demo.py
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>finite Hankel matrix: 48 x 48
+target rank: 3
+true poles: [-0.42, 0.18, 0.76]
+true weights: [1.25, -0.7, 0.4]
+leading singular values: [1.28016936, 0.61060229, 0.14951434, 0.0, 0.0, 0.0, 0.0, 0.0]
+sigma_next: 1.123664e-16
+rank-r SVD error: 6.575994e-16
+left Schmidt residual: 1.335e-16
+right Schmidt residual: 1.279e-16
+candidate tail error: 4.624e-15
+candidate rational error: 4.613e-15
+candidate pole radius: 0.7600
+candidate accepted: True
+recovered poles: [-0.42, 0.18, 0.76]
+</pre></div>
+</div>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/aak_certificate_poles.png"><img alt="aak certificate poles" src="../../_images/aak_certificate_poles.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_certificate_poles.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../../_images/aak_certificate_schmidt_pair.png"><img alt="aak certificate schmidt pair" src="../../_images/aak_certificate_schmidt_pair.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_certificate_schmidt_pair.png</span></code></span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="../../_images/aak_certificate_singular_values.png"><img alt="aak certificate singular values" src="../../_images/aak_certificate_singular_values.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_certificate_singular_values.png</span></code></span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../../_images/aak_certificate_tail_recovery.png"><img alt="aak certificate tail recovery" src="../../_images/aak_certificate_tail_recovery.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">aak_certificate_tail_recovery.png</span></code></span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="generated-data-files">
+<h2>Generated data files<a class="headerlink" href="#generated-data-files" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/1fb72549f2631f6bd20054b24426012f/aak_siso_certificate_summary.csv"><code class="xref download docutils literal notranslate"><span class="pre">aak_siso_certificate_summary.csv</span></code></a></p></li>
+</ul>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Tutorial: a finite-section SISO AAK/Nehari certificate.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">This example is the first deliberately AAK/Nehari-shaped diagnostic in the</span>
+<span class="linenos">  4</span><span class="sd">package.  It does not merely fit a recurrence.  It builds a finite Hankel</span>
+<span class="linenos">  5</span><span class="sd">matrix, computes the Schmidt pair associated with the first neglected singular</span>
+<span class="linenos">  6</span><span class="sd">value, checks the finite AAK identities, and then attaches the finite</span>
+<span class="linenos">  7</span><span class="sd">Nehari/rational candidate for the same rank.</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="sd">The example uses an exact rank-3 rational tail, so the rank-3 candidate should</span>
+<span class="linenos"> 10</span><span class="sd">be selected, recover the true poles, and have tiny tail/rational error.  This is</span>
+<span class="linenos"> 11</span><span class="sd">still a finite-section prototype, not a full infinite-dimensional Hardy-space</span>
+<span class="linenos"> 12</span><span class="sd">AAK/Nehari solver.</span>
+<span class="linenos"> 13</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="linenos"> 18</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 19</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 20</span>
+<span class="linenos"> 21</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span><span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="k">def</span><span class="w"> </span><span class="nf">artifact_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="linenos"> 27</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LATTICE_DSP_ARTIFACT_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/example-artifacts&quot;</span><span class="p">))</span>
+<span class="linenos"> 28</span>    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 29</span>    <span class="k">return</span> <span class="n">path</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span>
+<span class="linenos"> 32</span><span class="k">def</span><span class="w"> </span><span class="nf">exact_rational_tail</span><span class="p">(</span><span class="n">n_terms</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="linenos"> 33</span>    <span class="n">true_poles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.42</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.76</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 34</span>    <span class="n">true_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 35</span>    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_terms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 36</span>    <span class="n">tail</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="n">pole</span><span class="o">**</span><span class="n">n</span> <span class="k">for</span> <span class="n">weight</span><span class="p">,</span> <span class="n">pole</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_weights</span><span class="p">,</span> <span class="n">true_poles</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="linenos"> 37</span>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">true_poles</span><span class="p">,</span> <span class="n">true_weights</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span><span class="k">def</span><span class="w"> </span><span class="nf">write_summary</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 41</span>    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos"> 42</span>        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="linenos"> 43</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+<span class="linenos"> 44</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="linenos"> 45</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 48</span>    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">artifact_dir</span><span class="p">()</span>
+<span class="linenos"> 49</span>    <span class="n">rows</span> <span class="o">=</span> <span class="n">cols</span> <span class="o">=</span> <span class="mi">48</span>
+<span class="linenos"> 50</span>    <span class="n">rank</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos"> 51</span>    <span class="n">tail</span><span class="p">,</span> <span class="n">true_poles</span><span class="p">,</span> <span class="n">true_weights</span> <span class="o">=</span> <span class="n">exact_rational_tail</span><span class="p">(</span><span class="n">rows</span> <span class="o">+</span> <span class="n">cols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos"> 52</span>    <span class="n">criteria</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">FiniteNehariCandidateCriteria</span><span class="p">(</span>
+<span class="linenos"> 53</span>        <span class="n">max_tail_error</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+<span class="linenos"> 54</span>        <span class="n">max_rational_error</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+<span class="linenos"> 55</span>        <span class="n">max_pole_radius</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+<span class="linenos"> 56</span>    <span class="p">)</span>
+<span class="linenos"> 57</span>
+<span class="linenos"> 58</span>    <span class="n">certificate</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">finite_aak_siso_certificate</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">)</span>
+<span class="linenos"> 59</span>    <span class="n">candidate</span> <span class="o">=</span> <span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;candidate&quot;</span><span class="p">]</span>
+<span class="linenos"> 60</span>    <span class="n">selected_poles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;poles&quot;</span><span class="p">])</span>
+<span class="linenos"> 61</span>
+<span class="linenos"> 62</span>    <span class="n">summary</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 63</span>        <span class="p">{</span>
+<span class="linenos"> 64</span>            <span class="s2">&quot;rank&quot;</span><span class="p">:</span> <span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;rank&quot;</span><span class="p">],</span>
+<span class="linenos"> 65</span>            <span class="s2">&quot;sigma_next&quot;</span><span class="p">:</span> <span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;sigma_next&quot;</span><span class="p">],</span>
+<span class="linenos"> 66</span>            <span class="s2">&quot;rank_svd_error&quot;</span><span class="p">:</span> <span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;rank_svd_error&quot;</span><span class="p">],</span>
+<span class="linenos"> 67</span>            <span class="s2">&quot;schmidt_left_residual&quot;</span><span class="p">:</span> <span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;schmidt_left_residual&quot;</span><span class="p">],</span>
+<span class="linenos"> 68</span>            <span class="s2">&quot;schmidt_right_residual&quot;</span><span class="p">:</span> <span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;schmidt_right_residual&quot;</span><span class="p">],</span>
+<span class="linenos"> 69</span>            <span class="s2">&quot;hankelized_tail_error&quot;</span><span class="p">:</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;hankelized_tail_error&quot;</span><span class="p">],</span>
+<span class="linenos"> 70</span>            <span class="s2">&quot;rational_error&quot;</span><span class="p">:</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;rational_error&quot;</span><span class="p">],</span>
+<span class="linenos"> 71</span>            <span class="s2">&quot;max_pole_radius&quot;</span><span class="p">:</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;max_pole_radius&quot;</span><span class="p">],</span>
+<span class="linenos"> 72</span>            <span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">],</span>
+<span class="linenos"> 73</span>        <span class="p">}</span>
+<span class="linenos"> 74</span>    <span class="p">]</span>
+<span class="linenos"> 75</span>    <span class="n">summary_path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_siso_certificate_summary.csv&quot;</span>
+<span class="linenos"> 76</span>    <span class="n">write_summary</span><span class="p">(</span><span class="n">summary_path</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
+<span class="linenos"> 77</span>
+<span class="linenos"> 78</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;finite Hankel matrix:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rows</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">cols</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 79</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;target rank:&quot;</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+<span class="linenos"> 80</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;true poles:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">true_poles</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos"> 81</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;true weights:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">true_weights</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos"> 82</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;leading singular values:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;hankel_singular_values&quot;</span><span class="p">][:</span><span class="mi">8</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos"> 83</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sigma_next:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">certificate</span><span class="p">[</span><span class="s1">&#39;sigma_next&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 84</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rank-r SVD error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">certificate</span><span class="p">[</span><span class="s1">&#39;rank_svd_error&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 85</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;left Schmidt residual:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">certificate</span><span class="p">[</span><span class="s1">&#39;schmidt_left_residual&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 86</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;right Schmidt residual:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">certificate</span><span class="p">[</span><span class="s1">&#39;schmidt_right_residual&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 87</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;candidate tail error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">candidate</span><span class="p">[</span><span class="s1">&#39;hankelized_tail_error&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 88</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;candidate rational error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">candidate</span><span class="p">[</span><span class="s1">&#39;rational_error&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 89</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;candidate pole radius:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">candidate</span><span class="p">[</span><span class="s1">&#39;max_pole_radius&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 90</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;candidate accepted:&quot;</span><span class="p">,</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">])</span>
+<span class="linenos"> 91</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;recovered poles:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">selected_poles</span><span class="p">)),</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos"> 92</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">summary_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 93</span>
+<span class="linenos"> 94</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos"> 95</span>        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos"> 96</span>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="linenos"> 97</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matplotlib is not installed; skipped figures&quot;</span><span class="p">)</span>
+<span class="linenos"> 98</span>        <span class="k">return</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span>    <span class="n">singular_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;hankel_singular_values&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">101</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="linenos">102</span>    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span> <span class="n">singular_values</span><span class="p">[:</span><span class="mi">12</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;first neglected singular value&quot;</span><span class="p">)</span>
+<span class="linenos">104</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Finite AAK/Nehari certificate: Hankel singular values&quot;</span><span class="p">)</span>
+<span class="linenos">105</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+<span class="linenos">106</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;singular value&quot;</span><span class="p">)</span>
+<span class="linenos">107</span>    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">108</span>    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">109</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">110</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_certificate_singular_values.png&quot;</span>
+<span class="linenos">111</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">112</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">113</span>
+<span class="linenos">114</span>    <span class="n">fig2</span><span class="p">,</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.8</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="linenos">115</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;left_schmidt_vector&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;left Schmidt vector&quot;</span><span class="p">)</span>
+<span class="linenos">116</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">certificate</span><span class="p">[</span><span class="s2">&quot;right_schmidt_vector&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;right Schmidt vector&quot;</span><span class="p">)</span>
+<span class="linenos">117</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Critical finite Schmidt pair&quot;</span><span class="p">)</span>
+<span class="linenos">118</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;coefficient index&quot;</span><span class="p">)</span>
+<span class="linenos">119</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;amplitude&quot;</span><span class="p">)</span>
+<span class="linenos">120</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">121</span>    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">122</span>    <span class="n">fig2</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">123</span>    <span class="n">path2</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_certificate_schmidt_pair.png&quot;</span>
+<span class="linenos">124</span>    <span class="n">fig2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path2</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">125</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">126</span>
+<span class="linenos">127</span>    <span class="n">rational_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;rational_tail&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">128</span>    <span class="n">fig3</span><span class="p">,</span> <span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">9.2</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="linenos">129</span>    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">tail</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="linenos">130</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true tail&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="linenos">131</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">rational_tail</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;rank-3 rational candidate&quot;</span><span class="p">)</span>
+<span class="linenos">132</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Exact rank-3 rational tail recovery&quot;</span><span class="p">)</span>
+<span class="linenos">133</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;tail index&quot;</span><span class="p">)</span>
+<span class="linenos">134</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;coefficient&quot;</span><span class="p">)</span>
+<span class="linenos">135</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">136</span>    <span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">137</span>    <span class="n">fig3</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">138</span>    <span class="n">path3</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_certificate_tail_recovery.png&quot;</span>
+<span class="linenos">139</span>    <span class="n">fig3</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path3</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">140</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path3</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">141</span>
+<span class="linenos">142</span>    <span class="n">fig4</span><span class="p">,</span> <span class="n">ax4</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.8</span><span class="p">,</span> <span class="mf">5.8</span><span class="p">))</span>
+<span class="linenos">143</span>    <span class="n">circle</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="linenos">144</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+<span class="linenos">145</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">true_poles</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">true_poles</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true poles&quot;</span><span class="p">)</span>
+<span class="linenos">146</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">selected_poles</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">selected_poles</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;recovered poles&quot;</span><span class="p">)</span>
+<span class="linenos">147</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="linenos">148</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="linenos">149</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="linenos">150</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">)</span>
+<span class="linenos">151</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;imaginary&quot;</span><span class="p">)</span>
+<span class="linenos">152</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Stable rational candidate poles&quot;</span><span class="p">)</span>
+<span class="linenos">153</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="linenos">154</span>    <span class="n">ax4</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">155</span>    <span class="n">fig4</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">156</span>    <span class="n">path4</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;aak_certificate_poles.png&quot;</span>
+<span class="linenos">157</span>    <span class="n">fig4</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path4</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">158</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path4</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">159</span>
+<span class="linenos">160</span>
+<span class="linenos">161</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">162</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/aak_siso_certificate_demo.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

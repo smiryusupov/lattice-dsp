@@ -1,0 +1,7 @@
+label,parameter_type,parameters,max_abs_reflection,max_pole_radius,stable
+mild reflection vector,reflection,"[0.2, -0.3, 0.1]",0.3,0.7105601029057581,True
+moderate reflection vector,reflection,"[0.75, -0.45, 0.25]",0.75,0.946015824318881,True
+near-boundary reflection vector,reflection,"[0.95, -0.8, 0.65]",0.95,0.9988253416499964,True
+stable direct denominator,direct denominator,"[1.0, -1.85, 0.95]",0.95,0.9746794344808963,True
+nearby unstable direct denominator,direct denominator,"[1.0, -2.05, 1.05]",nan,1.0499999999999952,False
+another unstable direct denominator,direct denominator,"[1.0, 0.0, 1.05]",nan,1.02469507659596,False

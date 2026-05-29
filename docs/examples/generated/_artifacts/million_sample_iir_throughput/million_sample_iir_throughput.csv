@@ -1,0 +1,3 @@
+fft_length,median_seconds,method,relative_rms_error_vs_iir,samples,speedup_iir_vs_fft_fir,state_or_taps,throughput_msamples_per_s
+,0.0060371519066393375,lattice_iir_recursive,0.0,1000000,,1,165.6410200479225
+2097152,0.08752153487876058,truncated_fir_fft_convolution,2.6400025244962077e-05,1000000,14.497156313477728,131072,11.425759401788971

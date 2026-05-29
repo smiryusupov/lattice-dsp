@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model reduction, Hankel operators, Nehari, and AAK &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multichannel AR and block Levinson" href="multichannel_ar.html" />
+    <link rel="prev" title="Spectral diagnostics: periodogram, AR, Burg, and Capon" href="spectral_diagnostics.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="spectral_diagnostics.html" title="previous chapter">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+      <li>Next: <a href="multichannel_ar.html" title="next chapter">Multichannel AR and block Levinson</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="model-reduction-hankel-operators-nehari-and-aak">
+<h1>Model reduction, Hankel operators, Nehari, and AAK<a class="headerlink" href="#model-reduction-hankel-operators-nehari-and-aak" title="Link to this heading">¶</a></h1>
+<p>This page is a theory map for SISO model-reduction work in <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code>.
+The package currently includes <strong>finite-Hankel SVD diagnostics</strong> and a
+<strong>finite-Hankel/Ho–Kalman reducer</strong> in the C++ backend.  These are useful
+numerical tools and a serious step beyond coefficient deletion.  Their stated scope is finite-dimensional approximation; they are not full infinite-dimensional Nehari or Adamjan–Arov–Krein solvers.</p>
+<p>The purpose of this page is to explain the classical objects that guide the implementation, why they matter for speed, and where the current finite-section APIs stop.</p>
+<p>For a concise implementation-status table and release checklist, see
+<a class="reference internal" href="../project_status.html"><span class="doc">Project scope and release validation</span></a>.  For the Hardy-space, reachability, observability, and
+state-space background used by this page, see
+<a class="reference internal" href="../theory/hardy_hankel_state_space.html"><span class="doc">Hardy, Hankel, reachability, and observability</span></a>.</p>
+<section id="why-model-reduction-is-subtle-for-iir-filters">
+<h2>Why model reduction is subtle for IIR filters<a class="headerlink" href="#why-model-reduction-is-subtle-for-iir-filters" title="Link to this heading">¶</a></h2>
+<p>For an FIR filter, lowering cost can mean shortening the impulse response.  For
+an IIR filter, the object is a rational transfer function,</p>
+<div class="math notranslate nohighlight">
+\[G(z)=\frac{B(z)}{A(z)},\]</div>
+<p>and a reduced model is expected to preserve the input-output map while remaining stable.
+Simply deleting denominator coefficients is usually the wrong coordinate system:
+it can move poles outside the unit disk or destroy the approximation quality.</p>
+<p>Lattice coordinates are useful because scalar stability is controlled by
+reflection coefficients.  If the reflection coefficients satisfy</p>
+<div class="math notranslate nohighlight">
+\[|k_i| &lt; 1,\]</div>
+<p>then the corresponding all-pole denominator is stable.  This makes lattice
+truncation a safe baseline.  Optimal reduction, however, asks a stronger
+question: which lower-order stable rational filter best approximates the
+original input-output operator?</p>
+</section>
+<section id="the-hankel-viewpoint">
+<h2>The Hankel viewpoint<a class="headerlink" href="#the-hankel-viewpoint" title="Link to this heading">¶</a></h2>
+<p>For a stable causal SISO system with impulse response</p>
+<div class="math notranslate nohighlight">
+\[g_0, g_1, g_2, \ldots,\]</div>
+<p>one can form the Hankel matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H_G =
+\begin{bmatrix}
+g_1 &amp; g_2 &amp; g_3 &amp; \cdots \\
+g_2 &amp; g_3 &amp; g_4 &amp; \cdots \\
+g_3 &amp; g_4 &amp; g_5 &amp; \cdots \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots
+\end{bmatrix}.\end{split}\]</div>
+<p>The Hankel operator maps past inputs to future outputs.  Its singular values
+measure how much input-output <code class="docutils literal notranslate"><span class="pre">memory</span></code> is carried by different internal
+directions.  Rapid decay of these singular values suggests that a low-order
+model may approximate the original system well.</p>
+<p>A practical diagnostic is therefore:</p>
+<ol class="arabic simple">
+<li><p>compute or sample the impulse response,</p></li>
+<li><p>build a finite Hankel matrix,</p></li>
+<li><p>plot its singular values,</p></li>
+<li><p>choose a reduced order where the singular values decay,</p></li>
+<li><p>compare the reduced model by response error, pole radius, and runtime.</p></li>
+</ol>
+<p>This is the conceptual bridge between the baseline <code class="docutils literal notranslate"><span class="pre">model_reduction_benchmark</span></code>
+and the finite-Hankel reducer exposed as <code class="docutils literal notranslate"><span class="pre">finite_hankel_reduce_iir</span></code> and
+<code class="docutils literal notranslate"><span class="pre">finite_hankel_reduce_impulse</span></code>.</p>
+</section>
+<section id="nehari-approximation">
+<h2>Nehari approximation<a class="headerlink" href="#nehari-approximation" title="Link to this heading">¶</a></h2>
+<p>The Nehari problem asks how well a noncausal or anticausal transfer function can
+be approximated by a stable causal one in the uniform norm.  In operator terms,
+the distance is controlled by the norm of an associated Hankel operator.</p>
+<p>For DSP intuition, the important message is this:</p>
+<blockquote>
+<div><p>The part of a transfer function that cannot be represented by a stable causal
+filter is measured by a Hankel operator.</p>
+</div></blockquote>
+<p>That is why Nehari theory appears in model reduction and robust control: it
+turns a frequency-domain approximation question into an operator-norm question.
+For a lattice package, Nehari approximation is interesting because the final
+stable approximant can be converted back into reflection/lattice coordinates.</p>
+</section>
+<section id="aak-theory">
+<h2>AAK theory<a class="headerlink" href="#aak-theory" title="Link to this heading">¶</a></h2>
+<p>Adamjan–Arov–Krein theory goes further.  It links best low-rank approximation
+of Hankel operators with best rational approximation.  In the SISO setting, this
+is the deep theory behind Hankel-norm model reduction and rational approximation
+by lower-order systems.</p>
+<p>A simplified engineering slogan is:</p>
+<blockquote>
+<div><p>Hankel singular values tell us what order can be removed; AAK explains the
+optimal rational approximants associated with that removal.</p>
+</div></blockquote>
+<p>This is the theory behind exact AAK/Nehari solvers.  In <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code>, the current public APIs expose finite-section diagnostics and candidate workflows around this rational-approximation picture:</p>
+<div class="math notranslate nohighlight">
+\[G(z)
+\quad\longrightarrow\quad
+H_G
+\quad\longrightarrow\quad
+\text{Hankel singular structure}
+\quad\longrightarrow\quad
+G_r(z)
+\quad\longrightarrow\quad
+\text{lattice coordinates}.\]</div>
+</section>
+<section id="exact-rational-tail-validation">
+<h2>Exact rational-tail validation<a class="headerlink" href="#exact-rational-tail-validation" title="Link to this heading">¶</a></h2>
+<p>The finite-section workflow includes exact finite-dimensional validation cases.  A useful case is an anticausal tail generated by a known sum of stable exponentials,</p>
+<div class="math notranslate nohighlight">
+\[\gamma_n=\sum_{i=1}^r c_i p_i^n,\qquad |p_i|&lt;1.\]</div>
+<p>Such a sequence has Hankel rank at most <code class="docutils literal notranslate"><span class="pre">r</span></code> and satisfies an order-<code class="docutils literal notranslate"><span class="pre">r</span></code>
+linear recurrence.  The tutorial
+<code class="docutils literal notranslate"><span class="pre">finite_nehari_exact_rational_tail.py</span></code> uses a rank-3 example to check that
+ranks one and two are rejected, rank three is selected, and the fitted poles
+match the known poles to near numerical precision.</p>
+<p>This validation does not prove infinite-dimensional AAK/Nehari optimality.  It
+checks that the finite Hankel, Hankelization, rational fitting, and
+candidate-selection pieces are internally consistent on a known exact case.</p>
+</section>
+<section id="what-is-implemented-now">
+<h2>What is implemented now<a class="headerlink" href="#what-is-implemented-now" title="Link to this heading">¶</a></h2>
+<p>The C++ backend includes finite-section helpers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">iir_impulse_response</span><span class="p">(</span><span class="n">denominator</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+<span class="n">hankel_singular_values</span><span class="p">(</span><span class="n">impulse_response</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">finite_hankel_reduce_impulse</span><span class="p">(</span><span class="n">impulse_response</span><span class="p">,</span> <span class="n">reduced_order</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
+<span class="n">finite_hankel_reduce_iir</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">reduced_order</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">finite_hankel_reduce_mimo</span><span class="p">(</span><span class="n">markov_parameters</span><span class="p">,</span> <span class="n">reduced_order</span><span class="p">,</span> <span class="n">block_rows</span><span class="p">,</span> <span class="n">block_cols</span><span class="p">)</span>
+<span class="n">mimo_state_space_markov_response</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+<span class="n">mimo_state_space_process_batch</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The reducer follows a finite-Hankel workflow:</p>
+<ol class="arabic simple">
+<li><p>compute an impulse response from a stable lattice IIR,</p></li>
+<li><p>form finite Hankel matrices <code class="docutils literal notranslate"><span class="pre">H0</span></code> and shifted <code class="docutils literal notranslate"><span class="pre">H1</span></code>,</p></li>
+<li><p>compute the leading singular directions of <code class="docutils literal notranslate"><span class="pre">H0</span></code>,</p></li>
+<li><p>construct a reduced Ho–Kalman realization,</p></li>
+<li><p>convert the resulting rational model back to numerator/denominator
+coefficients, and when possible to reflection coefficients.</p></li>
+</ol>
+<p>The key finite realization formula is</p>
+<div class="math notranslate nohighlight">
+\[H_0 \approx U_r\Sigma_r V_r^T,
+\qquad
+A_r = \Sigma_r^{-1/2} U_r^T H_1 V_r \Sigma_r^{-1/2}.\]</div>
+<p>The returned SISO diagnostics include Hankel singular values, retained finite-Hankel
+energy, impulse-response error, stability status, and reduced coefficients.</p>
+<p>For MIMO systems, the analogous input is a sequence of Markov matrices
+<code class="docutils literal notranslate"><span class="pre">M_k</span></code> with shape <code class="docutils literal notranslate"><span class="pre">outputs</span> <span class="pre">x</span> <span class="pre">inputs</span></code>.  The finite-Hankel matrix becomes a
+block-Hankel matrix, and the reduced model is returned as state-space matrices
+<code class="docutils literal notranslate"><span class="pre">A,</span> <span class="pre">B,</span> <span class="pre">C,</span> <span class="pre">D</span></code> rather than scalar numerator/denominator polynomials:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathcal{H}_0 =
+\begin{bmatrix}
+  M_1 &amp; M_2 &amp; M_3 &amp; \cdots \\
+  M_2 &amp; M_3 &amp; M_4 &amp; \cdots \\
+  M_3 &amp; M_4 &amp; M_5 &amp; \cdots \\
+  \vdots &amp; \vdots &amp; \vdots &amp; \ddots
+\end{bmatrix}.\end{split}\]</div>
+<p>This block-Hankel MIMO reducer is a practical Ho–Kalman/ERA-style baseline.
+It is intentionally not advertised as a matrix Nehari/AAK solver.  The diagonal
+MIMO tutorial checks that independent SISO filters embed correctly; the coupled
+MIMO tutorial and benchmark then validate the same reducer on dense state-space
+systems with cross-channel dynamics.  The benchmark uses the compiled
+<code class="docutils literal notranslate"><span class="pre">mimo_state_space_process_batch</span></code> runtime when available, so speed measurements
+reflect repeated state-space simulation rather than only reduction quality.  It
+reports processing speedup separately from one-shot and reused-model end-to-end
+speedup because block-Hankel reduction is a preprocessing cost.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The previous compatibility names <code class="docutils literal notranslate"><span class="pre">finite_hankel_aak_reduce_iir</span></code> and
+<code class="docutils literal notranslate"><span class="pre">finite_hankel_aak_reduce_impulse</span></code> are retained as deprecated aliases, but
+the shorter <code class="docutils literal notranslate"><span class="pre">finite_hankel_reduce_*</span></code> names are preferred.  The current
+implementation is finite-Hankel/Ho–Kalman reduction, not an exact AAK solver.</p>
+</div>
+</section>
+<section id="why-speedups-can-be-large-for-many-poles">
+<h2>Why speedups can be large for many poles<a class="headerlink" href="#why-speedups-can-be-large-for-many-poles" title="Link to this heading">¶</a></h2>
+<p>The reduction step is a preprocessing cost.  It can be more expensive than one
+short filtering call, because it builds finite Hankel matrices and computes a
+singular-value decomposition.  The payoff comes afterward: filtering with a
+reduced order <code class="docutils literal notranslate"><span class="pre">r</span></code> is cheaper than filtering with the full order <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
+<p>For long signals, many independent channels, repeated inference, or many Monte
+Carlo trials, the one-time reduction cost can be amortized.  A useful diagnostic
+is the break-even sample count,</p>
+<div class="math notranslate nohighlight">
+\[N_{\text{break-even}}
+=
+\frac{t_{\text{reduce}}}
+     {t_{\text{full per sample}} - t_{\text{reduced per sample}}}.\]</div>
+<p>If the reduced model is used for more than this many samples, the preprocessing
+cost has paid for itself.  This is why high-pole SISO IIR reduction can be a
+real performance feature, not just a mathematical curiosity.</p>
+</section>
+<section id="how-this-differs-from-the-baseline-benchmark">
+<h2>How this differs from the baseline benchmark<a class="headerlink" href="#how-this-differs-from-the-baseline-benchmark" title="Link to this heading">¶</a></h2>
+<p>The baseline model-reduction benchmark does this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>full lattice/IIR model
+  -&gt; lower-order reflection truncation or AR refit
+  -&gt; compare speed, relMSE, SNR, and pole radius
+</pre></div>
+</div>
+<p>This is intentionally simple.  It answers:</p>
+<ul class="simple">
+<li><p>How much faster is a lower-order stable lattice model?</p></li>
+<li><p>How much output error does it introduce?</p></li>
+<li><p>Does the reduced model remain stable?</p></li>
+</ul>
+<p>It does <strong>not</strong> answer:</p>
+<ul class="simple">
+<li><p>Is this the best lower-order rational approximant?</p></li>
+<li><p>Is the Hankel-norm error optimal?</p></li>
+<li><p>Does it solve a Nehari or AAK approximation problem?</p></li>
+</ul>
+<p>The finite-Hankel reducer is more principled than coefficient truncation because
+it uses singular directions of the input-output Hankel map.  Still, exact
+Nehari/AAK optimality is outside the current finite-section API scope.</p>
+<p>A separate tutorial, <a class="reference internal" href="../examples/generated/nehari_aak_siso_toy.html"><span class="doc">Nehari and AAK intuition from a finite SISO Hankel matrix</span></a>, shows the finite-section theory bridge.  It uses
+<code class="docutils literal notranslate"><span class="pre">finite_nehari_approximate_tail</span></code> to build a finite Hankel matrix from an
+anticausal tail, verifies the finite Eckart–Young <code class="docutils literal notranslate"><span class="pre">sigma_{r+1}</span></code> error law for
+unconstrained low-rank approximation, and compares it with a Hankelized
+approximation.  This is a finite-dimensional teaching helper and numerical
+validation tool, not an exact AAK/Nehari solver.</p>
+<p>The companion benchmark, <a class="reference internal" href="../benchmarks/generated/finite_nehari_rank_sweep.html"><span class="doc">finite Nehari/AAK rank sweep</span></a>, runs the same helper across
+several ranks and records the singular-value bound, unconstrained SVD error,
+Hankelized error, and tail-relative error.  This gives a baseline curve for comparing finite-section candidates with any exact Nehari/AAK implementation evaluated outside this API scope.</p>
+<p>The companion tutorial, <a class="reference internal" href="../examples/generated/finite_nehari_rational_bridge.html"><span class="doc">Finite Nehari tail to rational model</span></a>, connects the finite
+Hankel picture back to recursive filters.  It fits a short linear recurrence to
+the Hankelized tail, realizes the recurrence as a scalar rational/IIR impulse
+response, and plots the fitted poles.  This is still a finite-dimensional bridge
+rather than an exact AAK/Nehari solver, but it shows how low-rank Hankel
+structure becomes a small stable rational model.</p>
+<p>The companion tutorial, <a class="reference internal" href="../examples/generated/aak_siso_schmidt_pair_demo.html"><span class="doc">AAK Schmidt-pair diagnostics for SISO Hankel
+approximation</span></a>, visualizes the
+first neglected singular direction.  It checks the finite Schmidt-pair equations
+<code class="docutils literal notranslate"><span class="pre">H</span> <span class="pre">v</span> <span class="pre">=</span> <span class="pre">sigma</span> <span class="pre">u</span></code> and <code class="docutils literal notranslate"><span class="pre">H.T</span> <span class="pre">u</span> <span class="pre">=</span> <span class="pre">sigma</span> <span class="pre">v</span></code> and compares this obstruction with the
+Hankelized and rational-bridge approximations.  This is a finite-section diagnostic
+layer for the scalar AAK/Nehari vocabulary.</p>
+</section>
+<section id="pade-hankel-and-local-moment-matching">
+<h2>Padé, Hankel, and local moment matching<a class="headerlink" href="#pade-hankel-and-local-moment-matching" title="Link to this heading">¶</a></h2>
+<p>Padé approximation is another rational-approximation viewpoint.  It constructs a
+rational function whose series expansion matches a target series to high order.
+Hankel matrices appear naturally because moment-matching equations have Hankel
+structure.</p>
+<p>The difference in emphasis is:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Viewpoint</p></th>
+<th class="head"><p>Main question</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Padé</p></td>
+<td><p>Which rational function matches the local series/moments?</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hankel singular values</p></td>
+<td><p>Which input-output memory directions are important?</p></td>
+</tr>
+<tr class="row-even"><td><p>Nehari</p></td>
+<td><p>How close is a noncausal/anticausal part to a stable causal system?</p></td>
+</tr>
+<tr class="row-odd"><td><p>AAK</p></td>
+<td><p>Which lower-rank Hankel/rational approximation is optimal?</p></td>
+</tr>
+<tr class="row-even"><td><p>Lattice reduction</p></td>
+<td><p>How do we keep the reduced recursive model stable in implementation?</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="why-this-matters-for-the-package-niche">
+<h2>Why this matters for the package niche<a class="headerlink" href="#why-this-matters-for-the-package-niche" title="Link to this heading">¶</a></h2>
+<p>A Python-first package that combines efficient stable IIR lattice filters with
+SISO Hankel/Nehari/AAK-style reduction would be unusual and useful.  The
+combination is natural:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>rational IIR model
+   -&gt; Hankel/Nehari/AAK theory chooses a reduced rational model
+   -&gt; Schur/lattice conversion gives stable implementation coordinates
+   -&gt; benchmarks show speed/accuracy/stability tradeoffs
+</pre></div>
+</div>
+<p>This also explains why the matrix/MIMO pages are scoped as diagnostics and baselines.  The scalar theory is already rich, and the matrix-valued problem is kept separate from the finite-section SISO APIs.</p>
+</section>
+<section id="implemented-model-reduction-stack">
+<h2>Implemented model-reduction stack<a class="headerlink" href="#implemented-model-reduction-stack" title="Link to this heading">¶</a></h2>
+<p>The public model-reduction stack is:</p>
+<ol class="arabic">
+<li><p><strong>Hankel singular-value diagnostic</strong></p>
+<p>Implemented in C++ via <code class="docutils literal notranslate"><span class="pre">hankel_singular_values</span></code> and demonstrated in the
+finite-Hankel tutorial.</p>
+</li>
+<li><p><strong>Finite-Hankel Ho–Kalman reducer</strong></p>
+<p>Implemented in C++ via <code class="docutils literal notranslate"><span class="pre">finite_hankel_reduce_iir</span></code> and
+<code class="docutils literal notranslate"><span class="pre">finite_hankel_reduce_impulse</span></code>.  This is the main finite-section reduction feature.</p>
+</li>
+<li><p><strong>Large-order amortization benchmark</strong></p>
+<p>Implemented as a benchmark to report reduction time, full/reduced filtering
+time, speedup, and break-even sample count.</p>
+</li>
+<li><p><strong>Finite Nehari/AAK teaching helper</strong></p>
+<p>Implemented in C++ via <code class="docutils literal notranslate"><span class="pre">finite_nehari_approximate_tail</span></code> and demonstrated in
+<code class="docutils literal notranslate"><span class="pre">examples/nehari_aak_siso_toy.py</span></code>.  It constructs a small anticausal
+sequence, builds a finite Hankel matrix, verifies the finite <code class="docutils literal notranslate"><span class="pre">sigma_{r+1}</span></code>
+low-rank error law, and shows how Hankelization differs from unconstrained
+SVD approximation.</p>
+</li>
+<li><p><strong>Schmidt-pair AAK/Nehari diagnostics</strong></p>
+<p>Implemented as <code class="docutils literal notranslate"><span class="pre">examples/aak_siso_schmidt_pair_demo.py</span></code>.  It visualizes the
+first neglected Hankel singular direction and checks the finite Schmidt-pair
+equations.  This gives a concrete diagnostic bridge from finite SVD to the
+singular-vector language used by scalar AAK theory.</p>
+</li>
+<li><p><strong>Finite rational candidate-selection API</strong></p>
+<p>Implemented in Python via <code class="docutils literal notranslate"><span class="pre">finite_nehari_rational_candidates</span></code> and
+<code class="docutils literal notranslate"><span class="pre">select_finite_nehari_candidate</span></code>.  This promotes the tutorial workflow into
+reusable code: finite Nehari tail approximation, rational recurrence fitting,
+stability diagnostics, and threshold-based rank selection.</p>
+</li>
+<li><p><strong>Finite-section AAK/Nehari certificate</strong></p>
+<p>Implemented in Python via <code class="docutils literal notranslate"><span class="pre">finite_aak_siso_certificate</span></code> and demonstrated in
+<code class="docutils literal notranslate"><span class="pre">examples/aak_siso_certificate_demo.py</span></code>.  It reports the first neglected
+singular value, verifies the finite Schmidt-pair equations, and attaches the
+rational candidate for the same rank.  This is the most AAK-shaped baseline
+currently exposed, while still being explicitly finite-section.</p>
+</li>
+<li><p><strong>Finite-section SISO AAK/Nehari candidate reduction</strong></p>
+<p>Implemented through <code class="docutils literal notranslate"><span class="pre">finite_aak_reduce_tail</span></code> and <code class="docutils literal notranslate"><span class="pre">finite_aak_reduce_iir</span></code>.
+These helpers evaluate rank candidates, attach finite-section diagnostics, and
+return stable rational candidates when the selected denominator supports a
+reflection-coefficient representation.</p>
+</li>
+<li><p><strong>Lattice-stable packaging</strong></p>
+<p>Reduced denominators are converted to reflection coefficients when possible,
+allowing the existing lattice/lattice-ladder machinery to handle filtering and
+benchmarking.</p>
+</li>
+</ol>
+</section>
+<section id="tutorial-outputs">
+<h2>Tutorial outputs<a class="headerlink" href="#tutorial-outputs" title="Link to this heading">¶</a></h2>
+<p>The finite-section model-reduction tutorials generate or report these diagnostics:</p>
+<ul class="simple">
+<li><p>impulse response of the full and reduced filters,</p></li>
+<li><p>frequency-response magnitude and phase,</p></li>
+<li><p>Hankel singular values,</p></li>
+<li><p>approximation error versus reduced order,</p></li>
+<li><p>pole-zero plots showing stability,</p></li>
+<li><p>runtime versus order using the existing C++ lattice backend.</p></li>
+</ul>
+<p>The key educational goal is to show that model reduction is not merely
+coefficient deletion.  It is rational approximation of an input-output operator,
+and the Hankel/Nehari/AAK language explains what is being optimized.</p>
+</section>
+<section id="finite-candidate-selection">
+<h2>Finite candidate selection<a class="headerlink" href="#finite-candidate-selection" title="Link to this heading">¶</a></h2>
+<p>The package now exposes the reusable Python workflow behind the tutorial:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+
+<span class="n">criteria</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">FiniteNehariCandidateCriteria</span><span class="p">(</span>
+    <span class="n">max_tail_error</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">max_rational_error</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+    <span class="n">max_pole_radius</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">finite_nehari_rational_candidates</span><span class="p">(</span>
+    <span class="n">tail</span><span class="p">,</span>
+    <span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+    <span class="n">rows</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span>
+    <span class="n">cols</span><span class="o">=</span><span class="mi">48</span><span class="p">,</span>
+    <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">selected</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">select_finite_nehari_candidate</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The tutorial <code class="docutils literal notranslate"><span class="pre">examples/aak_siso_candidate_selection.py</span></code> uses this API to
+combine the finite Nehari helper, Schmidt-pair diagnostics, and rational bridge
+into a tolerance-based workflow.  It selects the first candidate rank whose
+Hankelized tail error, rational realization error, and pole radius meet
+prescribed thresholds.  This is a solver-style finite-dimensional baseline, not
+a full infinite-dimensional AAK/Nehari algorithm.</p>
+<p>The complementary <code class="docutils literal notranslate"><span class="pre">finite_aak_siso_certificate</span></code> helper goes one step closer to
+AAK language by checking the finite Schmidt-pair identities for the first
+neglected singular value and attaching the candidate row for the same rank.</p>
+</section>
+<section id="high-level-finite-section-reduction-helper">
+<h2>High-level finite-section reduction helper<a class="headerlink" href="#high-level-finite-section-reduction-helper" title="Link to this heading">¶</a></h2>
+<p>The high-level <code class="docutils literal notranslate"><span class="pre">finite_aak_reduce_tail</span></code> helper combines these pieces: it
+evaluates candidate ranks, selects a stable rational approximation under
+user-chosen tolerances, and attaches a finite Schmidt-pair certificate for the
+selected rank.  The <code class="docutils literal notranslate"><span class="pre">finite_aak_noisy_tail_demo.py</span></code> tutorial exercises this
+workflow on a non-exact tail so users can see how the finite-section method
+behaves away from perfect rational data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">finite_aak_reduce_iir</span></code> helper closes the loop for DSP users.  It computes
+a finite impulse response from a stable lattice/IIR model, applies the same
+finite-section rank-selection workflow, and returns a reduced numerator,
+denominator, and reflection coefficients when the selected denominator is
+stable.  The <code class="docutils literal notranslate"><span class="pre">finite_aak_iir_reduction_demo.py</span></code> tutorial compares impulse
+response, magnitude response, pole radius, and filtering speed for the selected
+reduced model.</p>
+<p>The benchmark <code class="docutils literal notranslate"><span class="pre">benchmarks/finite_aak_iir_reduction_speedup.py</span></code> compares this
+finite-section AAK/Nehari candidate workflow against the finite-Hankel/Ho–Kalman
+baseline on the same stable SISO IIR filters.  It reports reduction cost,
+filtering speedup, end-to-end speedup including reduction, SNR, magnitude error,
+stability, and break-even samples per channel.  This benchmark keeps the algorithmic scope clear: the package exposes finite-section baselines and diagnostics, not a full infinite-dimensional AAK/Nehari solver.</p>
+</section>
+<section id="mimo-stress-examples-and-tangential-schur-diagnostics">
+<h2>MIMO stress examples and tangential-Schur diagnostics<a class="headerlink" href="#mimo-stress-examples-and-tangential-schur-diagnostics" title="Link to this heading">¶</a></h2>
+<p>The tutorial <a class="reference internal" href="../examples/generated/mimo_model_reduction_stress_cases.html"><span class="doc">MIMO model-reduction stress cases</span></a> adds three larger
+finite-data checks around the MIMO reducer:</p>
+<ul class="simple">
+<li><p>a 3-by-3 slowly decaying matrix tail with entries <span class="math notranslate nohighlight">\((j+1)^{-\alpha}\)</span> for
+exponents between <code class="docutils literal notranslate"><span class="pre">1.1</span></code> and <code class="docutils literal notranslate"><span class="pre">1.9</span></code>, reduced up to order <code class="docutils literal notranslate"><span class="pre">70</span></code>;</p></li>
+<li><p>a 10-by-10 rational response generated from 65 scalar basis poles and 1000
+Markov coefficients, also reduced up to order <code class="docutils literal notranslate"><span class="pre">70</span></code>;</p></li>
+<li><p>a 2-by-2 high-degree rational response with 500 modal terms and a deliberately
+large modal dynamic range, including a 400-state finite-Hankel tail diagnostic.</p></li>
+</ul>
+<p>The numerical comparison remains finite-dimensional.  For each reduced order
+<code class="docutils literal notranslate"><span class="pre">r</span></code> the example compares the first <code class="docutils literal notranslate"><span class="pre">N</span></code> Markov matrices by</p>
+<div class="math notranslate nohighlight">
+\[\frac{\left(\sum_{k=0}^{N-1}\lVert M_k-\widehat M_k^{(r)}\rVert_F^2\right)^{1/2}}
+     {\left(\sum_{k=0}^{N-1}\lVert M_k\rVert_F^2\right)^{1/2}}.\]</div>
+<p>It also compares against a naive truncated-FIR baseline and plots the
+block-Hankel singular values.  A second error curve reports the finite-Hankel
+spectral-norm tail</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{r+1}(\mathcal H_0)/\sigma_1(\mathcal H_0),\]</div>
+<p>which is closer to a Hankel-norm diagnostic than the coefficientwise Markov
+error.  The largest ill-conditioned orders are used for this tail diagnostic;
+state-space Markov expansion is skipped when it would mostly measure an
+ill-conditioned realization rather than the reduction target.</p>
+<p>The tutorial also records wall-clock timing and backend labels.  Moderate
+orders exercise the compiled C++ reducer/state-space expansion.  The 400-state
+stress path uses a shared NumPy/LAPACK SVD so that the public example remains
+fast; it marks the natural future C++ target as a LAPACK/BDCSVD-style dense-SVD
+backend rather than the current portable Jacobi path.</p>
+<p>The tangential-Schur layer is used here as a finite sampled certificate rather
+than as a reduction method: sampled right tangential data <code class="docutils literal notranslate"><span class="pre">F(z_i)u_i/gamma</span></code>
+are scaled until the Pick matrix is positive semidefinite.  The resulting scale
+and the tangential sample residual of each reduced model help connect the MIMO
+reduction baseline to the Schur/Pick interpolation language without claiming a
+full matrix AAK/Nehari or tangential-Schur reduction solver.</p>
+</section>
+<section id="mimo-to-matrix-lattice-bridge-diagnostics">
+<h2>MIMO to matrix-lattice bridge diagnostics<a class="headerlink" href="#mimo-to-matrix-lattice-bridge-diagnostics" title="Link to this heading">¶</a></h2>
+<p>The MIMO block-Hankel reducer returns a stable state-space model.  A matrix
+lattice all-pass, however, represents a unitary/scattering response.  These are
+not the same object in general: a reduced MIMO model can have frequency-dependent
+gain, while an all-pass lattice has singular values equal to one at every
+frequency.</p>
+<p>The tutorial <code class="docutils literal notranslate"><span class="pre">examples/mimo_hankel_to_matrix_lattice_bridge.py</span></code> therefore uses
+the reduced model only as a source of matrix-lattice initialization data.  It
+builds contractive reflection matrices from early reduced Markov matrices and
+compares the resulting matrix-lattice scaffold with the polar factor of the
+reduced frequency response:</p>
+<div class="math notranslate nohighlight">
+\[H(e^{j\omega}) = U(e^{j\omega})\Sigma(e^{j\omega})V(e^{j\omega})^H,
+\qquad U_p(e^{j\omega}) = U(e^{j\omega})V(e^{j\omega})^H.\]</div>
+<p>The reported polar-factor error measures how far the scaffold is from the polar-factor target.  The package exposes a tested MIMO reduction baseline and a matrix-lattice bridge diagnostic; exact matrix-lattice realization and matrix AAK/Nehari solvers are outside the current public scope.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/model_reduction_hankel_aak.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Interpolation, Schur stability, and why lattice coordinates help &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tangential Schur, Pick matrices, and J-inner factors" href="tangential_schur.html" />
+    <link rel="prev" title="Hardy, Hankel, reachability, and observability" href="hardy_hankel_state_space.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="package_positioning.html">Package positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing_algorithms.html">Choosing an algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="causality_and_data_use.html">Causality, data use, and signal roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering_relationships.html">Filtering relationships and signal-processing vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardy_hankel_state_space.html">Hardy, Hankel, reachability, and observability</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Interpolation, Schur stability, and why lattice coordinates help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur, Pick matrices, and J-inner factors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Theory guide</a><ul>
+      <li>Previous: <a href="hardy_hankel_state_space.html" title="previous chapter">Hardy, Hankel, reachability, and observability</a></li>
+      <li>Next: <a href="tangential_schur.html" title="next chapter">Tangential Schur, Pick matrices, and J-inner factors</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="interpolation-schur-stability-and-why-lattice-coordinates-help">
+<h1>Interpolation, Schur stability, and why lattice coordinates help<a class="headerlink" href="#interpolation-schur-stability-and-why-lattice-coordinates-help" title="Link to this heading">¶</a></h1>
+<p>This page explains the motivation behind several design choices in
+<code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code>.  The short version is:</p>
+<blockquote>
+<div><p>Stable IIR design and reduction are often hard not because the formulas are
+unknown, but because the direct coefficient coordinates are numerically poor.
+Lattice, Schur, reflection, and Hankel coordinates expose the contractive and
+finite-rank structure more directly.</p>
+</div></blockquote>
+<p>The discussion is intentionally finite-dimensional and numerical.  It gives the
+mathematical map behind the tutorials; it is not a claim that the package solves
+all Nevanlinna–Pick, AAK, or matrix-valued interpolation problems.</p>
+<section id="why-interpolation-problems-become-numerically-hard">
+<h2>Why interpolation problems become numerically hard<a class="headerlink" href="#why-interpolation-problems-become-numerically-hard" title="Link to this heading">¶</a></h2>
+<p>A classical scalar Nevanlinna–Pick problem asks for an analytic bounded function
+<code class="docutils literal notranslate"><span class="pre">f</span></code> on the unit disk that matches prescribed values,</p>
+<div class="math notranslate nohighlight">
+\[f(z_i) = w_i, \qquad |f(z)| \le 1 \quad (|z| &lt; 1).\]</div>
+<p>In the Schur-class normalization, feasibility is characterized by the Pick
+matrix</p>
+<div class="math notranslate nohighlight">
+\[P_{ij} = \frac{1 - w_i \overline{w_j}}{1 - z_i \overline{z_j}}.\]</div>
+<p>The exact mathematical condition is elegant: a solution exists when <code class="docutils literal notranslate"><span class="pre">P</span></code> is
+positive semidefinite.  Numerically, however, this matrix can be very difficult:</p>
+<ul class="simple">
+<li><p>interpolation nodes close to each other produce nearly dependent kernel
+columns;</p></li>
+<li><p>nodes close to the unit circle amplify denominator sensitivity;</p></li>
+<li><p>values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> close to the unit circle make the problem nearly extremal;</p></li>
+<li><p>high-order data can produce very large condition numbers even when the
+mathematical problem is feasible;</p></li>
+<li><p>tiny perturbations can change a nearly singular feasibility certificate into
+an apparently indefinite one.</p></li>
+</ul>
+<p>This is the first reason direct coefficient methods are fragile.  Polynomial,
+state-space, or denominator-coefficient solves can hide the contractive
+structure that the problem is really about.  A numerically small coefficient
+perturbation can correspond to a large movement of poles, zeros, or interpolation
+residuals.</p>
+</section>
+<section id="why-iir-and-lattice-coordinates-are-natural">
+<h2>Why IIR and lattice coordinates are natural<a class="headerlink" href="#why-iir-and-lattice-coordinates-are-natural" title="Link to this heading">¶</a></h2>
+<p>IIR filters are a natural representation for rational stable systems: a modest
+number of poles can represent long memory.  The difficulty is that the denominator
+controls stability.  In direct form,</p>
+<div class="math notranslate nohighlight">
+\[H(z) = \frac{B(z)}{A(z)},
+\qquad
+A(z) = 1 + a_1 z^{-1} + \cdots + a_p z^{-p},\]</div>
+<p>stability requires all roots of <code class="docutils literal notranslate"><span class="pre">A</span></code> to lie strictly inside the unit disk.  The
+stable set in the direct coefficient vector <code class="docutils literal notranslate"><span class="pre">a</span></code> is not a simple box.  Adaptive
+updates, least-squares fits, or model-reduction post-processing can easily cross
+the stability boundary.</p>
+<p>Reflection/PARCOR coefficients give a different scalar coordinate system.  In
+Schur or Levinson recursion, a stable denominator is built stage by stage from
+coefficients</p>
+<div class="math notranslate nohighlight">
+\[k_1, k_2, \ldots, k_p,
+\qquad |k_m| &lt; 1.\]</div>
+<p>For scalar all-pole denominators, this boundedness condition is the key practical
+benefit: the hard root-location condition becomes a per-stage contractivity
+condition.  Implementations can enforce a margin, for example</p>
+<div class="math notranslate nohighlight">
+\[|k_m| \le 1 - \varepsilon,\]</div>
+<p>by clipping or by optimizing an unconstrained parameter through <code class="docutils literal notranslate"><span class="pre">tanh</span></code>.  The
+result is not a guarantee that every adaptive objective is solved well, but it
+keeps the denominator inside a stable parameterization while the objective is
+being optimized.</p>
+</section>
+<section id="inner-and-outer-factors">
+<h2>Inner and outer factors<a class="headerlink" href="#inner-and-outer-factors" title="Link to this heading">¶</a></h2>
+<p>Hardy-space language also explains why lattice and all-pass examples appear next
+to Hankel and reduction examples.</p>
+<p>A scalar Hardy-space transfer function can often be viewed through an
+inner–outer factorization,</p>
+<div class="math notranslate nohighlight">
+\[G(z) = G_{\mathrm{inner}}(z)\,G_{\mathrm{outer}}(z).\]</div>
+<p>Informally:</p>
+<ul class="simple">
+<li><p>the <strong>inner</strong> factor is energy-preserving on the unit circle.  In SISO rational
+examples this is closely related to all-pass/Blaschke behavior;</p></li>
+<li><p>the <strong>outer</strong> factor carries the minimum-phase amplitude information and is
+tied to spectral factorization and prediction-error filters;</p></li>
+<li><p>Schur parameters and lattice stages are a constructive way to expose
+contractive/all-pass structure one stage at a time.</p></li>
+</ul>
+<p>For MIMO systems, inner/outer factorization becomes matrix-valued.  The same
+words still identify the conceptual roles, but the numerical problem is much
+harder: factors may be rectangular, singular directions interact, and scalar
+root tests are replaced by matrix contractivity and state-space conditions.  This
+is why the package treats MIMO lattice/all-pass material as specialized
+scaffolding and diagnostics rather than as a complete matrix-valued interpolation
+solver.</p>
+<section id="advanced-context-tangential-schur-and-potapov-blaschke-products">
+<h3>Advanced context: tangential Schur and Potapov–Blaschke products<a class="headerlink" href="#advanced-context-tangential-schur-and-potapov-blaschke-products" title="Link to this heading">¶</a></h3>
+<p>Matrix-valued lattice filters are related to tangential Schur recursions and
+Potapov–Blaschke products.  A scalar Blaschke factor is the simplest unit-disk
+inner function; a Potapov–Blaschke factor is its matrix/signature analogue and
+is <span class="math notranslate nohighlight">\(J\)</span>-inner on the unit circle.  These factors are the building blocks
+used in linear-fractional Schur transformations and in lossless/all-pass system
+parametrizations.</p>
+<p>The public API exposes a finite, definite baseline: right tangential Pick
+matrices, RKHS/Pick positivity checks, interpolation residual checks,
+constant-solution sanity checks, and elementary J-inner Potapov factors.  It
+still does not claim full generalized indefinite matrix Schur synthesis or the
+complete recursive Hanzon–Olivi–Peeters/Marmorat manifold parametrization.
+See <a class="reference internal" href="tangential_schur.html"><span class="doc">Tangential Schur, Pick matrices, and J-inner factors</span></a> and
+<a class="reference internal" href="../examples/generated/tangential_schur_pick_jinner.html"><span class="doc">Tangential Schur Pick and J-inner diagnostics</span></a>.</p>
+</section>
+</section>
+<section id="kronecker-theorem-and-finite-hankel-rank">
+<h2>Kronecker theorem and finite Hankel rank<a class="headerlink" href="#kronecker-theorem-and-finite-hankel-rank" title="Link to this heading">¶</a></h2>
+<p>The Hankel point of view gives a second motivation for the model-reduction tools.
+For a sequence of Markov parameters <code class="docutils literal notranslate"><span class="pre">g_0,</span> <span class="pre">g_1,</span> <span class="pre">...</span></code>, the Hankel matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H =
+\begin{bmatrix}
+g_1 &amp; g_2 &amp; g_3 &amp; \cdots \\
+g_2 &amp; g_3 &amp; g_4 &amp; \cdots \\
+g_3 &amp; g_4 &amp; g_5 &amp; \cdots \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots
+\end{bmatrix}\end{split}\]</div>
+<p>summarizes how past inputs influence future outputs.  A classical Kronecker-type
+statement says, in practical DSP terms:</p>
+<blockquote>
+<div><p>A Hankel operator has finite rank exactly when the corresponding sequence is
+generated by a rational transfer function; the rank corresponds to the
+realization order or McMillan degree under the usual minimality assumptions.</p>
+</div></blockquote>
+<p>This is the reason singular values of finite Hankel blocks are useful.  Exact
+finite rank suggests an exact low-order rational model.  Fast decay suggests
+that a low-order model may be a good numerical approximation.  In SISO, this can
+lead back to an IIR denominator and reflection coordinates.  In MIMO, the same
+idea appears as block-Hankel/ERA-style state-space reduction.</p>
+</section>
+<section id="how-this-motivates-the-package-workflow">
+<h2>How this motivates the package workflow<a class="headerlink" href="#how-this-motivates-the-package-workflow" title="Link to this heading">¶</a></h2>
+<p>The package documentation uses the following chain:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>interpolation and bounded analytic functions
+   -&gt; Schur contractivity and reflection coefficients
+   -&gt; stable scalar IIR/lattice coordinates
+   -&gt; Hankel finite-rank and model-reduction diagnostics
+   -&gt; MIMO block-Hankel/state-space examples
+   -&gt; matrix-lattice/all-pass scaffolds
+</pre></div>
+</div>
+<p>The package is most useful when a user has data that can already be represented
+as arrays: impulse responses, Markov parameters, time series, or synthetic room
+responses.  The numerical routines then expose stability, order, and reduction
+information in coordinates that are less fragile than direct polynomial updates.</p>
+</section>
+<section id="scope-boundary">
+<h2>Scope boundary<a class="headerlink" href="#scope-boundary" title="Link to this heading">¶</a></h2>
+<p>The page motivates the implementation but does not expand the public claims.  In
+this release:</p>
+<ul class="simple">
+<li><p>scalar reflection coefficients are used as a practical stability
+parameterization for SISO IIR examples;</p></li>
+<li><p>finite Hankel and Ho–Kalman-style routines are finite numerical diagnostics
+and reducers;</p></li>
+<li><p>finite Nehari/AAK helpers expose finite-section candidate checks and
+certificates;</p></li>
+<li><p>MIMO routines operate on finite Markov tensors and reduced state-space models;</p></li>
+<li><p>definite right-tangential Pick/J-inner utilities are included as finite
+diagnostics; generalized indefinite matrix Schur synthesis, exact
+infinite-dimensional Nehari optimization, and complete MIMO inner–outer
+synthesis are outside the package scope.</p></li>
+</ul>
+</section>
+<section id="related-tutorials">
+<h2>Related tutorials<a class="headerlink" href="#related-tutorials" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../examples/generated/stability_vs_direct_iir.html"><span class="doc">Why direct-form adaptive IIR updates can become unstable</span></a></p></li>
+<li><p><a class="reference internal" href="../examples/generated/reflection_coefficients_stability_demo.html"><span class="doc">Reflection coefficients as a stability coordinate system</span></a></p></li>
+<li><p><a class="reference internal" href="../examples/generated/reachability_observability_hankel_demo.html"><span class="doc">Reachability, observability, and Hankel singular values</span></a></p></li>
+<li><p><a class="reference internal" href="../examples/generated/mimo_coupled_model_reduction.html"><span class="doc">Coupled MIMO finite-Hankel model reduction</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/theory/interpolation_schur_motivation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

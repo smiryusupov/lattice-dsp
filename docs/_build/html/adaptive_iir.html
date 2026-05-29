@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Adaptive stable IIR workflows &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="adaptive-stable-iir-workflows">
+<h1>Adaptive stable IIR workflows<a class="headerlink" href="#adaptive-stable-iir-workflows" title="Link to this heading">¶</a></h1>
+<p>Adaptive IIR filters are attractive because they can model resonant or recursive systems with fewer parameters than long FIR filters.  The difficulty is stability: direct updates to denominator coefficients can move poles outside the unit circle.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> avoids this failure mode by using reflection/PARCOR coefficients.  For an all-pole denominator produced by the Schur/step-up recursion, the sufficient stability condition is simple:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>|k_i| &lt; 1 for every reflection coefficient k_i
+</pre></div>
+</div>
+<p>The adaptive API keeps unconstrained raw variables internally and maps them through a bounded <code class="docutils literal notranslate"><span class="pre">tanh</span></code> transform:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>k_i = (1 - margin) tanh(raw_i)
+</pre></div>
+</div>
+<p>This does not make every adaptive experiment successful, but it prevents a common and severe failure: denominator instability caused by unconstrained direct coefficient updates.</p>
+<section id="key-classes">
+<h2>Key classes<a class="headerlink" href="#key-classes" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeIIR</span></code>: stable reflection-parameterized IIR filter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderIIR</span></code>: synthesis lattice-ladder realization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderNLMS</span></code>: fixed-denominator adaptive numerator/ladder NLMS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveLatticeLadderNLMS</span></code>: experimental adaptive numerator plus bounded reflection updates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveNotch</span></code>: small second-order adaptive notch filter.</p></li>
+</ul>
+</section>
+<section id="recommended-examples">
+<h2>Recommended examples<a class="headerlink" href="#recommended-examples" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/stability_vs_direct_iir.py
+python<span class="w"> </span>examples/adaptive_iir_system_identification.py
+python<span class="w"> </span>examples/tracking_drifting_iir_system.py
+python<span class="w"> </span>examples/adaptive_prediction_ar.py
+python<span class="w"> </span>examples/ar_spectral_estimation.py
+</pre></div>
+</div>
+</section>
+<section id="practical-tuning-guidance">
+<h2>Practical tuning guidance<a class="headerlink" href="#practical-tuning-guidance" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Start with numerator-only adaptation (<code class="docutils literal notranslate"><span class="pre">LatticeLadderNLMS</span></code>) when possible.</p></li>
+<li><p>Use small <code class="docutils literal notranslate"><span class="pre">mu_reflection</span></code>; denominator updates are more sensitive than numerator updates.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">reflection_update_period</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> to reduce gradient cost once behavior is stable.</p></li>
+<li><p>Enable <code class="docutils literal notranslate"><span class="pre">scale_reflection_mu_by_period=True</span></code> when skipping reflection updates.</p></li>
+<li><p>Track final MSE and stability margin, not only one scalar score.</p></li>
+</ul>
+</section>
+<section id="what-stable-parameterization-does-not-solve">
+<h2>What stable parameterization does not solve<a class="headerlink" href="#what-stable-parameterization-does-not-solve" title="Link to this heading">¶</a></h2>
+<p>Reflection-bounded updates guarantee denominator stability, not task success.  They do not automatically solve:</p>
+<ul class="simple">
+<li><p>poor excitation;</p></li>
+<li><p>wrong model order;</p></li>
+<li><p>long sparse impulse responses better modeled by FIR/partitioned FIR;</p></li>
+<li><p>nonlinear systems;</p></li>
+<li><p>delay/reference mismatch;</p></li>
+<li><p>nonstationary targets that change faster than the adaptation can track.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/adaptive_iir.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

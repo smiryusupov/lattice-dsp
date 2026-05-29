@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Matrix lattice all-pass response &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Coupled MIMO matrix-lattice filtering" href="coupled_mimo_lattice_filter.html" />
+    <link rel="prev" title="MIMO lattice response versus block Levinson AR" href="mimo_lattice_vs_block_levinson.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="mimo_lattice_vs_block_levinson.html" title="previous chapter">MIMO lattice response versus block Levinson AR</a></li>
+      <li>Next: <a href="coupled_mimo_lattice_filter.html" title="next chapter">Coupled MIMO matrix-lattice filtering</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="matrix-lattice-all-pass-response">
+<h1>Matrix lattice all-pass response<a class="headerlink" href="#matrix-lattice-all-pass-response" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Build a matrix all-pass lattice and verify unitary response behavior.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>Matrix lattice filters generalize scalar reflection coefficients to matrix reflection
+coefficients.  They are useful for compact multichannel unitary or paraunitary transforms.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>A matrix-lattice section replaces a scalar reflection coefficient with a
+reflection matrix <span class="math notranslate nohighlight">\(K_i\)</span>.  The contractive-stage diagnostic is</p>
+<div class="math notranslate nohighlight">
+\[\lVert K_i\rVert_2 &lt; 1.\]</div>
+<p>Under the all-pass/scattering construction used here, the resulting transfer
+matrix <span class="math notranslate nohighlight">\(G(z)\)</span> should satisfy, on the unit circle,</p>
+<div class="math notranslate nohighlight">
+\[G(e^{j\omega})^H G(e^{j\omega}) = I.\]</div>
+<p>Equivalently, every singular value of <span class="math notranslate nohighlight">\(G(e^{j\omega})\)</span> should be one.
+The entry-magnitude plot shows how individual channel responses vary with
+frequency; the singular-value and residual plots check the stronger unitary
+matrix property.</p>
+</section>
+<section id="causality-and-data-use">
+<h2>Causality and data use<a class="headerlink" href="#causality-and-data-use" title="Link to this heading">¶</a></h2>
+<p>This example verifies the all-pass transfer function on a frequency grid and also uses <code class="docutils literal notranslate"><span class="pre">MatrixLatticeAllPass.to_online_filter()</span></code> to realize the same object as a sample-by-sample causal runtime.  The streaming impulse-response check uses only current input and previous section states.</p>
+</section>
+<section id="what-this-example-verifies">
+<h2>What this example verifies<a class="headerlink" href="#what-this-example-verifies" title="Link to this heading">¶</a></h2>
+<p>This verifies that the causal online all-pass runtime matches the frequency
+response represented by <code class="docutils literal notranslate"><span class="pre">MatrixLatticeAllPass</span></code>.  The impulse-response FFT
+should agree with the frequency-grid evaluator, and singular values should
+remain close to one on the unit circle.</p>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>The singular-value and unitarity-residual figures should be flat at one and near numerical precision if the generated matrix reflections are contractive.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/matrix_lattice_allpass.py
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dimension: 3
+order: 4
+max reflection singular value: 0.89981
+real scalar parameter count: 90
+max unitarity error: 3.085e-14
+streaming impulse/frequency relative error: 6.095e-11
+response shape: (256, 3, 3)
+</pre></div>
+</div>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/matrix_lattice_allpass_entry_magnitudes.png"><img alt="matrix lattice allpass entry magnitudes" src="../../_images/matrix_lattice_allpass_entry_magnitudes.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">matrix_lattice_allpass_entry_magnitudes.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../../_images/matrix_lattice_allpass_singular_values.png"><img alt="matrix lattice allpass singular values" src="../../_images/matrix_lattice_allpass_singular_values.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">matrix_lattice_allpass_singular_values.png</span></code></span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="../../_images/matrix_lattice_allpass_streaming_impulse.png"><img alt="matrix lattice allpass streaming impulse" src="../../_images/matrix_lattice_allpass_streaming_impulse.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">matrix_lattice_allpass_streaming_impulse.png</span></code></span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="../../_images/matrix_lattice_allpass_unitarity_error.png"><img alt="matrix lattice allpass unitarity error" src="../../_images/matrix_lattice_allpass_unitarity_error.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">matrix_lattice_allpass_unitarity_error.png</span></code></span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Matrix-valued lattice/all-pass response demo.&quot;&quot;&quot;</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos">  4</span>
+<span class="linenos">  5</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos">  6</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos">  7</span>
+<span class="linenos">  8</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos">  9</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatrixLatticeAllPass</span><span class="p">,</span> <span class="n">contractive_matrix_from_raw</span><span class="p">,</span> <span class="n">unitary_polar_factor</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="k">def</span><span class="w"> </span><span class="nf">_artifact_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="linenos"> 14</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LATTICE_DSP_ARTIFACT_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/example-artifacts&quot;</span><span class="p">))</span>
+<span class="linenos"> 15</span>    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 16</span>    <span class="k">return</span> <span class="n">path</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="k">def</span><span class="w"> </span><span class="nf">_save_figures</span><span class="p">(</span><span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filt</span><span class="p">:</span> <span class="n">MatrixLatticeAllPass</span><span class="p">,</span> <span class="n">impulse</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 20</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos"> 21</span>        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos"> 22</span>    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover - optional plotting dependency</span>
+<span class="linenos"> 23</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matplotlib is not installed; skipped figures&quot;</span><span class="p">)</span>
+<span class="linenos"> 24</span>        <span class="k">return</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span>    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">_artifact_dir</span><span class="p">()</span>
+<span class="linenos"> 27</span>    <span class="n">singular_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 28</span>    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">filt</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+<span class="linenos"> 29</span>    <span class="n">unitarity_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">hi</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">eye</span><span class="p">)</span> <span class="k">for</span> <span class="n">hi</span> <span class="ow">in</span> <span class="n">response</span><span class="p">])</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.2</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">))</span>
+<span class="linenos"> 32</span>    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">singular_values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+<span class="linenos"> 33</span>        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">singular_values</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;σ</span><span class="si">{</span><span class="n">idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 34</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;rad/sample&quot;</span><span class="p">)</span>
+<span class="linenos"> 35</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;singular value&quot;</span><span class="p">)</span>
+<span class="linenos"> 36</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;All singular values stay at one for an all-pass response&quot;</span><span class="p">)</span>
+<span class="linenos"> 37</span>    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos"> 38</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos"> 39</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;matrix_lattice_allpass_singular_values.png&quot;</span>
+<span class="linenos"> 40</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos"> 41</span>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="linenos"> 42</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="linenos"> 45</span>    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">unitarity_error</span><span class="p">,</span> <span class="mf">1e-18</span><span class="p">))</span>
+<span class="linenos"> 46</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;rad/sample&quot;</span><span class="p">)</span>
+<span class="linenos"> 47</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;||HᴴH - I||₂&quot;</span><span class="p">)</span>
+<span class="linenos"> 48</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Frequency-by-frequency unitarity residual&quot;</span><span class="p">)</span>
+<span class="linenos"> 49</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos"> 50</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;matrix_lattice_allpass_unitarity_error.png&quot;</span>
+<span class="linenos"> 51</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos"> 52</span>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="linenos"> 53</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="linenos"> 56</span>    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">impulse</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="mf">1e-18</span><span class="p">))</span>
+<span class="linenos"> 57</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">)</span>
+<span class="linenos"> 58</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;impulse-response block Frobenius norm&quot;</span><span class="p">)</span>
+<span class="linenos"> 59</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Causal online realization has a decaying all-pass tail&quot;</span><span class="p">)</span>
+<span class="linenos"> 60</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos"> 61</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;matrix_lattice_allpass_streaming_impulse.png&quot;</span>
+<span class="linenos"> 62</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos"> 63</span>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="linenos"> 64</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 65</span>
+<span class="linenos"> 66</span>    <span class="n">freq_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+<span class="linenos"> 67</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq_indices</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">9.2</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">))</span>
+<span class="linenos"> 68</span>    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">freq_indices</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="linenos"> 69</span>        <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+<span class="linenos"> 70</span>        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|H(e^</span><span class="se">{{</span><span class="s2">jω</span><span class="se">}}</span><span class="s2">)| at ω=</span><span class="si">{</span><span class="n">omega</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 71</span>        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
+<span class="linenos"> 72</span>        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">)</span>
+<span class="linenos"> 73</span>        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="linenos"> 74</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos"> 75</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;matrix_lattice_allpass_entry_magnitudes.png&quot;</span>
+<span class="linenos"> 76</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos"> 77</span>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="linenos"> 78</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span>
+<span class="linenos"> 81</span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="linenos"> 82</span><span class="n">dim</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos"> 83</span><span class="n">order</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span><span class="n">reflections</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 86</span>    <span class="n">contractive_matrix_from_raw</span><span class="p">(</span><span class="mf">0.35</span> <span class="o">*</span> <span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">))))</span>
+<span class="linenos"> 87</span>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+<span class="linenos"> 88</span><span class="p">]</span>
+<span class="linenos"> 89</span><span class="n">residue</span> <span class="o">=</span> <span class="n">unitary_polar_factor</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">)))</span>
+<span class="linenos"> 90</span>
+<span class="linenos"> 91</span><span class="n">filt</span> <span class="o">=</span> <span class="n">MatrixLatticeAllPass</span><span class="p">(</span><span class="n">reflections</span><span class="p">,</span> <span class="n">residue</span><span class="o">=</span><span class="n">residue</span><span class="p">)</span>
+<span class="linenos"> 92</span><span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+<span class="linenos"> 93</span><span class="n">response</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">frequency_response</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span><span class="c1"># Streaming realization check: process one impulse per input channel and compare</span>
+<span class="linenos"> 96</span><span class="c1"># the truncated impulse-response frequency response with the direct evaluator.</span>
+<span class="linenos"> 97</span><span class="n">n_impulse</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="linenos"> 98</span><span class="n">impulse_response</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_impulse</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+<span class="linenos"> 99</span><span class="k">for</span> <span class="n">input_channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+<span class="linenos">100</span>    <span class="n">runtime</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">to_online_filter</span><span class="p">()</span>
+<span class="linenos">101</span>    <span class="n">impulse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_impulse</span><span class="p">,</span> <span class="n">dim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+<span class="linenos">102</span>    <span class="n">impulse</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">input_channel</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="linenos">103</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">impulse</span><span class="p">)</span>
+<span class="linenos">104</span>    <span class="n">impulse_response</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">input_channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+<span class="linenos">105</span><span class="n">streaming_probe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="linenos">106</span><span class="n">powers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">streaming_probe</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_impulse</span><span class="p">)))</span>
+<span class="linenos">107</span><span class="n">streaming_response</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;wn,nij-&gt;wij&quot;</span><span class="p">,</span> <span class="n">powers</span><span class="p">,</span> <span class="n">impulse_response</span><span class="p">)</span>
+<span class="linenos">108</span><span class="n">streaming_relative_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">streaming_response</span> <span class="o">-</span> <span class="n">filt</span><span class="o">.</span><span class="n">frequency_response</span><span class="p">(</span><span class="n">streaming_probe</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
+<span class="linenos">109</span>    <span class="n">filt</span><span class="o">.</span><span class="n">frequency_response</span><span class="p">(</span><span class="n">streaming_probe</span><span class="p">)</span>
+<span class="linenos">110</span><span class="p">)</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dimension:&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+<span class="linenos">113</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;order:&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+<span class="linenos">114</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max reflection singular value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">filt</span><span class="o">.</span><span class="n">max_reflection_singular_value</span><span class="p">(),</span> <span class="mi">6</span><span class="p">))</span>
+<span class="linenos">115</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;real scalar parameter count:&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="o">.</span><span class="n">parameter_count</span><span class="p">())</span>
+<span class="linenos">116</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max unitarity error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filt</span><span class="o">.</span><span class="n">unitarity_error</span><span class="p">(</span><span class="n">omega</span><span class="p">)</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">117</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;streaming impulse/frequency relative error:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">streaming_relative_error</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">118</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;response shape:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="linenos">119</span>
+<span class="linenos">120</span><span class="n">_save_figures</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">impulse_response</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/matrix_lattice_allpass.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

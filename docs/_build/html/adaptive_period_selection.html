@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Choosing reflection_update_period &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="choosing-reflection-update-period">
+<h1>Choosing <code class="docutils literal notranslate"><span class="pre">reflection_update_period</span></code><a class="headerlink" href="#choosing-reflection-update-period" title="Link to this heading">¶</a></h1>
+<p>Adaptive lattice-ladder filtering has two different update costs:</p>
+<ol class="arabic simple">
+<li><p><strong>tap / ladder updates</strong> are cheap and normally run every sample;</p></li>
+<li><p><strong>reflection / denominator updates</strong> are more expensive and can be noisier.</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">reflection_update_period</span></code> decimates the reflection update while still updating
+the taps every sample.  With <code class="docutils literal notranslate"><span class="pre">scale_reflection_mu_by_period=True</span></code>, period <code class="docutils literal notranslate"><span class="pre">K</span></code>
+applies <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">*</span> <span class="pre">mu_reflection</span></code> when the denominator is updated, preserving a similar
+effective learning rate.</p>
+<section id="practical-interpretation">
+<h2>Practical interpretation<a class="headerlink" href="#practical-interpretation" title="Link to this heading">¶</a></h2>
+<p>A useful workflow is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/adaptive_period_sweep.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--periods<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--samples<span class="w"> </span><span class="m">20000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repeats<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>adaptive-period-sweep-scaled.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>adaptive-period-sweep-scaled.csv
+
+python<span class="w"> </span>benchmarks/adaptive_period_report.py<span class="w"> </span>adaptive-period-sweep-scaled.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--markdown-output<span class="w"> </span>adaptive-period-report.md<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>adaptive-period-pareto.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--max-tail-mse-ratio<span class="w"> </span><span class="m">1</span>.5
+</pre></div>
+</div>
+<p>The report chooses the fastest period whose tail MSE remains within the chosen
+quality threshold.  A threshold of <code class="docutils literal notranslate"><span class="pre">1.5</span></code> means “allow at most 50% worse tail MSE
+than period 1”.</p>
+</section>
+<section id="early-results">
+<h2>Early results<a class="headerlink" href="#early-results" title="Link to this heading">¶</a></h2>
+<p>On a representative Linux laptop with a 4th-order reflection model and
+20,000 samples, scaled periodic updates produced the following pattern:</p>
+<ul class="simple">
+<li><p>period <code class="docutils literal notranslate"><span class="pre">1</span></code>: best reference quality, no speedup;</p></li>
+<li><p>period <code class="docutils literal notranslate"><span class="pre">8</span></code>: roughly <code class="docutils literal notranslate"><span class="pre">9.6x</span></code> faster with tail MSE very close to period <code class="docutils literal notranslate"><span class="pre">1</span></code>;</p></li>
+<li><p>period <code class="docutils literal notranslate"><span class="pre">16</span></code> and <code class="docutils literal notranslate"><span class="pre">32</span></code>: even faster, still close in tail MSE for this synthetic
+problem;</p></li>
+<li><p>fixed, unscaled periodic updates under-trained the denominator and produced
+much worse tail MSE.</p></li>
+</ul>
+<p>This suggests <code class="docutils literal notranslate"><span class="pre">reflection_update_period=8</span></code> is a good conservative default for
+examples, while <code class="docutils literal notranslate"><span class="pre">16</span></code> or <code class="docutils literal notranslate"><span class="pre">32</span></code> may be attractive when the system is slowly varying.
+Run the sweep on the intended data distribution and report the selected default with the resulting tail-MSE and coefficient-error evidence.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<p>The period-scaling strategy is not a universal optimizer.  It keeps the average
+step size comparable, but it still samples denominator gradients less often.  In
+nonstationary echo-cancellation or equalization problems, long periods can miss
+fast changes.  For those cases, start with period <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span></code>, then increase the
+period only after convergence is stable.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/adaptive_period_selection.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,2 @@
+channels,order,samples,tail_samples,max_reflection_singular_value,real_scalar_parameter_count,unitarity_error,streaming_vs_truncated_impulse_error,energy_relative_error_with_tail,finite_adjoint_reconstruction_error,input_mean_offdiag_cov,output_mean_offdiag_cov
+3,5,2048,768,0.7944015121553526,108,2.228961313266315e-14,3.7964551365758075e-09,3.1453056358653225e-16,2.9064077507197603e-09,0.5075258711148377,0.16156217560355804

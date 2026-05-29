@@ -1,0 +1,54 @@
+{
+  "benchmarks": {
+    "lattice_direct_cpp_batch_default_threads": {
+      "max_s": 0.017114090966060758,
+      "median_s": 0.015617769910022616,
+      "min_s": 0.009865074884146452
+    },
+    "lattice_direct_cpp_batch_one_thread": {
+      "max_s": 0.007474885089322925,
+      "median_s": 0.007370087085291743,
+      "min_s": 0.007323177065700293
+    },
+    "lattice_direct_cpp_one_stream": {
+      "max_s": 0.0006179739721119404,
+      "median_s": 0.00047853891737759113,
+      "min_s": 0.00047674495726823807
+    },
+    "lattice_ladder_cpp_batch_default_threads": {
+      "max_s": 0.009285753825679421,
+      "median_s": 0.008958752965554595,
+      "min_s": 0.008918917970731854
+    },
+    "lattice_ladder_cpp_batch_one_thread": {
+      "max_s": 0.00872058211825788,
+      "median_s": 0.00869655585847795,
+      "min_s": 0.008691154886037111
+    },
+    "lattice_ladder_cpp_one_stream": {
+      "max_s": 0.0005872859619557858,
+      "median_s": 0.0005851718597114086,
+      "min_s": 0.0005849909503012896
+    },
+    "scipy_lfilter_batch_axis1": {
+      "max_s": 0.0027657621540129185,
+      "median_s": 0.002763638971373439,
+      "min_s": 0.0027584079653024673
+    },
+    "scipy_lfilter_one_stream": {
+      "max_s": 0.00018297717906534672,
+      "median_s": 9.188498370349407e-05,
+      "min_s": 8.947006426751614e-05
+    }
+  },
+  "metadata": {
+    "channels": 32,
+    "has_openmp": true,
+    "platform": "Linux-6.17.0-1020-oem-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "reflection_update_period": 1,
+    "repeats": 3,
+    "samples": 20000,
+    "scale_reflection_mu_by_period": false
+  }
+}

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Streaming and block helpers &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="streaming-and-block-helpers">
+<h1>Streaming and block helpers<a class="headerlink" href="#streaming-and-block-helpers" title="Link to this heading">¶</a></h1>
+<p>The core filter classes are stateful and can already process block-by-block.
+<code class="docutils literal notranslate"><span class="pre">lattice_dsp.streaming</span></code> adds small Python wrappers that make streaming demos
+clear without moving the inner loops out of C++.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockProcessor</span><span class="p">,</span> <span class="n">AdaptiveBlockProcessor</span>
+
+<span class="n">fixed</span> <span class="o">=</span> <span class="n">BlockProcessor</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">)</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="n">fixed</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">fixed</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+<span class="n">adaptive</span> <span class="o">=</span> <span class="n">AdaptiveBlockProcessor</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">initial_taps</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;rls&quot;</span><span class="p">)</span>
+<span class="n">result0</span> <span class="o">=</span> <span class="n">adaptive</span><span class="o">.</span><span class="n">process_adapt</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">d0</span><span class="p">)</span>
+<span class="n">result1</span> <span class="o">=</span> <span class="n">adaptive</span><span class="o">.</span><span class="n">process_adapt</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Available adaptive kinds:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nlms</span></code>: fixed-denominator NLMS numerator adaptation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rls</span></code>: fixed-denominator RLS numerator adaptation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_iir</span></code>: experimental stable denominator + numerator adaptation.</p></li>
+</ul>
+<p>For offline multi-channel work, prefer C++ batch functions such as
+<code class="docutils literal notranslate"><span class="pre">process_batch</span></code>, <code class="docutils literal notranslate"><span class="pre">adaptive_process_batch</span></code>, and <code class="docutils literal notranslate"><span class="pre">rls_process_batch</span></code>.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/streaming_blocks.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

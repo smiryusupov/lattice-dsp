@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lattice_dsp.tuning &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../lattice_dsp.html">lattice_dsp</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for lattice_dsp.tuning</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;User-facing tuning helpers for adaptive lattice-IIR parameters.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">statistics</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdaptiveLatticeLadderNLMS</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_periods</span><span class="p">(</span><span class="n">periods</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">parsed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">periods</span><span class="p">:</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">period</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;periods must contain positive integers&quot;</span><span class="p">)</span>
+        <span class="n">parsed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parsed</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;periods must contain at least one value&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">parsed</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_trial_matrix</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a 1-D array or a 2-D trial-by-sample array&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_tail_count</span><span class="p">(</span><span class="n">tail</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x and desired must contain at least one sample&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">//</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">tail_i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tail</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tail_i</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tail must be positive&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">tail_i</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_median</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">statistics</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quantile</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">q</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">ordered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordered</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ordered</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ordered</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">q</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+    <span class="n">hi</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">lo</span> <span class="o">==</span> <span class="n">hi</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ordered</span><span class="p">[</span><span class="n">lo</span><span class="p">]</span>
+    <span class="n">frac</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="n">lo</span>
+    <span class="k">return</span> <span class="n">ordered</span><span class="p">[</span><span class="n">lo</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">frac</span><span class="p">)</span> <span class="o">+</span> <span class="n">ordered</span><span class="p">[</span><span class="n">hi</span><span class="p">]</span> <span class="o">*</span> <span class="n">frac</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_safe_ratio</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">baseline</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">baseline</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">baseline</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_initial_parameters</span><span class="p">(</span>
+    <span class="n">initial_reflection</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">initial_taps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">initial_reflection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">reflection</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">initial_reflection</span><span class="p">]</span>
+        <span class="n">inferred_order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="o">!=</span> <span class="n">inferred_order</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;order must match len(initial_reflection)&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">initial_taps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">inferred_order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_taps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># A small, practical default that makes the simple API usable.</span>
+                <span class="c1"># Serious experiments should pass order or initial_reflection.</span>
+                <span class="n">inferred_order</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inferred_order</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inferred_order</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;order must be non-negative&quot;</span><span class="p">)</span>
+        <span class="n">reflection</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">inferred_order</span>
+
+    <span class="k">if</span> <span class="n">initial_taps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">taps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">inferred_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">taps</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">initial_taps</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">)</span> <span class="o">!=</span> <span class="n">inferred_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;initial_taps must have length order + 1&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">,</span> <span class="n">inferred_order</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mse</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">array</span><span class="p">)))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_recommend_period</span><span class="p">(</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">max_tail_mse_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_worst_tail_mse_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">min_stability_margin</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">prefer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">eligible</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">row</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tail_mse_ratio_median&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_tail_mse_ratio</span>
+        <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tail_mse_ratio_worst&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_worst_tail_mse_ratio</span>
+        <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;stability_margin_min&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_stability_margin</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">eligible</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">prefer</span> <span class="o">==</span> <span class="s2">&quot;fastest&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">eligible</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;median_s&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tail_mse_ratio_worst&quot;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">prefer</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;quality&quot;</span><span class="p">,</span> <span class="s2">&quot;accurate&quot;</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">eligible</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;mse_tail_median&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;median_s&quot;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">prefer</span> <span class="o">==</span> <span class="s2">&quot;balanced&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">eligible</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;speedup_vs_period1_median&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tail_mse_ratio_worst&quot;</span><span class="p">],</span> <span class="mf">1e-12</span><span class="p">),</span>
+                <span class="o">-</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;median_s&quot;</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;prefer must be one of: &#39;fastest&#39;, &#39;quality&#39;, &#39;accurate&#39;, &#39;balanced&#39;&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="tune_reflection_update_period">
+<a class="viewcode-back" href="../../api/tuning.html#lattice_dsp.tune_reflection_update_period">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tune_reflection_update_period</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">desired</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="n">initial_reflection</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">initial_taps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mu_taps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">mu_reflection</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
+    <span class="n">tail</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">repeats</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_tail_mse_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">max_worst_tail_mse_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">min_stability_margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">prefer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fastest&quot;</span><span class="p">,</span>
+    <span class="n">gradient_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+    <span class="n">scale_reflection_mu_by_period</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">min_trials_for_robust</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tune ``reflection_update_period`` for adaptive lattice-ladder NLMS.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x, desired:</span>
+<span class="sd">        Either 1-D arrays with shape ``(samples,)`` or 2-D arrays with shape</span>
+<span class="sd">        ``(trials, samples)``.  With 2-D data, each row is treated as an</span>
+<span class="sd">        independent validation trial, and ``max_worst_tail_mse_ratio`` is</span>
+<span class="sd">        evaluated across rows.</span>
+<span class="sd">    periods:</span>
+<span class="sd">        Candidate denominator/reflection update periods.</span>
+<span class="sd">    initial_reflection, initial_taps, order:</span>
+<span class="sd">        Initial model parameters.  If no reflection/taps are provided, a</span>
+<span class="sd">        zero-initialized order-4 model is used so the convenience API works out</span>
+<span class="sd">        of the box.  For real experiments, pass ``order`` or explicit initial</span>
+<span class="sd">        coefficients.</span>
+<span class="sd">    max_tail_mse_ratio:</span>
+<span class="sd">        Constraint on the median tail-MSE ratio versus the first candidate</span>
+<span class="sd">        period, typically period 1.</span>
+<span class="sd">    max_worst_tail_mse_ratio:</span>
+<span class="sd">        Constraint on the worst tail-MSE ratio across trials.  Defaults to the</span>
+<span class="sd">        same value as ``max_tail_mse_ratio``.</span>
+<span class="sd">    min_trials_for_robust:</span>
+<span class="sd">        Minimum number of independent validation rows required before the</span>
+<span class="sd">        recommendation is labelled robust.  With fewer trials, the function</span>
+<span class="sd">        still returns a period, but the report includes a warning that the</span>
+<span class="sd">        recommendation is signal-specific.</span>
+<span class="sd">    prefer:</span>
+<span class="sd">        ``&quot;fastest&quot;`` chooses the fastest eligible period. ``&quot;quality&quot;`` /</span>
+<span class="sd">        ``&quot;accurate&quot;`` chooses the lowest median tail MSE. ``&quot;balanced&quot;`` uses</span>
+<span class="sd">        a simple speedup / worst-tail-ratio score.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A report dictionary with ``recommended_period``, ``recommended``,</span>
+<span class="sd">        ``results``, ``warnings``, and ``metadata`` keys.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">period_list</span> <span class="o">=</span> <span class="n">_parse_periods</span><span class="p">(</span><span class="n">periods</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repeats</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;repeats must be positive&quot;</span><span class="p">)</span>
+    <span class="n">min_trials_for_robust_i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">min_trials_for_robust</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">min_trials_for_robust_i</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;min_trials_for_robust must be positive&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_worst_tail_mse_ratio</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">max_worst_tail_mse_ratio</span> <span class="o">=</span> <span class="n">max_tail_mse_ratio</span>
+
+    <span class="n">x_trials</span> <span class="o">=</span> <span class="n">_as_trial_matrix</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">desired_trials</span> <span class="o">=</span> <span class="n">_as_trial_matrix</span><span class="p">(</span><span class="s2">&quot;desired&quot;</span><span class="p">,</span> <span class="n">desired</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x_trials</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">desired_trials</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x and desired must have the same shape&quot;</span><span class="p">)</span>
+
+    <span class="n">n_trials</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="n">x_trials</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">tail_n</span> <span class="o">=</span> <span class="n">_tail_count</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">is_robust_recommendation</span> <span class="o">=</span> <span class="n">n_trials</span> <span class="o">&gt;=</span> <span class="n">min_trials_for_robust_i</span>
+    <span class="n">recommendation_scope</span> <span class="o">=</span> <span class="s2">&quot;robust&quot;</span> <span class="k">if</span> <span class="n">is_robust_recommendation</span> <span class="k">else</span> <span class="s2">&quot;single_signal&quot;</span>
+    <span class="n">warnings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_robust_recommendation</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">&quot;Only one/few validation trial(s) were provided, so the selected &quot;</span>
+            <span class="s2">&quot;reflection_update_period is signal-specific rather than a robust &quot;</span>
+            <span class="s2">&quot;default. Pass a 2-D trial-by-sample array to validate worst-case &quot;</span>
+            <span class="s2">&quot;behavior across independent signals.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">reflection0</span><span class="p">,</span> <span class="n">taps0</span><span class="p">,</span> <span class="n">inferred_order</span> <span class="o">=</span> <span class="n">_infer_initial_parameters</span><span class="p">(</span>
+        <span class="n">initial_reflection</span><span class="p">,</span> <span class="n">initial_taps</span><span class="p">,</span> <span class="n">order</span>
+    <span class="p">)</span>
+
+    <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">baseline_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">baseline_tail_mse</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">period</span> <span class="ow">in</span> <span class="n">period_list</span><span class="p">:</span>
+        <span class="n">timings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">repeat_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">repeats</span><span class="p">)):</span>
+            <span class="n">trial_metrics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">trial_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+                <span class="n">adaptive</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+                    <span class="n">reflection0</span><span class="p">,</span>
+                    <span class="n">taps0</span><span class="p">,</span>
+                    <span class="n">mu_taps</span><span class="o">=</span><span class="n">mu_taps</span><span class="p">,</span>
+                    <span class="n">mu_reflection</span><span class="o">=</span><span class="n">mu_reflection</span><span class="p">,</span>
+                    <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span>
+                    <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">,</span>
+                    <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">gradient_mode</span><span class="o">=</span><span class="n">gradient_mode</span><span class="p">,</span>
+                    <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+                    <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">y</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">adaptive</span><span class="o">.</span><span class="n">process_adapt</span><span class="p">(</span><span class="n">x_trials</span><span class="p">[</span><span class="n">trial_idx</span><span class="p">],</span> <span class="n">desired_trials</span><span class="p">[</span><span class="n">trial_idx</span><span class="p">])</span>
+                <span class="n">y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="n">err_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="n">final_reflection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">adaptive</span><span class="o">.</span><span class="n">reflection</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="n">max_abs_reflection</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">final_reflection</span><span class="p">)))</span> <span class="k">if</span> <span class="n">final_reflection</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+                <span class="p">)</span>
+                <span class="n">trial_metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;mse_total&quot;</span><span class="p">:</span> <span class="n">_mse</span><span class="p">(</span><span class="n">err_arr</span><span class="p">),</span>
+                        <span class="s2">&quot;mse_head&quot;</span><span class="p">:</span> <span class="n">_mse</span><span class="p">(</span><span class="n">err_arr</span><span class="p">[:</span><span class="n">tail_n</span><span class="p">]),</span>
+                        <span class="s2">&quot;mse_tail&quot;</span><span class="p">:</span> <span class="n">_mse</span><span class="p">(</span><span class="n">err_arr</span><span class="p">[</span><span class="o">-</span><span class="n">tail_n</span><span class="p">:]),</span>
+                        <span class="s2">&quot;output_power&quot;</span><span class="p">:</span> <span class="n">_mse</span><span class="p">(</span><span class="n">y_arr</span><span class="p">),</span>
+                        <span class="s2">&quot;max_abs_reflection&quot;</span><span class="p">:</span> <span class="n">max_abs_reflection</span><span class="p">,</span>
+                        <span class="s2">&quot;stability_margin&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">max_abs_reflection</span><span class="p">),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+            <span class="n">timings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">repeat_idx</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">metrics</span> <span class="o">=</span> <span class="n">trial_metrics</span>
+
+        <span class="n">median_s</span> <span class="o">=</span> <span class="n">_median</span><span class="p">(</span><span class="n">timings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">baseline_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">baseline_time</span> <span class="o">=</span> <span class="n">median_s</span>
+            <span class="n">baseline_tail_mse</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;mse_tail&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">baseline_tail_mse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">tail_ratios</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_safe_ratio</span><span class="p">(</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;mse_tail&quot;</span><span class="p">],</span> <span class="n">baseline_tail_mse</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">mse_tail_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;mse_tail&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">]</span>
+        <span class="n">mse_total_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;mse_total&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">]</span>
+        <span class="n">stability_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;stability_margin&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">]</span>
+        <span class="n">max_reflection_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">metric</span><span class="p">[</span><span class="s2">&quot;max_abs_reflection&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">]</span>
+
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;reflection_update_period&quot;</span><span class="p">:</span> <span class="n">period</span><span class="p">,</span>
+                <span class="s2">&quot;n_trials&quot;</span><span class="p">:</span> <span class="n">n_trials</span><span class="p">,</span>
+                <span class="s2">&quot;min_s&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">timings</span><span class="p">)),</span>
+                <span class="s2">&quot;median_s&quot;</span><span class="p">:</span> <span class="n">median_s</span><span class="p">,</span>
+                <span class="s2">&quot;max_s&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">timings</span><span class="p">)),</span>
+                <span class="s2">&quot;speedup_vs_period1_median&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">baseline_time</span> <span class="o">/</span> <span class="n">median_s</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">median_s</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+                <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                <span class="s2">&quot;mse_tail_median&quot;</span><span class="p">:</span> <span class="n">_median</span><span class="p">(</span><span class="n">mse_tail_values</span><span class="p">),</span>
+                <span class="s2">&quot;mse_tail_worst&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">mse_tail_values</span><span class="p">)),</span>
+                <span class="s2">&quot;mse_total_median&quot;</span><span class="p">:</span> <span class="n">_median</span><span class="p">(</span><span class="n">mse_total_values</span><span class="p">),</span>
+                <span class="s2">&quot;tail_mse_ratio_median&quot;</span><span class="p">:</span> <span class="n">_median</span><span class="p">(</span><span class="n">tail_ratios</span><span class="p">),</span>
+                <span class="s2">&quot;tail_mse_ratio_p90&quot;</span><span class="p">:</span> <span class="n">_quantile</span><span class="p">(</span><span class="n">tail_ratios</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+                <span class="s2">&quot;tail_mse_ratio_worst&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">tail_ratios</span><span class="p">)),</span>
+                <span class="s2">&quot;stability_margin_median&quot;</span><span class="p">:</span> <span class="n">_median</span><span class="p">(</span><span class="n">stability_values</span><span class="p">),</span>
+                <span class="s2">&quot;stability_margin_min&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">stability_values</span><span class="p">)),</span>
+                <span class="s2">&quot;max_abs_reflection_median&quot;</span><span class="p">:</span> <span class="n">_median</span><span class="p">(</span><span class="n">max_reflection_values</span><span class="p">),</span>
+                <span class="s2">&quot;max_abs_reflection_max&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">max_reflection_values</span><span class="p">)),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">recommended</span> <span class="o">=</span> <span class="n">_recommend_period</span><span class="p">(</span>
+        <span class="n">rows</span><span class="p">,</span>
+        <span class="n">max_tail_mse_ratio</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">max_tail_mse_ratio</span><span class="p">),</span>
+        <span class="n">max_worst_tail_mse_ratio</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">max_worst_tail_mse_ratio</span><span class="p">),</span>
+        <span class="n">min_stability_margin</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">min_stability_margin</span><span class="p">),</span>
+        <span class="n">prefer</span><span class="o">=</span><span class="n">prefer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;recommended_period&quot;</span><span class="p">:</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">recommended</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">recommended</span><span class="p">[</span><span class="s2">&quot;reflection_update_period&quot;</span><span class="p">]),</span>
+        <span class="s2">&quot;recommended&quot;</span><span class="p">:</span> <span class="n">recommended</span><span class="p">,</span>
+        <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="n">rows</span><span class="p">,</span>
+        <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="n">warnings</span><span class="p">,</span>
+        <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;periods&quot;</span><span class="p">:</span> <span class="n">period_list</span><span class="p">,</span>
+            <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">inferred_order</span><span class="p">,</span>
+            <span class="s2">&quot;n_trials&quot;</span><span class="p">:</span> <span class="n">n_trials</span><span class="p">,</span>
+            <span class="s2">&quot;min_trials_for_robust&quot;</span><span class="p">:</span> <span class="n">min_trials_for_robust_i</span><span class="p">,</span>
+            <span class="s2">&quot;is_robust_recommendation&quot;</span><span class="p">:</span> <span class="n">is_robust_recommendation</span><span class="p">,</span>
+            <span class="s2">&quot;recommendation_scope&quot;</span><span class="p">:</span> <span class="n">recommendation_scope</span><span class="p">,</span>
+            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">n_samples</span><span class="p">,</span>
+            <span class="s2">&quot;tail&quot;</span><span class="p">:</span> <span class="n">tail_n</span><span class="p">,</span>
+            <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">repeats</span><span class="p">),</span>
+            <span class="s2">&quot;mu_taps&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">mu_taps</span><span class="p">),</span>
+            <span class="s2">&quot;mu_reflection&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">mu_reflection</span><span class="p">),</span>
+            <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">),</span>
+            <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">margin</span><span class="p">),</span>
+            <span class="s2">&quot;gradient_mode&quot;</span><span class="p">:</span> <span class="n">gradient_mode</span><span class="p">,</span>
+            <span class="s2">&quot;scale_reflection_mu_by_period&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">scale_reflection_mu_by_period</span><span class="p">),</span>
+            <span class="s2">&quot;max_tail_mse_ratio&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_tail_mse_ratio</span><span class="p">),</span>
+            <span class="s2">&quot;max_worst_tail_mse_ratio&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_worst_tail_mse_ratio</span><span class="p">),</span>
+            <span class="s2">&quot;min_stability_margin&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">min_stability_margin</span><span class="p">),</span>
+            <span class="s2">&quot;prefer&quot;</span><span class="p">:</span> <span class="n">prefer</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tune_reflection_update_period&quot;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

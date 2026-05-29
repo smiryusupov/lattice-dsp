@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Synthetic echo-cancellation metric demo &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="synthetic-echo-cancellation-metric-demo">
+<h1>Synthetic echo-cancellation metric demo<a class="headerlink" href="#synthetic-echo-cancellation-metric-demo" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> is <strong>not</strong> a production acoustic echo canceller.  The echo helpers are kept as small synthetic examples for adaptive-filter experiments and metric interpretation.</p>
+<p>The included echo demo answers a narrow question:</p>
+<blockquote>
+<div><p>If a synthetic microphone signal contains a known echo/error component, how much does an adaptive filter reduce that error power?</p>
+</div></blockquote>
+<p>Run the small example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/echo_cancellation_erle_demo.py
+</pre></div>
+</div>
+<p>Or run the JSON benchmark:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/echo_cancellation_benchmark.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--samples<span class="w"> </span><span class="m">64000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--sample-rate<span class="w"> </span><span class="m">16000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--no-double-talk<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--near-end-power-ratio<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--noise-snr-db<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>echo-benchmark.json
+</pre></div>
+</div>
+<section id="synthetic-signal-model">
+<h2>Synthetic signal model<a class="headerlink" href="#synthetic-signal-model" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">generate_echo_problem(...)</span></code> creates:</p>
+<ul class="simple">
+<li><p>a far-end/reference signal <code class="docutils literal notranslate"><span class="pre">x</span></code>;</p></li>
+<li><p>a stable IIR echo path parameterized by reflection coefficients;</p></li>
+<li><p>optional nonlinear residual echo;</p></li>
+<li><p>optional near-end/double-talk signal;</p></li>
+<li><p>optional background noise;</p></li>
+<li><p>a microphone signal containing echo plus any near-end/noise components;</p></li>
+<li><p>a clean target used only for metrics.</p></li>
+</ul>
+<p>Because the clean target is known, the package can compute error-power metrics that would not be available in a live deployment.</p>
+</section>
+<section id="what-is-erle">
+<h2>What is ERLE?<a class="headerlink" href="#what-is-erle" title="Link to this heading">¶</a></h2>
+<p>ERLE means <strong>Echo Return Loss Enhancement</strong>.  In this package the basic form is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERLE dB = 10 log10( power(input_error) / power(output_error) )
+</pre></div>
+</div>
+<p>where:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>input_error  = microphone - clean_target
+output_error = enhanced_or_residual - clean_target
+</pre></div>
+</div>
+<p>Positive ERLE means the output residual error has less power than the input echo/error.  For example, <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">dB</span></code> means the residual error power is about ten times lower; <code class="docutils literal notranslate"><span class="pre">20</span> <span class="pre">dB</span></code> means about one hundred times lower.</p>
+</section>
+<section id="why-erle-is-interesting">
+<h2>Why ERLE is interesting<a class="headerlink" href="#why-erle-is-interesting" title="Link to this heading">¶</a></h2>
+<p>ERLE is useful because it gives a simple scalar view of how much echo/error power was removed in a controlled experiment.  It is especially useful for:</p>
+<ul class="simple">
+<li><p>synthetic regression tests;</p></li>
+<li><p>comparing adaptive-filter variants;</p></li>
+<li><p>checking convergence across random seeds;</p></li>
+<li><p>validating whether a filter order or step size is obviously too weak.</p></li>
+</ul>
+</section>
+<section id="why-erle-is-not-enough">
+<h2>Why ERLE is not enough<a class="headerlink" href="#why-erle-is-not-enough" title="Link to this heading">¶</a></h2>
+<p>ERLE can be misleading.  A processor can improve ERLE by suppressing everything, including desired near-end speech.  That is why the package also reports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mse_improvement_db</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">segmental_erle_median_db</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">residual_power_db</span></code>;</p></li>
+<li><p>per-case timing.</p></li>
+</ul>
+<p>For real AEC quality, listening tests and speech-preservation metrics matter.  This repository presents synthetic echo examples as adaptive-filter diagnostics, not production AEC performance results.</p>
+</section>
+<section id="compared-cases">
+<h2>Compared cases<a class="headerlink" href="#compared-cases" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">benchmarks/echo_cancellation_benchmark.py</span></code> compares small baselines:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">no_cancellation</span></code> — microphone passed through unchanged;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">toy_residual_suppressor_only</span></code> — fixed gain attenuation, included as a failure-mode baseline;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spectral_residual_suppressor_only</span></code> — deterministic dependency-free spectral suppression;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fir_nlms_baseline</span></code> — simple FIR/NLMS reference;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_only</span></code> — adaptive stable lattice/IIR linear stage;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_plus_toy_residual_suppressor</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_plus_spectral_residual_suppressor</span></code>.</p></li>
+</ol>
+<p>These are educational baselines.  They are not intended to compete with WebRTC AEC, SpeexDSP, AirPods-class voice pickup, or Microsoft AEC Challenge systems.</p>
+</section>
+<section id="recommended-interpretation">
+<h2>Recommended interpretation<a class="headerlink" href="#recommended-interpretation" title="Link to this heading">¶</a></h2>
+<p>Use this demo to say:</p>
+<blockquote>
+<div><p>“Here is how a stable adaptive lattice/IIR model behaves on a controlled echo-like problem, and here is the ERLE it obtains.”</p>
+</div></blockquote>
+<p>Do not use it to say:</p>
+<blockquote>
+<div><p>“This package is a production echo canceller.”</p>
+</div></blockquote>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/echo_cancellation.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

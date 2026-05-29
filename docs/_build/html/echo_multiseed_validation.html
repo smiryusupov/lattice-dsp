@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Echo/noise cancellation multi-seed validation &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="echo-noise-cancellation-multi-seed-validation">
+<h1>Echo/noise cancellation multi-seed validation<a class="headerlink" href="#echo-noise-cancellation-multi-seed-validation" title="Link to this heading">¶</a></h1>
+<p>The single-run nonlinear echo benchmark is useful for debugging and is not an application-level validation by itself.  The multi-seed benchmark repeats
+that experiment across independent synthetic signal realizations and optional
+scenario sweeps.</p>
+<p>The goal is to validate the hybrid idea:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>stable adaptive lattice/IIR = linear echo-path model
+optional residual processor = nonlinear echo/noise/speech residual stage
+</pre></div>
+</div>
+<section id="run-a-small-robust-benchmark">
+<h2>Run a small robust benchmark<a class="headerlink" href="#run-a-small-robust-benchmark" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/echo_multiseed_benchmark.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--seeds<span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="m">101</span><span class="w"> </span><span class="m">102</span><span class="w"> </span><span class="m">103</span><span class="w"> </span><span class="m">104</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nonlinear-strengths<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span><span class="m">0</span>.08<span class="w"> </span><span class="m">0</span>.16<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--noise-snr-dbs<span class="w"> </span><span class="m">40</span><span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--near-end-power-ratios<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span><span class="m">0</span>.02<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--samples<span class="w"> </span><span class="m">64000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repeats<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--reflection-update-period<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>echo-multiseed-benchmark.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>echo-multiseed-summary-raw.csv
+</pre></div>
+</div>
+<p>Then generate a readable report:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/echo_multiseed_report.py<span class="w"> </span>echo-multiseed-benchmark.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--markdown-output<span class="w"> </span>echo-multiseed-report.md<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>echo-multiseed-summary.csv
+</pre></div>
+</div>
+</section>
+<section id="what-the-report-compares">
+<h2>What the report compares<a class="headerlink" href="#what-the-report-compares" title="Link to this heading">¶</a></h2>
+<p>For each scenario, the benchmark aggregates these cases over seeds:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">no_cancellation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">toy_residual_suppressor_only</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fir_nlms_baseline</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_only</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_plus_toy_residual_suppressor</span></code></p></li>
+</ul>
+<p>The report highlights:</p>
+<ul class="simple">
+<li><p>median ERLE for FIR, lattice/IIR, and hybrid cases</p></li>
+<li><p>worst-seed ERLE gain relative to FIR/NLMS</p></li>
+<li><p>median runtime speedup relative to FIR/NLMS</p></li>
+<li><p>hybrid gain over lattice/IIR-only processing</p></li>
+<li><p>best method by median ERLE for each scenario</p></li>
+</ul>
+</section>
+<section id="interpreting-results">
+<h2>Interpreting results<a class="headerlink" href="#interpreting-results" title="Link to this heading">¶</a></h2>
+<p>The most important distinction is between two interpretations:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_only</span></code> tests whether the stable adaptive IIR stage models the
+linear echo path efficiently.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lattice_iir_plus_toy_residual_suppressor</span></code> tests the hybrid architecture,
+where the residual stage is a simple dependency-free suppressor,
+or other nonlinear/noise suppressor.</p></li>
+</ol>
+<p>The toy residual suppressor is intentionally simple and dependency-free.  It is
+not meant to be a production nonlinear echo suppressor.  Its role is to verify
+that the API and benchmark pipeline can evaluate residual-stage improvements.</p>
+</section>
+<section id="suggested-result-wording">
+<h2>Suggested result wording<a class="headerlink" href="#suggested-result-wording" title="Link to this heading">¶</a></h2>
+<p>Use scenario-specific wording.  Prefer phrasing like:</p>
+<blockquote>
+<div><p>In synthetic multi-seed benchmarks, the lattice/IIR stage can model the stable
+linear echo path efficiently.  The hybrid API exposes the remaining residual
+for residual suppression, enabling explicit speed/quality
+comparisons against FIR/NLMS baselines.</p>
+</div></blockquote>
+</section>
+<section id="spectral-residual-comparisons">
+<h2>Spectral residual comparisons<a class="headerlink" href="#spectral-residual-comparisons" title="Link to this heading">¶</a></h2>
+<p>The multi-seed benchmark includes additional comparisons for the deterministic spectral residual stage:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spectral_hybrid_vs_fir</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spectral_hybrid_vs_lattice</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spectral_hybrid_vs_toy_hybrid</span></code></p></li>
+</ul>
+<p>These comparisons help answer whether the residual stage itself is doing useful work beyond the stable lattice/IIR linear model and beyond the fixed-gain toy baseline.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/echo_multiseed_validation.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

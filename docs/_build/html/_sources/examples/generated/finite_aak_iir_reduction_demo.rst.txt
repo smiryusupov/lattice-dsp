@@ -1,0 +1,115 @@
+Finite-section AAK/Nehari reduction of a stable IIR filter
+==========================================================
+
+.. admonition:: Tutorial goal
+
+   Apply the finite AAK/Nehari tail reducer to a full stable SISO IIR filter and compare the selected reduced model.
+
+.. note::
+
+   New to the terminology? See the :doc:`lattice DSP concept map <../../algorithms/concept_map>` and the :doc:`causality/data-use guide <../../theory/causality_and_data_use>` for how online, offline, block, and MIMO examples should be read.
+
+Context
+-------
+
+The previous finite AAK/Nehari pages work with abstract tail sequences.  This tutorial
+closes the loop for DSP users: start with a stable higher-order lattice/IIR filter,
+compute its impulse response, select a reduced rational model, convert the selected
+denominator back to reflection coefficients, and run the reduced filter on real signals.
+
+The point is practical rather than absolute optimality.  The current implementation is a
+finite-section SISO reduction candidate with Hankel, Schmidt-pair, and rational diagnostics;
+it is not a full infinite-dimensional AAK/Nehari solver.
+
+Key idea and equations
+----------------------
+
+A stable full model has transfer function
+
+.. math::
+
+   H(z)=\frac{B(z)}{A(z)},\qquad |\lambda_i(A)|<1.
+
+The finite AAK/Nehari workflow uses the impulse response ``h_n`` to build a finite Hankel
+matrix, selects a rational order ``r``, and returns a reduced model
+
+.. math::
+
+   H_r(z)=\frac{B_r(z)}{A_r(z)},
+
+whose denominator is converted back to reflection coefficients when stable.
+
+How to read the result
+----------------------
+
+Look for the selected rank, impulse and magnitude-response error, pole radius below one, and filtering speedup on a random batch.
+
+Run command
+-----------
+
+.. code-block:: bash
+
+   python examples/finite_aak_iir_reduction_demo.py
+
+Run status
+----------
+
+Return code: ``0``
+
+Captured stdout
+---------------
+
+.. code-block:: text
+
+   full IIR order: 8
+   finite Hankel matrix: 96 x 96
+   candidate ranks: [2, 3, 4, 5, 6, 8]
+   selected rank: 3
+   selected accepted: True
+   selected pole radius: 0.9074
+   relative impulse error: 3.863e-03
+   batch output SNR: 48.27 dB
+   batch output rel MSE: 1.488e-05
+   max magnitude error: 0.039 dB
+   full filter median time: 0.0205 s
+   reduced filter median time: 0.0094 s
+   filter speedup: 2.18x
+
+Figures
+-------
+
+.. figure:: _artifacts/finite_aak_iir_reduction_demo/finite_aak_iir_impulse_response.png
+   :alt: finite aak iir impulse response
+   :width: 95%
+
+   ``finite_aak_iir_impulse_response.png``
+
+.. figure:: _artifacts/finite_aak_iir_reduction_demo/finite_aak_iir_magnitude_response.png
+   :alt: finite aak iir magnitude response
+   :width: 95%
+
+   ``finite_aak_iir_magnitude_response.png``
+
+.. figure:: _artifacts/finite_aak_iir_reduction_demo/finite_aak_iir_poles.png
+   :alt: finite aak iir poles
+   :width: 95%
+
+   ``finite_aak_iir_poles.png``
+
+.. figure:: _artifacts/finite_aak_iir_reduction_demo/finite_aak_iir_singular_values.png
+   :alt: finite aak iir singular values
+   :width: 95%
+
+   ``finite_aak_iir_singular_values.png``
+
+Generated data files
+--------------------
+
+* :download:`finite_aak_iir_reduction_summary.csv <_artifacts/finite_aak_iir_reduction_demo/finite_aak_iir_reduction_summary.csv>`
+
+Source code
+-----------
+
+.. literalinclude:: ../../../examples/finite_aak_iir_reduction_demo.py
+   :language: python
+   :linenos:

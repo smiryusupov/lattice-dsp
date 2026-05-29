@@ -1,0 +1,2 @@
+dimension,order,known_lattice_unitarity_error,allpass_raw_error,allpass_compensated_error,gain_wrapped_raw_error,gain_wrapped_compensated_error,gain_improvement,left_gain_condition,right_gain_condition,max_reflection_singular_value
+3,4,2.8026595908977167e-14,0.0,0.0,1.14838782229434,1.141910461554274e-06,1005672.3893493799,5.142857734390231,1.0000052427283028,0.743221428945822

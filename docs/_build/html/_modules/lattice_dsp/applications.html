@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lattice_dsp.applications &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../lattice_dsp.html">lattice_dsp</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for lattice_dsp.applications</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Small application-layer helpers for synthetic echo/noise experiments.</span>
+
+<span class="sd">The core package intentionally stays dependency-light.  This module provides a</span>
+<span class="sd">thin bridge between stable adaptive lattice/IIR filters and simple residual</span>
+<span class="sd">processors such as fixed-gain or deterministic spectral suppressors.  These</span>
+<span class="sd">helpers are examples and diagnostics, not production acoustic echo cancellation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdaptiveLatticeLadderNLMS</span>
+
+<span class="n">ResidualProcessor</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="EchoCancellationResult">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.EchoCancellationResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EchoCancellationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Container returned by :class:`HybridEchoCanceller`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    echo_estimate:</span>
+<span class="sd">        Linear echo/noise estimate produced by the adaptive lattice/IIR stage.</span>
+<span class="sd">    residual:</span>
+<span class="sd">        Microphone signal minus the linear estimate.  In echo cancellation this</span>
+<span class="sd">        is the signal passed to an optional residual suppressor.</span>
+<span class="sd">    enhanced:</span>
+<span class="sd">        Residual after the optional residual processor.  If no residual</span>
+<span class="sd">        processor is supplied, this is equal to ``residual``.</span>
+<span class="sd">    error:</span>
+<span class="sd">        Alias for ``residual``; kept for adaptive-filter terminology.</span>
+<span class="sd">    reflection, taps, denominator, numerator:</span>
+<span class="sd">        Final adaptive filter parameters after processing the block.</span>
+<span class="sd">    metrics:</span>
+<span class="sd">        Optional scalar diagnostics.  When a clean target is provided, the</span>
+<span class="sd">        metrics include input/residual/enhanced MSE and improvement in dB.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">echo_estimate</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">residual</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">enhanced</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">reflection</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">taps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">denominator</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">numerator</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_1d_float</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a 1-D array&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="mse">
+<a class="viewcode-back" href="../../api/applications.html#lattice_dsp.applications.mse">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mse</span><span class="p">(</span><span class="n">reference</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">estimate</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return mean-squared error between two equally shaped arrays.&quot;&quot;&quot;</span>
+
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">estimate</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">est</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reference and estimate must have the same shape&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">ref</span> <span class="o">-</span> <span class="n">est</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="improvement_db">
+<a class="viewcode-back" href="../../api/applications.html#lattice_dsp.applications.improvement_db">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">improvement_db</span><span class="p">(</span><span class="n">before_mse</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">after_mse</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return improvement in dB from ``before_mse`` to ``after_mse``.</span>
+
+<span class="sd">    Positive values mean the after-MSE is lower.  ``epsilon`` prevents division</span>
+<span class="sd">    by zero in silent or perfectly reconstructed synthetic examples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">before</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">before_mse</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">))</span>
+    <span class="n">after</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">after_mse</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">before</span> <span class="o">/</span> <span class="n">after</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="ResidualAttenuator">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.ResidualAttenuator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResidualAttenuator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dependency-free residual suppressor that applies a fixed gain.</span>
+
+<span class="sd">    This is deliberately simple.  It is useful as a minimal placeholder for</span>
+<span class="sd">    a residual echo suppressor, but it will attenuate near-end speech as well</span>
+<span class="sd">    as residual echo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gain</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;gain must be non-negative&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">context</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span></div>
+
+
+
+<div class="viewcode-block" id="residual_attenuator">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.residual_attenuator">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">residual_attenuator</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``signal`` multiplied by ``gain`` as a tiny residual baseline.&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">ResidualAttenuator</span><span class="p">(</span><span class="n">gain</span><span class="o">=</span><span class="n">gain</span><span class="p">)(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="p">{})</span></div>
+
+
+
+<div class="viewcode-block" id="SpectralResidualSuppressor">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.SpectralResidualSuppressor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpectralResidualSuppressor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Small deterministic STFT-domain residual echo suppressor.</span>
+
+<span class="sd">    This class is intentionally **not** a production denoiser.  It provides a</span>
+<span class="sd">    reproducible, dependency-free residual-model baseline beyond the toy gain</span>
+<span class="sd">    attenuator.</span>
+
+<span class="sd">    By default the suppressor is **echo-aware** when a context dictionary with</span>
+<span class="sd">    ``reference`` or ``echo_estimate`` is supplied.  It estimates time-frequency</span>
+<span class="sd">    coherence between the residual and the echo/reference signal, then attenuates</span>
+<span class="sd">    components that remain correlated with the far-end path.  This is safer for</span>
+<span class="sd">    echo-cancellation benchmarks than blind spectral gating, because near-end</span>
+<span class="sd">    speech/noise should be preserved when it is not coherent with the far-end.</span>
+
+<span class="sd">    If no useful context is supplied, the class falls back to a blind STFT soft</span>
+<span class="sd">    gate.  The blind mode is useful as a denoising sanity check but can damage the</span>
+<span class="sd">    desired near-end target and should not be interpreted as residual echo</span>
+<span class="sd">    suppression.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame_size:</span>
+<span class="sd">        STFT frame length.  If the signal is shorter, it is padded internally.</span>
+<span class="sd">    hop_size:</span>
+<span class="sd">        Frame hop.  Defaults to one quarter of ``frame_size``.</span>
+<span class="sd">    mode:</span>
+<span class="sd">        ``&quot;echo_aware&quot;`` uses far-end/echo coherence when context is available;</span>
+<span class="sd">        ``&quot;blind&quot;`` always uses the old percentile-floor soft gate.</span>
+<span class="sd">    floor:</span>
+<span class="sd">        Minimum gain.  A value of ``0`` can create artifacts; ``0.05`` to</span>
+<span class="sd">        ``0.2`` is usually safer for examples.</span>
+<span class="sd">    over_subtract:</span>
+<span class="sd">        Blind-mode multiplier applied to the estimated residual floor.</span>
+<span class="sd">    noise_percentile:</span>
+<span class="sd">        Blind-mode percentile across time used as the residual floor estimate.</span>
+<span class="sd">    smoothing:</span>
+<span class="sd">        Temporal gain smoothing in ``[0, 1)``.  Larger values vary more slowly.</span>
+<span class="sd">    exponent:</span>
+<span class="sd">        Optional gain curve exponent.  In echo-aware mode this is applied to the</span>
+<span class="sd">        coherence before suppression; in blind mode it shapes the soft gate.</span>
+<span class="sd">    echo_aware_strength:</span>
+<span class="sd">        Suppression strength for coherence-based echo-aware mode.</span>
+<span class="sd">    reference_key:</span>
+<span class="sd">        Preferred context key for the far-end/echo-correlated signal.  If this</span>
+<span class="sd">        key is absent, ``echo_estimate`` and then ``reference`` are tried.</span>
+<span class="sd">    echo_gate:</span>
+<span class="sd">        If true, scale echo-aware suppression by a block-level echo-confidence</span>
+<span class="sd">        estimate.  This helps real-audio/double-talk cases where the residual</span>
+<span class="sd">        is dominated by near-end content and a fixed global suppression strength</span>
+<span class="sd">        can over-suppress the target.</span>
+<span class="sd">    echo_gate_threshold:</span>
+<span class="sd">        Echo-confidence threshold below which suppression is reduced toward</span>
+<span class="sd">        ``echo_gate_floor``.</span>
+<span class="sd">    echo_gate_transition:</span>
+<span class="sd">        Width of the soft transition from reduced to full suppression.</span>
+<span class="sd">    echo_gate_floor:</span>
+<span class="sd">        Minimum fraction of ``echo_aware_strength`` kept when the gate is closed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">frame_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span>
+        <span class="n">hop_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;echo_aware&quot;</span><span class="p">,</span>
+        <span class="n">floor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.08</span><span class="p">,</span>
+        <span class="n">over_subtract</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.25</span><span class="p">,</span>
+        <span class="n">noise_percentile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.65</span><span class="p">,</span>
+        <span class="n">exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">echo_aware_strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">reference_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;echo_estimate&quot;</span><span class="p">,</span>
+        <span class="n">echo_gate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">echo_gate_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">echo_gate_transition</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.20</span><span class="p">,</span>
+        <span class="n">echo_gate_floor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">frame_size</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;frame_size must be greater than 8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hop_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hop_size</span> <span class="o">=</span> <span class="n">frame_size</span> <span class="o">//</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">hop_size</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">hop_size</span> <span class="o">&gt;</span> <span class="n">frame_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;hop_size must be in the range [1, frame_size]&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;echo_aware&quot;</span><span class="p">,</span> <span class="s2">&quot;blind&quot;</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mode must be &#39;echo_aware&#39; or &#39;blind&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">floor</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;floor must be in [0, 1]&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">over_subtract</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;over_subtract must be non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">noise_percentile</span> <span class="o">&lt;=</span> <span class="mf">100.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;noise_percentile must be in [0, 100]&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">smoothing</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;smoothing must be in [0, 1)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exponent</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;exponent must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">echo_aware_strength</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;echo_aware_strength must be non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">echo_gate_threshold</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;echo_gate_threshold must be non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">echo_gate_transition</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;echo_gate_transition must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">echo_gate_floor</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;echo_gate_floor must be in [0, 1]&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">epsilon</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;epsilon must be positive&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">frame_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hop_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">floor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">floor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">over_subtract</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">over_subtract</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_percentile</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">noise_percentile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">smoothing</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exponent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">exponent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_aware_strength</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">echo_aware_strength</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">reference_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">echo_gate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_threshold</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">echo_gate_threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_transition</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">echo_gate_transition</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_floor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">echo_gate_floor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_echo_gate_scale</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_echo_confidence</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;echo_aware&quot;</span><span class="p">:</span>
+            <span class="n">reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_from_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_echo_aware</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reference_from_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_key</span><span class="p">,</span> <span class="s2">&quot;echo_estimate&quot;</span><span class="p">,</span> <span class="s2">&quot;reference&quot;</span><span class="p">]</span>
+        <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="n">frame_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop_size</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">n_frames</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span> <span class="o">-</span> <span class="n">frame_size</span><span class="p">)</span> <span class="o">/</span> <span class="n">hop</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">padded_length</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hop</span> <span class="o">+</span> <span class="n">frame_size</span>
+        <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">padded_length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">padded</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">frame_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">frame_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">spectra</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">hop</span>
+            <span class="n">spectra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">padded</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">frame_size</span><span class="p">]</span> <span class="o">*</span> <span class="n">window</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">spectra</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">length</span><span class="p">,</span> <span class="n">window</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_istft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">frame_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop_size</span>
+        <span class="n">n_frames</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">padded_length</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hop</span> <span class="o">+</span> <span class="n">frame_size</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">padded_length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">padded_length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">hop</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="n">frame_size</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">frame_size</span><span class="p">]</span> <span class="o">+=</span> <span class="n">frame</span> <span class="o">*</span> <span class="n">window</span>
+            <span class="n">norm</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">frame_size</span><span class="p">]</span> <span class="o">+=</span> <span class="n">window</span> <span class="o">*</span> <span class="n">window</span>
+        <span class="c1"># Standard overlap-add normalization divides by the squared-window</span>
+        <span class="c1"># sum.  Hann windows have very small values near block boundaries, and</span>
+        <span class="c1"># after spectral gain modification those tiny denominators can amplify</span>
+        <span class="c1"># harmless reconstruction leakage into very large edge samples.  Use a</span>
+        <span class="c1"># relative floor so gain-modified frames stay bounded; this only affects</span>
+        <span class="c1"># the first/last few samples or pathological low-overlap regions.</span>
+        <span class="n">norm_peak</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">norm</span><span class="p">))</span> <span class="k">if</span> <span class="n">norm</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">norm_floor</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span> <span class="mf">1e-4</span> <span class="o">*</span> <span class="n">norm_peak</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">norm</span><span class="p">,</span> <span class="n">norm_floor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SpectralResidualSuppressor.process">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.SpectralResidualSuppressor.process">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Blindly suppress a 1-D residual signal and return an equal-length array.</span>
+
+<span class="sd">        This method does not use reference/echo context.  For echo-cancellation</span>
+<span class="sd">        applications, prefer calling the object with a context dictionary so</span>
+<span class="sd">        :meth:`process_echo_aware` can preserve uncorrelated near-end content.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span><span class="s2">&quot;signal&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">spec</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stft</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+        <span class="n">floor_estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_percentile</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">raw_gain</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">over_subtract</span> <span class="o">*</span> <span class="n">floor_estimate</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">mag</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="n">raw_gain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">raw_gain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exponent</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">raw_gain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">raw_gain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exponent</span><span class="p">)</span>
+            <span class="n">raw_gain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">raw_gain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">raw_gain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">raw_gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smooth_gain</span><span class="p">(</span><span class="n">raw_gain</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_istft</span><span class="p">(</span><span class="n">spec</span> <span class="o">*</span> <span class="n">raw_gain</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_echo_gate_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a block-level scale for echo-aware suppression strength.</span>
+
+<span class="sd">        The reference is normally the adaptive echo estimate.  When its power is</span>
+<span class="sd">        small relative to the residual, the block is likely near-end dominated</span>
+<span class="sd">        or the linear stage has little confidence.  In that case, fixed spectral</span>
+<span class="sd">        suppression can reduce target quality even when it lowers leakage</span>
+<span class="sd">        diagnostics.  The gate keeps suppression conservative for those blocks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_echo_confidence</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_echo_gate_scale</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="k">return</span> <span class="mf">1.0</span>
+        <span class="n">r_power</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">residual</span><span class="p">)))</span> <span class="k">if</span> <span class="n">residual</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">x_power</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">reference</span><span class="p">)))</span> <span class="k">if</span> <span class="n">reference</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">confidence</span> <span class="o">=</span> <span class="n">x_power</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_power</span> <span class="o">+</span> <span class="n">r_power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="p">(</span><span class="n">confidence</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_threshold</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_transition</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_floor</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_gate_floor</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_echo_confidence</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_echo_gate_scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SpectralResidualSuppressor.process_echo_aware">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.SpectralResidualSuppressor.process_echo_aware">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_echo_aware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Suppress far-end-coherent residual components.</span>
+
+<span class="sd">        ``reference`` can be the original far-end signal or the linear echo</span>
+<span class="sd">        estimate.  The latter is usually preferred because it already includes</span>
+<span class="sd">        the learned acoustic path coloration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span><span class="s2">&quot;residual&quot;</span><span class="p">,</span> <span class="n">residual</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reference must have the same length as residual&quot;</span><span class="p">)</span>
+
+        <span class="n">r_spec</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stft</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">x_spec</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stft</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_spec</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">r_spec</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;internal STFT shape mismatch&quot;</span><span class="p">)</span>
+
+        <span class="n">n_frames</span><span class="p">,</span> <span class="n">n_bins</span> <span class="o">=</span> <span class="n">r_spec</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span>
+        <span class="n">s_rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">s_xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">s_rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">strength</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echo_aware_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo_gate_scale</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">):</span>
+            <span class="n">rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r_spec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x_spec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">rx</span> <span class="o">=</span> <span class="n">r_spec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">x_spec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">s_rr</span> <span class="o">=</span> <span class="n">rr</span>
+                <span class="n">s_xx</span> <span class="o">=</span> <span class="n">xx</span>
+                <span class="n">s_rx</span> <span class="o">=</span> <span class="n">rx</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s_rr</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">s_rr</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">rr</span>
+                <span class="n">s_xx</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">s_xx</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">xx</span>
+                <span class="n">s_rx</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">s_rx</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">rx</span>
+            <span class="n">coherence</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s_rx</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">s_rr</span> <span class="o">*</span> <span class="n">s_xx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+            <span class="n">coherence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">coherence</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">shaped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">coherence</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exponent</span><span class="p">)</span>
+            <span class="n">gain</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">strength</span> <span class="o">*</span> <span class="n">shaped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">n_frames</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># A second light pass smooths the final gain while keeping the</span>
+            <span class="c1"># coherence estimator itself causal/reproducible.</span>
+            <span class="n">gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smooth_gain</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_istft</span><span class="p">(</span><span class="n">r_spec</span> <span class="o">*</span> <span class="n">gain</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_smooth_gain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gain</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">gain</span>
+        <span class="n">smoothed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span>
+        <span class="n">smoothed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gain</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">gain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">smoothed</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">smoothed</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">gain</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">smoothed</span></div>
+
+
+<div class="viewcode-block" id="spectral_residual_suppressor">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.spectral_residual_suppressor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spectral_residual_suppressor</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience wrapper around :class:`SpectralResidualSuppressor`.&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">SpectralResidualSuppressor</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="HybridEchoCanceller">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.HybridEchoCanceller">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HybridEchoCanceller</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Linear adaptive lattice/IIR stage plus optional residual processor.</span>
+
+<span class="sd">    This helper is intentionally small.  It models the common hybrid strategy:</span>
+
+<span class="sd">    1. a stable adaptive lattice/IIR filter estimates the linear echo path from</span>
+<span class="sd">       a reference/far-end signal to the microphone signal;</span>
+<span class="sd">    2. the residual signal is passed to an optional dependency-free processor</span>
+<span class="sd">       such as a fixed attenuator, a spectral suppressor, or any callable</span>
+<span class="sd">       supplied by the user.</span>
+
+<span class="sd">    The residual processor is called as ``processor(residual, context)``.  The</span>
+<span class="sd">    context dictionary contains ``reference``, ``microphone``, ``echo_estimate``,</span>
+<span class="sd">    ``sample_rate``, and ``linear_filter``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">initial_reflection</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">initial_taps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">mu_taps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">mu_reflection</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+        <span class="n">margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
+        <span class="n">freeze_reflection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">gradient_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+        <span class="n">reflection_update_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">scale_reflection_mu_by_period</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">residual_processor</span><span class="p">:</span> <span class="n">ResidualProcessor</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">safety_max_power_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">safety_max_abs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+            <span class="n">initial_reflection</span><span class="p">,</span>
+            <span class="n">initial_taps</span><span class="p">,</span>
+            <span class="n">mu_taps</span><span class="o">=</span><span class="n">mu_taps</span><span class="p">,</span>
+            <span class="n">mu_reflection</span><span class="o">=</span><span class="n">mu_reflection</span><span class="p">,</span>
+            <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span>
+            <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">,</span>
+            <span class="n">freeze_reflection</span><span class="o">=</span><span class="n">freeze_reflection</span><span class="p">,</span>
+            <span class="n">gradient_mode</span><span class="o">=</span><span class="n">gradient_mode</span><span class="p">,</span>
+            <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">reflection_update_period</span><span class="p">,</span>
+            <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">safety_max_power_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">safety_max_power_ratio</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;safety_max_power_ratio must be positive or None&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">safety_max_abs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">safety_max_abs</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;safety_max_abs must be positive or None&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residual_processor</span> <span class="o">=</span> <span class="n">residual_processor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">safety_max_power_ratio</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">safety_max_power_ratio</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">safety_max_power_ratio</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">safety_max_abs</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">safety_max_abs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">safety_max_abs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HybridEchoCanceller.reset">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.HybridEchoCanceller.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the internal adaptive filter state.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_safety_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">microphone</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether ``candidate`` is safe relative to ``microphone``.</span>
+
+<span class="sd">        The guard is intentionally simple and deterministic.  It is meant for</span>
+<span class="sd">        real-audio evaluation where occasional adaptive divergence should fall</span>
+<span class="sd">        back to a conservative signal instead of dominating aggregate metrics</span>
+<span class="sd">        with huge floating-point values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">mic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">microphone</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mic</span><span class="o">.</span><span class="n">shape</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">max_abs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span> <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">mic_power</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">mic</span><span class="p">)))</span> <span class="k">if</span> <span class="n">mic</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">out_power</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span> <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">out_power</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">mic_power</span><span class="p">,</span> <span class="mf">1e-24</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_max_abs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">max_abs</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_max_abs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">max_abs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_max_power_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ratio</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">safety_max_power_ratio</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">max_abs</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">max_abs</span>
+
+<div class="viewcode-block" id="HybridEchoCanceller.process">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.HybridEchoCanceller.process">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reference</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">microphone</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">clean_target</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EchoCancellationResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process one reference/microphone block.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reference:</span>
+<span class="sd">            Far-end/reference signal used by the linear adaptive filter.</span>
+<span class="sd">        microphone:</span>
+<span class="sd">            Microphone signal containing echo/noise plus desired near-end</span>
+<span class="sd">            content.  During supervised synthetic tests this can be the desired</span>
+<span class="sd">            response of a known echo path.</span>
+<span class="sd">        clean_target:</span>
+<span class="sd">            Optional clean signal used only for metrics.  In echo cancellation</span>
+<span class="sd">            this is usually unavailable in real deployments, but it is useful</span>
+<span class="sd">            for simulations and benchmarks.</span>
+<span class="sd">        context:</span>
+<span class="sd">            Optional extra values passed to the residual processor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+        <span class="n">mic</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span><span class="s2">&quot;microphone&quot;</span><span class="p">,</span> <span class="n">microphone</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mic</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;reference and microphone must have the same shape&quot;</span><span class="p">)</span>
+
+        <span class="n">echo_estimate_raw</span><span class="p">,</span> <span class="n">residual_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="o">.</span><span class="n">process_adapt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mic</span><span class="p">)</span>
+        <span class="n">echo_estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">echo_estimate_raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">residual_raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="n">safety_triggered</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">safety_stage</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">residual_safe</span><span class="p">,</span> <span class="n">residual_ratio</span><span class="p">,</span> <span class="n">residual_max_abs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safety_check</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">mic</span><span class="p">)</span>
+        <span class="n">enhanced_ratio</span> <span class="o">=</span> <span class="n">residual_ratio</span>
+        <span class="n">enhanced_max_abs</span> <span class="o">=</span> <span class="n">residual_max_abs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">residual_safe</span><span class="p">:</span>
+            <span class="c1"># The linear adaptive stage diverged.  Fall back to no cancellation</span>
+            <span class="c1"># for this block so benchmarks/users get a bounded, conservative</span>
+            <span class="c1"># result instead of a numerically explosive residual.</span>
+            <span class="n">safety_triggered</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">safety_stage</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">echo_estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mic</span><span class="p">)</span>
+            <span class="n">residual</span> <span class="o">=</span> <span class="n">mic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">enhanced</span> <span class="o">=</span> <span class="n">mic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">processor_context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                <span class="s2">&quot;microphone&quot;</span><span class="p">:</span> <span class="n">mic</span><span class="p">,</span>
+                <span class="s2">&quot;echo_estimate&quot;</span><span class="p">:</span> <span class="n">echo_estimate</span><span class="p">,</span>
+                <span class="s2">&quot;sample_rate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                <span class="s2">&quot;linear_filter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+                <span class="n">processor_context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual_processor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">enhanced</span> <span class="o">=</span> <span class="n">residual</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">enhanced</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span>
+                    <span class="s2">&quot;residual_processor output&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual_processor</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">processor_context</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">enhanced</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">residual</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;residual_processor must return a 1-D array with the same shape&quot;</span><span class="p">)</span>
+
+            <span class="n">enhanced_safe</span><span class="p">,</span> <span class="n">enhanced_ratio</span><span class="p">,</span> <span class="n">enhanced_max_abs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safety_check</span><span class="p">(</span><span class="n">enhanced</span><span class="p">,</span> <span class="n">mic</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">enhanced_safe</span><span class="p">:</span>
+                <span class="c1"># The optional residual processor produced an unsafe signal.</span>
+                <span class="c1"># Keep the bounded linear residual rather than discarding the</span>
+                <span class="c1"># whole adaptive cancellation.</span>
+                <span class="n">safety_triggered</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="n">safety_stage</span> <span class="o">=</span> <span class="mf">2.0</span>
+                <span class="n">enhanced</span> <span class="o">=</span> <span class="n">residual</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">metrics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;reference_power&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span>
+            <span class="s2">&quot;microphone_power&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">mic</span><span class="p">))),</span>
+            <span class="s2">&quot;linear_residual_power&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">residual</span><span class="p">))),</span>
+            <span class="s2">&quot;enhanced_power&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">enhanced</span><span class="p">))),</span>
+            <span class="s2">&quot;safety_triggered&quot;</span><span class="p">:</span> <span class="n">safety_triggered</span><span class="p">,</span>
+            <span class="s2">&quot;safety_stage&quot;</span><span class="p">:</span> <span class="n">safety_stage</span><span class="p">,</span>
+            <span class="s2">&quot;safety_residual_power_ratio&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">residual_ratio</span><span class="p">),</span>
+            <span class="s2">&quot;safety_enhanced_power_ratio&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">enhanced_ratio</span><span class="p">),</span>
+            <span class="s2">&quot;safety_residual_max_abs&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">residual_max_abs</span><span class="p">),</span>
+            <span class="s2">&quot;safety_enhanced_max_abs&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">enhanced_max_abs</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">clean_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">clean</span> <span class="o">=</span> <span class="n">_as_1d_float</span><span class="p">(</span><span class="s2">&quot;clean_target&quot;</span><span class="p">,</span> <span class="n">clean_target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">clean</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mic</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;clean_target must have the same shape as microphone&quot;</span><span class="p">)</span>
+            <span class="n">input_mse</span> <span class="o">=</span> <span class="n">mse</span><span class="p">(</span><span class="n">clean</span><span class="p">,</span> <span class="n">mic</span><span class="p">)</span>
+            <span class="n">residual_mse</span> <span class="o">=</span> <span class="n">mse</span><span class="p">(</span><span class="n">clean</span><span class="p">,</span> <span class="n">residual</span><span class="p">)</span>
+            <span class="n">enhanced_mse</span> <span class="o">=</span> <span class="n">mse</span><span class="p">(</span><span class="n">clean</span><span class="p">,</span> <span class="n">enhanced</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;input_mse&quot;</span><span class="p">:</span> <span class="n">input_mse</span><span class="p">,</span>
+                    <span class="s2">&quot;linear_residual_mse&quot;</span><span class="p">:</span> <span class="n">residual_mse</span><span class="p">,</span>
+                    <span class="s2">&quot;enhanced_mse&quot;</span><span class="p">:</span> <span class="n">enhanced_mse</span><span class="p">,</span>
+                    <span class="s2">&quot;linear_improvement_db&quot;</span><span class="p">:</span> <span class="n">improvement_db</span><span class="p">(</span><span class="n">input_mse</span><span class="p">,</span> <span class="n">residual_mse</span><span class="p">),</span>
+                    <span class="s2">&quot;enhanced_improvement_db&quot;</span><span class="p">:</span> <span class="n">improvement_db</span><span class="p">(</span><span class="n">input_mse</span><span class="p">,</span> <span class="n">enhanced_mse</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">EchoCancellationResult</span><span class="p">(</span>
+            <span class="n">echo_estimate</span><span class="o">=</span><span class="n">echo_estimate</span><span class="p">,</span>
+            <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+            <span class="n">enhanced</span><span class="o">=</span><span class="n">enhanced</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+            <span class="n">reflection</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="o">.</span><span class="n">reflection</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="n">taps</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="o">.</span><span class="n">taps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="n">denominator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="n">numerator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_filter</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="make_residual_processor_from_model">
+<a class="viewcode-back" href="../../api/top_level.html#lattice_dsp.applications.make_residual_processor_from_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_residual_processor_from_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResidualProcessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap a user-provided residual model as a residual processor.</span>
+
+<span class="sd">    The model may expose ``predict(residual, context)``, be directly callable as</span>
+<span class="sd">    ``model(residual, context)``, or be callable as ``model(residual)``.  This</span>
+<span class="sd">    keeps downstream residual processors out of the core while making custom</span>
+<span class="sd">    callables easy to plug in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">processor</span><span class="p">(</span><span class="n">residual</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>  <span class="c1"># noqa: B009 - user-supplied protocol</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">processor</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;EchoCancellationResult&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HybridEchoCanceller&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ResidualAttenuator&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ResidualProcessor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SpectralResidualSuppressor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;improvement_db&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;make_residual_processor_from_model&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mse&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;residual_attenuator&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spectral_residual_suppressor&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

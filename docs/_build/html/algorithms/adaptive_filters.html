@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Adaptive lattice filters: NLMS and RLS &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LMS as a minimax robust filter" href="robust_lms_hinf.html" />
+    <link rel="prev" title="Scalar lattice and lattice-ladder IIR filters" href="lattice_filters.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="lattice_filters.html" title="previous chapter">Scalar lattice and lattice-ladder IIR filters</a></li>
+      <li>Next: <a href="robust_lms_hinf.html" title="next chapter">LMS as a minimax robust filter</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="adaptive-lattice-filters-nlms-and-rls">
+<h1>Adaptive lattice filters: NLMS and RLS<a class="headerlink" href="#adaptive-lattice-filters-nlms-and-rls" title="Link to this heading">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> contains adaptive examples and APIs for stable recursive system
+identification.  The key idea is to update filter parameters while keeping the
+recursive denominator in a stability-preserving representation.</p>
+</section>
+<section id="nlms-style-updates">
+<h2>NLMS-style updates<a class="headerlink" href="#nlms-style-updates" title="Link to this heading">¶</a></h2>
+<p>Normalized LMS adapts a parameter vector using the instantaneous error</p>
+<div class="math notranslate nohighlight">
+\[e[n] = d[n] - y[n],\]</div>
+<p>and a normalized step size</p>
+<div class="math notranslate nohighlight">
+\[\theta[n+1] = \theta[n] + \mu\,\frac{e[n] x[n]}{\epsilon + \|x[n]\|^2}.\]</div>
+<p>The package uses this principle for ladder/tap adaptation and for the adaptive
+lattice-ladder demos.  When reflection updates are used, raw unconstrained
+parameters are mapped into bounded reflection coefficients so the denominator
+remains stable.</p>
+</section>
+<section id="update-period-scaling">
+<h2>Update period scaling<a class="headerlink" href="#update-period-scaling" title="Link to this heading">¶</a></h2>
+<p>Recursive-filter adaptation can be expensive.  <code class="docutils literal notranslate"><span class="pre">reflection_update_period</span></code> lets
+you update the reflection coefficients every <code class="docutils literal notranslate"><span class="pre">P</span></code> samples instead of every
+sample.  <code class="docutils literal notranslate"><span class="pre">scale_reflection_mu_by_period=True</span></code> scales the step size by the
+period so slower update schedules maintain comparable adaptation strength.  The
+tuning helpers and reports demonstrate the speed/quality tradeoff.</p>
+</section>
+<section id="h-viewpoint">
+<h2>H∞ viewpoint<a class="headerlink" href="#h-viewpoint" title="Link to this heading">¶</a></h2>
+<p>The usual LMS story is that it is a stochastic-gradient approximation to a
+least-squares objective.  The tutorial <a class="reference internal" href="robust_lms_hinf.html"><span class="doc">LMS as a minimax robust filter</span></a> explains the
+complementary Hassibi–Sayed–Kailath viewpoint: LMS can also be read as a
+minimax robust filter that controls worst-case disturbance-to-error energy
+gain.  This does not replace the least-squares interpretation; it shows that
+the same recursion can be understood through a different objective.</p>
+</section>
+<section id="rls-style-updates">
+<h2>RLS-style updates<a class="headerlink" href="#rls-style-updates" title="Link to this heading">¶</a></h2>
+<p>Recursive Least Squares uses an inverse correlation estimate <code class="docutils literal notranslate"><span class="pre">P</span></code> and a
+forgetting factor <code class="docutils literal notranslate"><span class="pre">lambda</span></code>.  In a standard FIR form:</p>
+<div class="math notranslate nohighlight">
+\[g[n] = \frac{P[n-1] x[n]}{\lambda + x[n]^T P[n-1] x[n]},\]</div>
+<div class="math notranslate nohighlight">
+\[w[n] = w[n-1] + g[n] e[n],\]</div>
+<div class="math notranslate nohighlight">
+\[P[n] = \lambda^{-1}\left(P[n-1] - g[n] x[n]^T P[n-1]\right).\]</div>
+<p>The package exposes <code class="docutils literal notranslate"><span class="pre">LatticeLadderRLS</span></code> and <code class="docutils literal notranslate"><span class="pre">rls_process_batch</span></code> as a compact
+RLS adaptive path.  It is intentionally presented as an adaptive-filtering tool,
+not as a full acoustic echo canceller.</p>
+</section>
+<section id="openmp-batch-path">
+<h2>OpenMP batch path<a class="headerlink" href="#openmp-batch-path" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">adaptive_process_batch</span></code> and <code class="docutils literal notranslate"><span class="pre">rls_process_batch</span></code> process independent jobs in
+parallel when OpenMP is available.  This is useful for parameter sweeps, channel
+batches, and repeated benchmark trials.</p>
+</section>
+<section id="relevant-apis">
+<h2>Relevant APIs<a class="headerlink" href="#relevant-apis" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderNLMS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveLatticeLadderNLMS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LatticeLadderRLS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_process_batch</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rls_process_batch</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tune_reflection_update_period</span></code></p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/hinf_lms_reproduction.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/adaptive_iir_system_identification.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/rls_lattice_identification.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/tracking_drifting_iir_system.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/tune_reflection_update_period.py</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/adaptive_filters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

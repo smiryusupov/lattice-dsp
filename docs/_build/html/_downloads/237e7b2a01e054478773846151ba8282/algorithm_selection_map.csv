@@ -1,0 +1,9 @@
+goal,recommended_api,first_diagnostic,scope
+stable scalar IIR filtering,"LatticeIIR, reflection_to_denominator",reflection bounds and pole radius,stable scalar recursive filtering
+stable IIR with a numerator,"LatticeLadderIIR, numerator_to_ladder",sample-by-sample agreement with B(z)/A(z),lattice denominator plus ladder numerator
+adaptive recursive system identification,"AdaptiveLatticeLadderNLMS, LatticeLadderRLS","learning curve, final MSE, learned pole radius",controlled online identification examples
+AR spectral estimation,"burg_denominator, levinson_durbin_denominator",prediction error and spectrum residuals,stationary AR modeling diagnostics
+finite SISO model reduction,"hankel_singular_values, finite_hankel_reduce_iir",Hankel singular-value decay and response error,finite-Hankel/Ho-Kalman baseline
+finite Nehari/AAK-style diagnostics,"finite_aak_siso_certificate, finite_aak_reduce_iir","tail error, rational error, pole radius",finite-section candidate workflow
+MIMO state-space reduction,"mimo_state_space_markov_response, finite_hankel_reduce_mimo",block-Hankel singular values and state-space response error,finite block-Hankel baseline
+matrix-lattice all-pass experiments,"MatrixLatticeAllPass, contractive_matrix_from_raw",frequency-response singular values,all-pass/paraunitary tutorial scaffold

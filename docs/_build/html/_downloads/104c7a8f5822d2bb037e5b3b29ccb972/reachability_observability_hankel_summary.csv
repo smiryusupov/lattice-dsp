@@ -1,0 +1,8 @@
+quantity,value
+state_dimension,4
+reachability_rank,3
+observability_rank,3
+finite_hankel_rank_tol_1e-8,2
+leading_gramian_hsv,3.2266412
+second_gramian_hsv,0.051668354
+third_gramian_hsv,0

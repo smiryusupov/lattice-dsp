@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Finite Nehari/AAK rank-sweep benchmark &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Block Levinson versus dense block-Toeplitz solve" href="block_levinson.html" />
+    <link rel="prev" title="Experimental MIMO matrix-lattice realization sweep" href="experimental_mimo_matrix_lattice_realization_sweep.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Benchmark tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core_filtering.html">Core filtering and OpenMP batch benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction.html">Model reduction speed/accuracy benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hankel_reduction_speedup.html">Finite Hankel reduction amortization benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finite_aak_iir_reduction_speedup.html">Finite-section AAK/Nehari IIR reduction benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_hankel_reduction_speedup.html">Coupled MIMO finite-Hankel reduction benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice_runtime.html">Matrix-lattice all-pass runtime benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_mimo.html">MIMO tangential-Schur/Pick and J-inner benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_mimo_matrix_lattice_realization_sweep.html">Experimental MIMO matrix-lattice realization sweep</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Finite Nehari/AAK rank-sweep benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="block_levinson.html">Block Levinson versus dense block-Toeplitz solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_period_sweep.html">Adaptive reflection update-period sweep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="echo_metric.html">Synthetic echo metric benchmark</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Benchmark tutorials</a><ul>
+      <li>Previous: <a href="experimental_mimo_matrix_lattice_realization_sweep.html" title="previous chapter">Experimental MIMO matrix-lattice realization sweep</a></li>
+      <li>Next: <a href="block_levinson.html" title="next chapter">Block Levinson versus dense block-Toeplitz solve</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="finite-nehari-aak-rank-sweep-benchmark">
+<h1>Finite Nehari/AAK rank-sweep benchmark<a class="headerlink" href="#finite-nehari-aak-rank-sweep-benchmark" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Measure how finite Hankel singular values and structured tail errors change with approximation rank.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>This benchmark is the conservative bridge between the finite-Hankel reducer and deeper
+Nehari/AAK theory.  It builds a finite Hankel matrix from an anticausal tail, runs
+<code class="docutils literal notranslate"><span class="pre">finite_nehari_approximate_tail</span></code> for several ranks, and reports both the unconstrained
+SVD error and the Hankelized structured approximation error.</p>
+<p>The benchmark does not claim exact infinite-dimensional Nehari or AAK optimality.  It is a
+numerical validation benchmark that makes the rank/error tradeoff visible within
+the documented finite-section scope.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>For the finite matrix problem, the Eckart–Young theorem gives</p>
+<div class="math notranslate nohighlight">
+\[\min_{\operatorname{rank}(X)\le r} \|H-X\|_2 = \sigma_{r+1}(H).\]</div>
+<p>After anti-diagonal averaging, the approximation is Hankel-structured again but need not
+remain rank <code class="docutils literal notranslate"><span class="pre">r</span></code>.  Its error is therefore reported as a separate diagnostic.</p>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Look for monotone decay of sigma_{r+1}, agreement between unconstrained SVD error and sigma_{r+1}, and decreasing tail-relative error as rank increases.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/finite_nehari_rank_sweep.py<span class="w"> </span>--rows<span class="w"> </span><span class="m">32</span><span class="w"> </span>--cols<span class="w"> </span><span class="m">32</span><span class="w"> </span>--ranks<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">6</span><span class="w"> </span>--output<span class="w"> </span>docs/benchmarks/generated/_artifacts/finite_nehari_rank_sweep/finite-nehari-rank-sweep.json<span class="w"> </span>--csv-output<span class="w"> </span>docs/benchmarks/generated/_artifacts/finite_nehari_rank_sweep/finite-nehari-rank-sweep.csv
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="visual-and-data-readout">
+<h2>Visual and data readout<a class="headerlink" href="#visual-and-data-readout" title="Link to this heading">¶</a></h2>
+<p>When the benchmark gallery is built with results, this page embeds PNG summaries generated from the same JSON/CSV artifacts.  The raw data stay available below as downloads so exact numbers remain reproducible without making the public page read like console output.</p>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/finite_nehari_rank_sweep_error_summary.png"><img alt="finite nehari rank sweep error summary" src="../../_images/finite_nehari_rank_sweep_error_summary.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">finite_nehari_rank_sweep_error_summary.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../../_images/finite_nehari_rank_sweep_runtime_summary.png"><img alt="finite nehari rank sweep runtime summary" src="../../_images/finite_nehari_rank_sweep_runtime_summary.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">finite_nehari_rank_sweep_runtime_summary.png</span></code></span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="generated-data-files">
+<h2>Generated data files<a class="headerlink" href="#generated-data-files" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/9d99e832b4e7ee7e16ff2f9fc4322bf4/finite-nehari-rank-sweep.csv"><code class="xref download docutils literal notranslate"><span class="pre">finite-nehari-rank-sweep.csv</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../../_downloads/f16dd7dfbc9a494ce73b0eee82bcc85a/finite-nehari-rank-sweep.json"><code class="xref download docutils literal notranslate"><span class="pre">finite-nehari-rank-sweep.json</span></code></a></p></li>
+</ul>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Finite Nehari/AAK rank-sweep benchmark.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">This benchmark is a numerical validation and tutorial companion for</span>
+<span class="linenos">  4</span><span class="sd">``finite_nehari_approximate_tail``.  It does not implement an exact</span>
+<span class="linenos">  5</span><span class="sd">infinite-dimensional Nehari or AAK solver.  Instead, it measures how the finite</span>
+<span class="linenos">  6</span><span class="sd">Hankel singular values, unconstrained SVD error, Hankelized error, and tail</span>
+<span class="linenos">  7</span><span class="sd">approximation error change with rank.</span>
+<span class="linenos">  8</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  9</span>
+<span class="linenos"> 10</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="linenos"> 13</span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="linenos"> 14</span><span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="linenos"> 15</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 16</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 17</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 20</span>
+<span class="linenos"> 21</span><span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="k">def</span><span class="w"> </span><span class="nf">synthetic_anticausal_tail</span><span class="p">(</span><span class="n">n_terms</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="linenos"> 25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a deterministic anticausal tail with several decaying modes.</span>
+<span class="linenos"> 26</span>
+<span class="linenos"> 27</span><span class="sd">    The first modes are strong and the later modes are weaker.  This produces a</span>
+<span class="linenos"> 28</span><span class="sd">    clear singular-value decay while still leaving visible approximation error at</span>
+<span class="linenos"> 29</span><span class="sd">    small rank.</span>
+<span class="linenos"> 30</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 31</span>
+<span class="linenos"> 32</span>    <span class="k">if</span> <span class="n">n_terms</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 33</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_terms must be positive&quot;</span><span class="p">)</span>
+<span class="linenos"> 34</span>
+<span class="linenos"> 35</span>    <span class="c1"># The seed is used only to make small sign/weight perturbations deterministic.</span>
+<span class="linenos"> 36</span>    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="linenos"> 37</span>    <span class="n">poles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.94</span><span class="p">,</span> <span class="mf">0.78</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.38</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.22</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 38</span>    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">0.28</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 39</span>    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.015</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+<span class="linenos"> 40</span>
+<span class="linenos"> 41</span>    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_terms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 42</span>    <span class="n">tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_terms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 43</span>    <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="linenos"> 44</span>        <span class="n">tail</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">p</span><span class="o">**</span><span class="n">n</span>
+<span class="linenos"> 45</span>    <span class="k">return</span> <span class="n">tail</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span>
+<span class="linenos"> 48</span><span class="k">def</span><span class="w"> </span><span class="nf">run_rank_sweep</span><span class="p">(</span>
+<span class="linenos"> 49</span>    <span class="n">tail</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="linenos"> 50</span>    <span class="n">ranks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="linenos"> 51</span>    <span class="n">rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 52</span>    <span class="n">cols</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 53</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Run finite Nehari/AAK approximation for a list of ranks.&quot;&quot;&quot;</span>
+<span class="linenos"> 55</span>
+<span class="linenos"> 56</span>    <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 57</span>    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>
+<span class="linenos"> 58</span>        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="linenos"> 59</span>        <span class="n">result</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">finite_nehari_approximate_tail</span><span class="p">(</span>
+<span class="linenos"> 60</span>            <span class="n">tail</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+<span class="linenos"> 61</span>            <span class="n">rank</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">rank</span><span class="p">),</span>
+<span class="linenos"> 62</span>            <span class="n">rows</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+<span class="linenos"> 63</span>            <span class="n">cols</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">cols</span><span class="p">),</span>
+<span class="linenos"> 64</span>        <span class="p">)</span>
+<span class="linenos"> 65</span>        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span>        <span class="n">sigma_next</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;sigma_next&quot;</span><span class="p">])</span>
+<span class="linenos"> 68</span>        <span class="n">hankelized_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;hankelized_hankel_error&quot;</span><span class="p">])</span>
+<span class="linenos"> 69</span>        <span class="n">unconstrained_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;unconstrained_hankel_error&quot;</span><span class="p">])</span>
+<span class="linenos"> 70</span>        <span class="n">tail_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;relative_tail_error&quot;</span><span class="p">])</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span>        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<span class="linenos"> 73</span>            <span class="p">{</span>
+<span class="linenos"> 74</span>                <span class="s2">&quot;rank&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">rank</span><span class="p">),</span>
+<span class="linenos"> 75</span>                <span class="s2">&quot;time_s&quot;</span><span class="p">:</span> <span class="n">elapsed</span><span class="p">,</span>
+<span class="linenos"> 76</span>                <span class="s2">&quot;sigma_next&quot;</span><span class="p">:</span> <span class="n">sigma_next</span><span class="p">,</span>
+<span class="linenos"> 77</span>                <span class="s2">&quot;unconstrained_hankel_error&quot;</span><span class="p">:</span> <span class="n">unconstrained_error</span><span class="p">,</span>
+<span class="linenos"> 78</span>                <span class="s2">&quot;hankelized_hankel_error&quot;</span><span class="p">:</span> <span class="n">hankelized_error</span><span class="p">,</span>
+<span class="linenos"> 79</span>                <span class="s2">&quot;hankelized_over_sigma_next&quot;</span><span class="p">:</span> <span class="n">hankelized_error</span> <span class="o">/</span> <span class="n">sigma_next</span> <span class="k">if</span> <span class="n">sigma_next</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos"> 80</span>                <span class="s2">&quot;relative_tail_error&quot;</span><span class="p">:</span> <span class="n">tail_error</span><span class="p">,</span>
+<span class="linenos"> 81</span>            <span class="p">}</span>
+<span class="linenos"> 82</span>        <span class="p">)</span>
+<span class="linenos"> 83</span>    <span class="k">return</span> <span class="n">results</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span>
+<span class="linenos"> 86</span><span class="k">def</span><span class="w"> </span><span class="nf">write_csv</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 87</span>    <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="linenos"> 88</span>
+<span class="linenos"> 89</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+<span class="linenos"> 90</span>        <span class="k">return</span>
+<span class="linenos"> 91</span>    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos"> 92</span>        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="linenos"> 93</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+<span class="linenos"> 94</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span>
+<span class="linenos"> 97</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 98</span>    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Finite Nehari/AAK rank-sweep benchmark.&quot;</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--rows&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">48</span><span class="p">)</span>
+<span class="linenos">100</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--cols&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">48</span><span class="p">)</span>
+<span class="linenos">101</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--ranks&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="linenos">102</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;reports/finite-nehari-rank-sweep.json&quot;</span><span class="p">))</span>
+<span class="linenos">104</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--csv-output&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;reports/finite-nehari-rank-sweep.csv&quot;</span><span class="p">))</span>
+<span class="linenos">105</span>    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="linenos">106</span>
+<span class="linenos">107</span>    <span class="n">n_terms</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">rows</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">cols</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="linenos">108</span>    <span class="n">tail</span> <span class="o">=</span> <span class="n">synthetic_anticausal_tail</span><span class="p">(</span><span class="n">n_terms</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+<span class="linenos">109</span>    <span class="n">rows</span> <span class="o">=</span> <span class="n">run_rank_sweep</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ranks</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span>    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos">112</span>        <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">(),</span>
+<span class="linenos">113</span>        <span class="s2">&quot;platform&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(),</span>
+<span class="linenos">114</span>        <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span>
+<span class="linenos">115</span>        <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">cols</span><span class="p">,</span>
+<span class="linenos">116</span>        <span class="s2">&quot;tail_terms&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_terms</span><span class="p">),</span>
+<span class="linenos">117</span>        <span class="s2">&quot;ranks&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">ranks</span><span class="p">,</span>
+<span class="linenos">118</span>        <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+<span class="linenos">119</span>        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">(</span>
+<span class="linenos">120</span>            <span class="s2">&quot;Finite-dimensional Nehari/AAK teaching benchmark. The SVD error equals sigma_next &quot;</span>
+<span class="linenos">121</span>            <span class="s2">&quot;for the unconstrained rank-r matrix problem; the Hankelized error is a separate &quot;</span>
+<span class="linenos">122</span>            <span class="s2">&quot;structured approximation diagnostic.&quot;</span>
+<span class="linenos">123</span>        <span class="p">),</span>
+<span class="linenos">124</span>    <span class="p">}</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span>    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="n">rows</span><span class="p">}</span>
+<span class="linenos">127</span>    <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">128</span>    <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+<span class="linenos">129</span>    <span class="n">write_csv</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">csv_output</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+<span class="linenos">130</span>
+<span class="linenos">131</span>    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="linenos">132</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">133</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;rank&#39;</span><span class="si">:</span><span class="s2">&gt;5s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;time_s&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;sigma_next&#39;</span><span class="si">:</span><span class="s2">&gt;13s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;svd_error&#39;</span><span class="si">:</span><span class="s2">&gt;13s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;hankelized&#39;</span><span class="si">:</span><span class="s2">&gt;13s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;hank/sigma&#39;</span><span class="si">:</span><span class="s2">&gt;11s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;tail_rel&#39;</span><span class="si">:</span><span class="s2">&gt;11s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">134</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">86</span><span class="p">)</span>
+<span class="linenos">135</span>    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+<span class="linenos">136</span>        <span class="n">ratio</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;hankelized_over_sigma_next&quot;</span><span class="p">]</span>
+<span class="linenos">137</span>        <span class="n">ratio_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">11.3f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;n/a&#39;</span><span class="si">:</span><span class="s2">&gt;11s</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">138</span>        <span class="nb">print</span><span class="p">(</span>
+<span class="linenos">139</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;rank&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">140</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;time_s&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">10.5f</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">141</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;sigma_next&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">13.6e</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">142</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;unconstrained_hankel_error&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">13.6e</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">143</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;hankelized_hankel_error&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">13.6e</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">144</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ratio_text</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="linenos">145</span>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;relative_tail_error&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">11.3e</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">146</span>        <span class="p">)</span>
+<span class="linenos">147</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">148</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">149</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">csv_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">150</span>
+<span class="linenos">151</span>
+<span class="linenos">152</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">153</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/benchmarks/generated/finite_nehari_rank_sweep.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

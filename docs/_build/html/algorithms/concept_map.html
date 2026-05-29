@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The lattice DSP concept map &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scalar lattice and lattice-ladder IIR filters" href="lattice_filters.html" />
+    <link rel="prev" title="Algorithms" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Algorithms</a></li>
+      <li>Next: <a href="lattice_filters.html" title="next chapter">Scalar lattice and lattice-ladder IIR filters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="the-lattice-dsp-concept-map">
+<h1>The lattice DSP concept map<a class="headerlink" href="#the-lattice-dsp-concept-map" title="Link to this heading">¶</a></h1>
+<section id="how-the-classical-ideas-fit-together">
+<h2>How the classical ideas fit together<a class="headerlink" href="#how-the-classical-ideas-fit-together" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> uses terminology from several communities: speech linear
+prediction, digital filters, orthogonal polynomials, operator theory,
+rational approximation, multirate filter banks, and MIMO signal processing.
+This page is a map of that vocabulary.  It is not meant to be a complete
+mathematical treatment.  Its purpose is to help readers recognize why the
+examples in the package belong together.  For the interpolation and numerical
+conditioning motivation behind Schur/reflection coordinates, see
+<a class="reference internal" href="../theory/interpolation_schur_motivation.html"><span class="doc">Interpolation, Schur stability, and why lattice coordinates help</span></a>.</p>
+<p>The short version is:</p>
+<blockquote class="pull-quote">
+<div><p>Lattice filters are not just implementation tricks.  They are computational
+forms of Schur/Szegő recursions.  Reflection coefficients encode stability;
+prediction errors expose orthogonality; all-pass and paraunitary completions
+expose energy preservation; Hankel and Padé viewpoints explain rational
+approximation and model reduction; matrix/MIMO versions replace scalar
+reflection coefficients by contraction matrices.</p>
+</div></blockquote>
+</section>
+<section id="the-core-object-a-stable-recursive-filter">
+<h2>1. The core object: a stable recursive filter<a class="headerlink" href="#the-core-object-a-stable-recursive-filter" title="Link to this heading">¶</a></h2>
+<p>The scalar IIR object is a rational transfer function</p>
+<div class="math notranslate nohighlight">
+\[H(z) = \frac{B(z)}{A(z)}, \qquad
+A(z)=1+a_1 z^{-1}+\cdots+a_p z^{-p}.\]</div>
+<p>For a causal discrete-time filter, stability is controlled by the roots of
+<code class="docutils literal notranslate"><span class="pre">A</span></code>.  Directly updating the denominator coefficients <code class="docutils literal notranslate"><span class="pre">a_i</span></code> is fragile: a
+small-looking coefficient update can move a pole outside the unit disk.  The
+lattice viewpoint replaces the polynomial coefficients by reflection/PARCOR
+coefficients</p>
+<div class="math notranslate nohighlight">
+\[k_1, k_2, \ldots, k_p.\]</div>
+<p>For the scalar all-pole recursion, the simple condition</p>
+<div class="math notranslate nohighlight">
+\[|k_i| &lt; 1 \quad \text{for all } i\]</div>
+<p>is the practical stability handle used throughout the package.</p>
+<p>Where to look: <a class="reference internal" href="lattice_filters.html"><span class="doc">Scalar lattice and lattice-ladder IIR filters</span></a>,
+<a class="reference internal" href="../examples/generated/reflection_conversion.html"><span class="doc">Reflection conversion</span></a>, and
+<a class="reference internal" href="../examples/generated/stability_vs_direct_iir.html"><span class="doc">Stability vs direct IIR</span></a>.</p>
+</section>
+<section id="schur-recursion-stability-by-reflection-coefficients">
+<h2>2. Schur recursion: stability by reflection coefficients<a class="headerlink" href="#schur-recursion-stability-by-reflection-coefficients" title="Link to this heading">¶</a></h2>
+<p>The Schur recursion is the classical way to peel a stable analytic function or
+stable polynomial into a sequence of reflection coefficients.  In signal
+processing language, the same idea appears as step-up/step-down conversion
+between denominator coefficients and PARCOR coefficients.</p>
+<p>A typical step-up form is</p>
+<div class="math notranslate nohighlight">
+\[A_m(z) = A_{m-1}(z) + k_m z^{-m} A_{m-1}^{\sharp}(z),\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">sharp</span></code> denotes the reversed/conjugate polynomial.  In real scalar code,
+this becomes the familiar denominator update implemented by
+<code class="docutils literal notranslate"><span class="pre">reflection_to_denominator</span></code>.</p>
+<p>Practical interpretation:</p>
+<ul class="simple">
+<li><p>step-up recursion builds a stable denominator from reflection coefficients;</p></li>
+<li><p>step-down recursion tests or extracts reflection coefficients from a denominator;</p></li>
+<li><p>a reflection coefficient with magnitude at least one signals loss of stability.</p></li>
+</ul>
+<p>Where to look: <a class="reference internal" href="../examples/generated/reflection_conversion.html"><span class="doc">Reflection conversion</span></a>.</p>
+</section>
+<section id="szego-polynomials-the-orthogonal-polynomial-view">
+<h2>3. Szegő polynomials: the orthogonal-polynomial view<a class="headerlink" href="#szego-polynomials-the-orthogonal-polynomial-view" title="Link to this heading">¶</a></h2>
+<p>Szegő recursions are the orthogonal-polynomial-on-the-unit-circle version of the
+same structure.  Instead of viewing the recursion as a filter realization, one
+views it as building orthogonal polynomials with respect to a spectral measure.
+The reflection coefficients are then the unit-circle analogues of recursion
+parameters; in the OPUC literature they are often called Verblunsky
+coefficients.</p>
+<p>For AR modeling, this is the conceptual bridge:</p>
+<div class="math notranslate nohighlight">
+\[\text{autocorrelation moments}
+\quad \longrightarrow \quad
+\text{orthogonal prediction polynomials}
+\quad \longrightarrow \quad
+\text{reflection coefficients}.\]</div>
+<p>That is why Levinson-Durbin, Burg estimation, prediction-error filters, and
+lattice filters are so tightly connected.</p>
+<p>Where to look: <a class="reference internal" href="ar_estimators.html"><span class="doc">AR estimation: autocorrelation, Levinson-Durbin, and Burg</span></a>,
+<a class="reference internal" href="../examples/generated/burg_levinson_ar_tools.html"><span class="doc">Burg and Levinson AR tools</span></a>, and
+<a class="reference internal" href="../examples/generated/ar_spectral_estimation.html"><span class="doc">AR spectral estimation</span></a>.</p>
+</section>
+<section id="christoffel-darboux-why-prediction-errors-and-kernels-appear">
+<h2>4. Christoffel-Darboux: why prediction errors and kernels appear<a class="headerlink" href="#christoffel-darboux-why-prediction-errors-and-kernels-appear" title="Link to this heading">¶</a></h2>
+<p>The Christoffel-Darboux identity is a compact identity for sums of orthogonal
+polynomials.  In this package it is not exposed as a public function, but it is
+part of the background explaining why AR spectra, prediction-error energies,
+and reproducing kernels are related.</p>
+<p>A schematic version of the message is:</p>
+<div class="math notranslate nohighlight">
+\[K_n(z,w) = \sum_{j=0}^n \phi_j(z)\overline{\phi_j(w)}\]</div>
+<p>can be rewritten using only the latest orthogonal polynomials and their reversed
+partners.  In filtering language, many cumulative prediction quantities can be
+represented through the current forward/backward prediction-error polynomials
+instead of through the whole history.</p>
+<p>Practical interpretation:</p>
+<ul class="simple">
+<li><p>prediction-error filters are not arbitrary residual generators;</p></li>
+<li><p>they are orthogonalization objects;</p></li>
+<li><p>spectral peaks and prediction error are two views of the same AR model.</p></li>
+</ul>
+<p>Where to look: <a class="reference internal" href="spectral_diagnostics.html"><span class="doc">Spectral diagnostics: periodogram, AR, Burg, and Capon</span></a>,
+<a class="reference internal" href="../examples/generated/periodogram_vs_ar_spectrum.html"><span class="doc">Periodogram vs AR spectrum</span></a>, and
+<a class="reference internal" href="../examples/generated/spectral_diagnostics_comparison.html"><span class="doc">Spectral diagnostics comparison</span></a>.</p>
+</section>
+<section id="orthogonal-filters-lattice-stages-as-rotations-reflections">
+<h2>5. Orthogonal filters: lattice stages as rotations/reflections<a class="headerlink" href="#orthogonal-filters-lattice-stages-as-rotations-reflections" title="Link to this heading">¶</a></h2>
+<p>A scalar lattice stage can be read as a local transformation of forward and
+backward prediction errors.  In stable/lossless normalizations, lattice stages
+behave like elementary rotations or hyperbolic rotations.  This is why lattice
+filters appear naturally in speech coding, AR modeling, wave digital filters,
+and filter-bank realizations.</p>
+<p>For MIMO and matrix-valued systems, the scalar coefficient <code class="docutils literal notranslate"><span class="pre">k</span></code> is replaced by
+a matrix <code class="docutils literal notranslate"><span class="pre">K</span></code>.  The scalar bound becomes a contraction condition:</p>
+<div class="math notranslate nohighlight">
+\[|k| &lt; 1
+\qquad \leadsto \qquad
+\|K\|_2 &lt; 1.\]</div>
+<p>This is one of the most important analogies in the package.</p>
+<p>Where to look: <a class="reference internal" href="matrix_lattice.html"><span class="doc">Matrix lattice all-pass filters</span></a>,
+<a class="reference internal" href="../examples/generated/matrix_lattice_allpass.html"><span class="doc">Matrix lattice all-pass</span></a>, and
+<a class="reference internal" href="../examples/generated/ml_unitary_convolution_demo.html"><span class="doc">ML unitary convolution demo</span></a>.</p>
+</section>
+<section id="all-pass-completion-from-a-stable-denominator-to-a-lossless-system">
+<h2>6. All-pass completion: from a stable denominator to a lossless system<a class="headerlink" href="#all-pass-completion-from-a-stable-denominator-to-a-lossless-system" title="Link to this heading">¶</a></h2>
+<p>An all-pass system has unit magnitude response in the scalar case:</p>
+<div class="math notranslate nohighlight">
+\[|H(e^{i\omega})| = 1.\]</div>
+<p>A matrix all-pass or paraunitary system satisfies the stronger matrix identity</p>
+<div class="math notranslate nohighlight">
+\[H(e^{i\omega})^* H(e^{i\omega}) = I.\]</div>
+<p>This means the system redistributes energy across time, frequency, or channels
+without changing total energy.  Lattice and matrix-lattice structures are useful
+because they can parameterize such energy-preserving systems through stable
+local factors.</p>
+<p>Practical interpretation:</p>
+<ul class="simple">
+<li><p>all-pass completions turn stability constraints into lossless systems;</p></li>
+<li><p>paraunitary filter banks are multichannel all-pass/orthogonal systems in
+polyphase form;</p></li>
+<li><p>MIMO lattice stages are compact parameterizations of structured unitary or
+contractive responses.</p></li>
+</ul>
+<p>Where to look: <a class="reference internal" href="matrix_lattice.html"><span class="doc">Matrix lattice all-pass filters</span></a>,
+<a class="reference internal" href="../examples/generated/matrix_unitary_response_compression.html"><span class="doc">Matrix unitary response compression</span></a>,
+<a class="reference internal" href="../examples/generated/paraunitary_filter_bank_demo.html"><span class="doc">Paraunitary filter-bank demo</span></a>.</p>
+</section>
+<section id="hankel-forms-and-pade-rational-approximation-and-model-reduction">
+<h2>7. Hankel forms and Padé: rational approximation and model reduction<a class="headerlink" href="#hankel-forms-and-pade-rational-approximation-and-model-reduction" title="Link to this heading">¶</a></h2>
+<p>A recursive filter is a rational approximation to an input-output map.  Two
+classical ways to understand reduced-order rational models are:</p>
+<ul class="simple">
+<li><p><strong>Padé approximation:</strong> match a finite number of moments or Taylor/Markov
+coefficients;</p></li>
+<li><p><strong>Hankel/operator approximation:</strong> approximate the map from past inputs to
+future outputs.</p></li>
+</ul>
+<p>Given an impulse response</p>
+<div class="math notranslate nohighlight">
+\[h_0, h_1, h_2, \ldots,\]</div>
+<p>one finite Hankel matrix is</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathcal H =
+\begin{bmatrix}
+h_1 &amp; h_2 &amp; h_3 &amp; \cdots \\
+h_2 &amp; h_3 &amp; h_4 &amp; \cdots \\
+h_3 &amp; h_4 &amp; h_5 &amp; \cdots \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots
+\end{bmatrix}.\end{split}\]</div>
+<p>Its singular values indicate how much input-output memory is carried by
+successive directions.  That is why Hankel singular values are natural order
+selection diagnostics for reduced IIR models.</p>
+<p>The current package includes finite model-reduction benchmarks and finite-section
+Nehari/AAK-style diagnostics.  Exact infinite-dimensional Nehari/AAK reduction is
+outside the public scope.  The theory pages explain this scope map.</p>
+<p>Where to look: <a class="reference internal" href="../theory/hardy_hankel_state_space.html"><span class="doc">Hardy, Hankel, reachability, and observability</span></a>,
+<a class="reference internal" href="../theory/interpolation_schur_motivation.html"><span class="doc">Interpolation, Schur stability, and why lattice coordinates help</span></a>,
+<a class="reference internal" href="model_reduction_hankel_aak.html"><span class="doc">Model reduction, Hankel operators, Nehari, and AAK</span></a>, and
+<a class="reference internal" href="../benchmarks/generated/model_reduction.html"><span class="doc">Model-reduction benchmark</span></a>.</p>
+</section>
+<section id="matrix-mimo-generalization-contractions-replace-scalar-coefficients">
+<h2>8. Matrix/MIMO generalization: contractions replace scalar coefficients<a class="headerlink" href="#matrix-mimo-generalization-contractions-replace-scalar-coefficients" title="Link to this heading">¶</a></h2>
+<p>The matrix/MIMO path is the rare part of the package.  The scalar lattice story
+has the following matrix analogue:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Scalar lattice idea</p></th>
+<th class="head"><p>Matrix/MIMO analogue</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>reflection coefficient <code class="docutils literal notranslate"><span class="pre">k</span></code></p></td>
+<td><p>reflection/contraction matrix <code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>stability condition <code class="docutils literal notranslate"><span class="pre">|k|</span> <span class="pre">&lt;</span> <span class="pre">1</span></code></p></td>
+<td><p>contraction condition <code class="docutils literal notranslate"><span class="pre">||K||_2</span> <span class="pre">&lt;</span> <span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>scalar all-pass response</p></td>
+<td><p>matrix all-pass/unitary response</p></td>
+</tr>
+<tr class="row-odd"><td><p>scalar AR prediction error</p></td>
+<td><p>vector AR prediction-error covariance</p></td>
+</tr>
+<tr class="row-even"><td><p>denominator polynomial</p></td>
+<td><p>matrix polynomial / block Toeplitz system</p></td>
+</tr>
+<tr class="row-odd"><td><p>Levinson recursion</p></td>
+<td><p>block Levinson / LWR-style recursion</p></td>
+</tr>
+</tbody>
+</table>
+<p>This is why scalar lattice filters, multichannel AR, paraunitary filter banks,
+and ML-inspired unitary convolutions are grouped together in the docs.  They are
+all examples of structured stable or energy-preserving transformations.</p>
+<p>Where to look: <a class="reference internal" href="multichannel_ar.html"><span class="doc">Multichannel AR and block Levinson</span></a>, <a class="reference internal" href="matrix_lattice.html"><span class="doc">Matrix lattice all-pass filters</span></a>,
+<a class="reference internal" href="../examples/generated/multichannel_levinson_ar.html"><span class="doc">Multichannel Levinson AR</span></a>, and
+<a class="reference internal" href="../examples/generated/mimo_lattice_vs_block_levinson.html"><span class="doc">MIMO lattice vs block Levinson</span></a>,
+<a class="reference internal" href="../examples/generated/mimo_diagonal_equals_independent_siso.html"><span class="doc">Diagonal MIMO equals independent SISO</span></a>, and
+<a class="reference internal" href="../examples/generated/mimo_finite_hankel_model_reduction.html"><span class="doc">Finite block-Hankel MIMO reduction</span></a>.</p>
+</section>
+<section id="where-each-concept-appears-in-the-package">
+<h2>9. Where each concept appears in the package<a class="headerlink" href="#where-each-concept-appears-in-the-package" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24.0%" />
+<col style="width: 44.0%" />
+<col style="width: 32.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What it means</p></th>
+<th class="head"><p>Where it appears</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Schur recursion</p></td>
+<td><p>Converts stable denominators to and from reflection coefficients.</p></td>
+<td><p><a class="reference internal" href="../examples/generated/reflection_conversion.html"><span class="doc">Reflection conversion</span></a>;
+<a class="reference internal" href="../examples/generated/stability_vs_direct_iir.html"><span class="doc">Stability vs direct IIR</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Szegő recursion</p></td>
+<td><p>Orthogonal-polynomial version of the same reflection-coefficient recursion.</p></td>
+<td><p><a class="reference internal" href="ar_estimators.html"><span class="doc">AR estimation: autocorrelation, Levinson-Durbin, and Burg</span></a>;
+<a class="reference internal" href="../examples/generated/burg_levinson_ar_tools.html"><span class="doc">Burg/Levinson AR tools</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Schur/Jury stability test</p></td>
+<td><p>Tests whether polynomial roots lie inside the unit disk; failed step-down
+coefficients reveal instability.</p></td>
+<td><p><a class="reference internal" href="lattice_filters.html"><span class="doc">Scalar lattice and lattice-ladder IIR filters</span></a>;
+<a class="reference internal" href="../examples/generated/stability_vs_direct_iir.html"><span class="doc">Stability vs direct IIR</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Christoffel-Darboux identity</p></td>
+<td><p>Reproducing-kernel identity behind compact prediction-error and spectral
+formulas.</p></td>
+<td><p><a class="reference internal" href="spectral_diagnostics.html"><span class="doc">Spectral diagnostics: periodogram, AR, Burg, and Capon</span></a>;
+<a class="reference internal" href="../examples/generated/ar_spectral_estimation.html"><span class="doc">AR spectral estimation</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Orthogonal lattice filters</p></td>
+<td><p>Lattice stages as local rotations/reflections of forward/backward errors.</p></td>
+<td><p><a class="reference internal" href="matrix_lattice.html"><span class="doc">Matrix lattice all-pass filters</span></a>;
+<a class="reference internal" href="../examples/generated/ml_unitary_convolution_demo.html"><span class="doc">ML unitary convolution</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>All-pass completion</p></td>
+<td><p>Completes a stable scalar or matrix factor into a lossless/energy-preserving
+response.</p></td>
+<td><p><a class="reference internal" href="../examples/generated/matrix_lattice_allpass.html"><span class="doc">Matrix lattice all-pass</span></a>;
+<a class="reference internal" href="../examples/generated/paraunitary_filter_bank_demo.html"><span class="doc">Paraunitary filter bank</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Hankel forms</p></td>
+<td><p>Encode input-output memory and moment/impulse-response matching.</p></td>
+<td><p><a class="reference internal" href="model_reduction_hankel_aak.html"><span class="doc">Model reduction, Hankel operators, Nehari, and AAK</span></a>;
+<a class="reference internal" href="../examples/generated/finite_hankel_model_reduction.html"><span class="doc">Finite-Hankel SISO reduction</span></a>;
+<a class="reference internal" href="../examples/generated/mimo_finite_hankel_model_reduction.html"><span class="doc">Finite block-Hankel MIMO reduction</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Padé approximation</p></td>
+<td><p>Builds rational approximants from moment or series matching.</p></td>
+<td><p><a class="reference internal" href="model_reduction_hankel_aak.html"><span class="doc">Model reduction, Hankel operators, Nehari, and AAK</span></a>; rational-approximation diagnostics</p></td>
+</tr>
+<tr class="row-even"><td><p>Walsh and rational approximation viewpoints</p></td>
+<td><p>Organize tables/families of rational approximants and explain degeneracies
+or near-cancellations.</p></td>
+<td><p>Rational-approximation diagnostics</p></td>
+</tr>
+<tr class="row-odd"><td><p>Schmidt pairs / Schmidt form</p></td>
+<td><p>Singular-vector structure of Hankel operators used in AAK theory.</p></td>
+<td><p><a class="reference internal" href="model_reduction_hankel_aak.html"><span class="doc">Model reduction, Hankel operators, Nehari, and AAK</span></a>; finite-section AAK diagnostics</p></td>
+</tr>
+<tr class="row-even"><td><p>Matrix Schur / matrix lattice forms</p></td>
+<td><p>MIMO generalization where reflection coefficients become contraction matrices.</p></td>
+<td><p><a class="reference internal" href="matrix_lattice.html"><span class="doc">Matrix lattice all-pass filters</span></a>;
+<a class="reference internal" href="../examples/generated/mimo_lattice_vs_block_levinson.html"><span class="doc">MIMO lattice vs block Levinson</span></a>;
+<a class="reference internal" href="../examples/generated/mimo_diagonal_equals_independent_siso.html"><span class="doc">Diagonal MIMO equals independent SISO</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="suggested-reading-order">
+<h2>Suggested reading order<a class="headerlink" href="#suggested-reading-order" title="Link to this heading">¶</a></h2>
+<p>For a new reader, the most useful path is:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="lattice_filters.html"><span class="doc">Scalar lattice and lattice-ladder IIR filters</span></a> for scalar stability and reflection coefficients.</p></li>
+<li><p><a class="reference internal" href="ar_estimators.html"><span class="doc">AR estimation: autocorrelation, Levinson-Durbin, and Burg</span></a> and <a class="reference internal" href="spectral_diagnostics.html"><span class="doc">Spectral diagnostics: periodogram, AR, Burg, and Capon</span></a> for prediction and spectra.</p></li>
+<li><p><a class="reference internal" href="adaptive_filters.html"><span class="doc">Adaptive lattice filters: NLMS and RLS</span></a> and <a class="reference internal" href="robust_lms_hinf.html"><span class="doc">LMS as a minimax robust filter</span></a> for adaptive filtering.</p></li>
+<li><p><a class="reference internal" href="model_reduction_hankel_aak.html"><span class="doc">Model reduction, Hankel operators, Nehari, and AAK</span></a> for the model-reduction scope map.</p></li>
+<li><p><a class="reference internal" href="multichannel_ar.html"><span class="doc">Multichannel AR and block Levinson</span></a> and <a class="reference internal" href="matrix_lattice.html"><span class="doc">Matrix lattice all-pass filters</span></a> for the matrix/MIMO direction.</p></li>
+</ol>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<p>For classical background, see <a class="reference internal" href="../references.html"><span class="doc">References and further reading</span></a>, especially the sections on
+scalar lattice filters, OPUC/Schur/Szegő theory, multirate/paraunitary systems,
+and Hankel/Nehari/AAK model reduction.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/concept_map.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,93 @@
+Million-sample IIR throughput for long acoustic-like tails
+==========================================================
+
+.. admonition:: Tutorial goal
+
+   Show why a compact IIR/lattice representation can process very long signals efficiently when a long decay has a low-order recursive description.
+
+.. note::
+
+   New to the terminology? See the :doc:`lattice DSP concept map <../../algorithms/concept_map>` and the :doc:`causality/data-use guide <../../theory/causality_and_data_use>` for how online, offline, block, and MIMO examples should be read.
+
+Context
+-------
+
+Long acoustic paths and reverberant decays are often represented as long FIR impulse
+responses.  That representation is flexible, but a tail with hundreds of thousands of taps
+is expensive to process repeatedly, especially when the signal itself has millions of samples.
+When the dominant decay is well described by a stable recursive model, an IIR/lattice
+representation can keep the long memory implicitly in a small state vector.
+
+Key idea and equations
+----------------------
+
+A long FIR tail computes
+
+.. math::
+
+   y[n] = \sum_{m=0}^{L-1} h[m] x[n-m].
+
+For the exponential tail
+
+.. math::
+
+   h[m] = (1-r) r^m, \qquad 0 < r < 1,
+
+an equivalent stable IIR recursion is
+
+.. math::
+
+   y[n] = (1-r) x[n] + r y[n-1].
+
+In the scalar lattice convention, this denominator has reflection coefficient
+``k_1 = -r``, so stability is exposed by ``|k_1| < 1``.
+
+How to read the result
+----------------------
+
+Compare the IIR recursive state count with the FIR truncation length and the local median timing on million-sample inputs.
+
+Run command
+-----------
+
+.. code-block:: bash
+
+   python examples/million_sample_iir_throughput.py
+
+Run status
+----------
+
+Return code: ``0``
+
+Captured stdout
+---------------
+
+.. code-block:: text
+
+   million-sample IIR throughput demonstration
+   ====================================================
+   samples: 1,000,000
+   stable pole radius: 0.99992000
+   IIR reflection coefficient: -0.99992000
+   IIR recursive state count: 1
+   IIR median time: 0.005594 s
+   IIR throughput: 178.76 million samples/s
+   
+   FIR truncation taps: 131,072
+   FFT length for FIR reference: 2,097,152
+   FFT/FIR median time: 0.081167 s
+   IIR speedup over FFT/FIR reference: 14.51x
+   relative RMS error from truncating the infinite IIR tail: 2.640e-05
+   omitted tail amplitude after 131,072 taps: 2.792e-05
+
+Generated data files
+--------------------
+
+* :download:`million_sample_iir_throughput.csv <_artifacts/million_sample_iir_throughput/million_sample_iir_throughput.csv>`
+
+Source code
+-----------
+
+.. literalinclude:: ../../../examples/million_sample_iir_throughput.py
+   :language: python
+   :linenos:

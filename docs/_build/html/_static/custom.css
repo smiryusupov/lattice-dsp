@@ -1,0 +1,4 @@
+.admonition.note { border-left: 4px solid #5b8def; }
+.admonition.warning { border-left: 4px solid #f0ad4e; }
+code.literal { font-size: 0.95em; }
+pre { font-size: 0.9em; }

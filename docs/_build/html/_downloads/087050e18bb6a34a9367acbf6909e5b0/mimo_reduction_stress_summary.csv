@@ -1,0 +1,25 @@
+case,method,order,relative_h2_error,relative_hankel_norm_error,tangential_sample_error,stable,retained_hankel_energy,state_radius,reduction_seconds,expansion_seconds,total_seconds,backend
+one_over_f_3x3,finite_block_hankel_mimo,10,0.01302665609509253,3.368108240542336e-05,6.905572962792081e-06,True,0.9999999988460722,0.983619012304803,0.005984457908198237,0.000601205974817276,0.006585663883015513,C++ finite_hankel_reduce_mimo + C++ state-space Markov expansion
+one_over_f_3x3,truncated_fir_baseline,10,0.09241277786627361,0.4466528226868149,0.0005363385699744717,True,nan,0.0,0.0,0.0,1.8274877220392227e-05,Python truncation baseline
+one_over_f_3x3,finite_block_hankel_mimo,30,nan,5.710618874552954e-13,nan,False,0.9999999999999959,6.788828972989809,0.010273685911670327,0.0,0.010273685911670327,C++ finite_hankel_reduce_mimo
+one_over_f_3x3,truncated_fir_baseline,30,0.04584986935826945,0.12608434695276904,2.057493805255701e-06,True,nan,0.0,0.0,0.0,1.0509975254535675e-05,Python truncation baseline
+one_over_f_3x3,finite_block_hankel_mimo,50,nan,1.838823551043022e-18,nan,False,0.9999999999999993,12.320798748525647,0.021364880027249455,0.0,0.021364880027249455,C++ finite_hankel_reduce_mimo
+one_over_f_3x3,truncated_fir_baseline,50,0.032910218091253086,0.0,2.2390466249841596e-08,True,nan,0.0,0.0,0.0,9.087147191166878e-06,Python truncation baseline
+one_over_f_3x3,finite_block_hankel_mimo,70,nan,6.04183533805126e-20,nan,True,nan,0.0,0.0006121369078755379,0.0,0.0006121369078755379,NumPy/LAPACK SVD + NumPy/BLAS Markov expansion
+one_over_f_3x3,truncated_fir_baseline,70,0.026440290753158062,0.0,2.953473160030306e-10,True,nan,0.0,0.0,0.0,7.623806595802307e-06,Python truncation baseline
+random_rational_10x10,finite_block_hankel_mimo,10,0.021805161576308678,0.009130142698916974,0.008199948789050844,True,0.9997181447093142,0.94445298473157,0.04456922598183155,0.0004849350079894066,0.04505416098982096,C++ finite_hankel_reduce_mimo + C++ state-space Markov expansion
+random_rational_10x10,truncated_fir_baseline,10,0.11946801355628324,0.235440157590878,0.0014491405807718623,True,nan,0.0,0.0,0.0,1.6712117940187454e-05,Python truncation baseline
+random_rational_10x10,finite_block_hankel_mimo,30,0.011038309554832556,0.00011415354777271571,5.862044680741255e-05,True,0.9999999791531963,0.9948914892621881,0.04776465892791748,0.0027626368682831526,0.05052729579620063,C++ finite_hankel_reduce_mimo + C++ state-space Markov expansion
+random_rational_10x10,truncated_fir_baseline,30,0.028575241888572092,0.0,4.799794290085853e-06,True,nan,0.0,0.0,0.0,3.385404124855995e-05,Python truncation baseline
+random_rational_10x10,finite_block_hankel_mimo,50,0.0015280203132992372,2.4598469364588397e-07,8.6735915207442e-08,True,0.9999999999999127,0.9708822009412132,0.05196303315460682,0.007027137093245983,0.0589901702478528,C++ finite_hankel_reduce_mimo + C++ state-space Markov expansion
+random_rational_10x10,truncated_fir_baseline,50,0.009654422688121523,0.0,2.6777353161479197e-08,True,nan,0.0,0.0,0.0,2.691103145480156e-05,Python truncation baseline
+random_rational_10x10,finite_block_hankel_mimo,70,0.0006212774482296733,1.0833906578293866e-10,3.357089493234754e-11,True,1.0,0.9775310322533741,0.000674425857141614,0.0032116828951984644,0.0038861087523400784,NumPy/LAPACK SVD + NumPy/BLAS Markov expansion
+random_rational_10x10,truncated_fir_baseline,70,0.003664868217750767,0.0,1.7590873456535096e-10,True,nan,0.0,0.0,0.0,1.9146129488945007e-05,Python truncation baseline
+ill_conditioned_2x2,finite_block_hankel_mimo,40,0.3739957896017092,0.23309515915212425,0.05118795497210758,True,0.8927739016555832,0.9933850048645961,0.010339904227294028,0.001856348942965269,0.012196253170259297,NumPy/LAPACK shared SVD + NumPy/BLAS Markov expansion
+ill_conditioned_2x2,truncated_fir_baseline,40,0.46668967629179864,0.8436373659027772,4.1652417866373163e-05,True,nan,0.0,0.0,0.0,9.106937795877457e-06,Python truncation baseline
+ill_conditioned_2x2,finite_block_hankel_mimo,100,0.09461730402744718,0.05507997281185358,0.0017634763933596256,True,0.9954973701631503,0.9963437289384416,0.012547763180918992,0.0027298741042613983,0.01527763728518039,NumPy/LAPACK shared SVD + NumPy/BLAS Markov expansion
+ill_conditioned_2x2,truncated_fir_baseline,100,0.2684139249170055,0.547079662749346,1.244539508130424e-10,True,nan,0.0,0.0,0.0,1.2503005564212799e-05,Python truncation baseline
+ill_conditioned_2x2,finite_block_hankel_mimo,200,nan,0.0016249154816393857,nan,True,0.9999971215260907,0.0,0.009837436373345554,0.0,0.009837436373345554,"NumPy/LAPACK shared SVD, Markov expansion skipped for ill-conditioned high order"
+ill_conditioned_2x2,truncated_fir_baseline,200,0.136006372855139,0.27181890973443495,0.0,True,nan,0.0,0.0,0.0,1.0359100997447968e-05,Python truncation baseline
+ill_conditioned_2x2,finite_block_hankel_mimo,400,nan,0.0,nan,True,1.0,0.0,0.009826004155911505,0.0,0.009826004155911505,"NumPy/LAPACK shared SVD, Markov expansion skipped for ill-conditioned high order"
+ill_conditioned_2x2,truncated_fir_baseline,400,0.035828673249656884,0.0,0.0,True,nan,0.0,0.0,0.0,6.462913006544113e-06,Python truncation baseline

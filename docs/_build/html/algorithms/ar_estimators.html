@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>AR estimation: autocorrelation, Levinson-Durbin, and Burg &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Spectral diagnostics: periodogram, AR, Burg, and Capon" href="spectral_diagnostics.html" />
+    <link rel="prev" title="LMS as a minimax robust filter" href="robust_lms_hinf.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robust_lms_hinf.html">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="robust_lms_hinf.html" title="previous chapter">LMS as a minimax robust filter</a></li>
+      <li>Next: <a href="spectral_diagnostics.html" title="next chapter">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="ar-estimation-autocorrelation-levinson-durbin-and-burg">
+<h1>AR estimation: autocorrelation, Levinson-Durbin, and Burg<a class="headerlink" href="#ar-estimation-autocorrelation-levinson-durbin-and-burg" title="Link to this heading">¶</a></h1>
+<section id="autoregressive-model">
+<h2>Autoregressive model<a class="headerlink" href="#autoregressive-model" title="Link to this heading">¶</a></h2>
+<p>An AR(<code class="docutils literal notranslate"><span class="pre">p</span></code>) process is modeled as</p>
+<div class="math notranslate nohighlight">
+\[x[n] + a_1 x[n-1] + \cdots + a_p x[n-p] = e[n],\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">e[n]</span></code> is a prediction error.  AR denominators are closely related to
+reflection/PARCOR coefficients, so AR estimation is a natural companion to
+lattice filtering.</p>
+</section>
+<section id="autocorrelation">
+<h2>Autocorrelation<a class="headerlink" href="#autocorrelation" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">autocorrelation(x,</span> <span class="pre">order)</span></code> computes the biased sample autocorrelation values
+needed by the Yule-Walker equations:</p>
+<div class="math notranslate nohighlight">
+\[r[k] = \frac{1}{N}\sum_{n=k}^{N-1} x[n]x[n-k].\]</div>
+</section>
+<section id="levinson-durbin-recursion">
+<h2>Levinson-Durbin recursion<a class="headerlink" href="#levinson-durbin-recursion" title="Link to this heading">¶</a></h2>
+<p>Levinson-Durbin solves the Toeplitz Yule-Walker system efficiently.  Each order
+adds one reflection coefficient and updates the denominator coefficients and
+prediction error power:</p>
+<div class="math notranslate nohighlight">
+\[k_m = -\frac{r[m] + \sum_{i=1}^{m-1} a_i^{(m-1)} r[m-i]}{E_{m-1}},\]</div>
+<div class="math notranslate nohighlight">
+\[E_m = E_{m-1}(1 - k_m^2).\]</div>
+<p>Depending on sign convention, packages may report the negative of the
+prediction-error reflection coefficient.  <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> uses one convention
+consistently across <code class="docutils literal notranslate"><span class="pre">levinson_durbin_*</span></code> and denominator conversion helpers.</p>
+</section>
+<section id="burg-recursion">
+<h2>Burg recursion<a class="headerlink" href="#burg-recursion" title="Link to this heading">¶</a></h2>
+<p>The Burg method estimates AR parameters from forward and backward prediction
+errors instead of first estimating a full autocorrelation sequence.  It is often
+used for high-resolution spectral estimation from short records.  <code class="docutils literal notranslate"><span class="pre">burg_reflection</span></code>
+returns reflection coefficients and <code class="docutils literal notranslate"><span class="pre">burg_denominator</span></code> returns the corresponding
+AR denominator.</p>
+<p>The implementation uses compact forward/backward error vectors at each order so
+stale boundary samples do not corrupt later reflection coefficients.</p>
+</section>
+<section id="batch-estimation-versus-causal-filtering">
+<h2>Batch estimation versus causal filtering<a class="headerlink" href="#batch-estimation-versus-causal-filtering" title="Link to this heading">¶</a></h2>
+<p>Burg and Levinson-Durbin in this package are estimation algorithms, not runtime
+streaming filters.  <code class="docutils literal notranslate"><span class="pre">burg_reflection(x,</span> <span class="pre">order)</span></code> uses the supplied finite
+record <code class="docutils literal notranslate"><span class="pre">x</span></code> to compute reflection coefficients; <code class="docutils literal notranslate"><span class="pre">levinson_durbin_*</span></code> uses a
+finite autocorrelation sequence.  In that sense, coefficient estimation is
+batch/offline unless the caller maintains an online autocorrelation or sliding
+window externally.</p>
+<p>After estimation, the AR denominator represents a causal recursive model,</p>
+<div class="math notranslate nohighlight">
+\[x[n] = -a_1 x[n-1] - \cdots - a_p x[n-p] + e[n],\]</div>
+<p>and the corresponding IIR or prediction-error filter only needs past samples
+and its current state.</p>
+</section>
+<section id="relevant-apis">
+<h2>Relevant APIs<a class="headerlink" href="#relevant-apis" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">autocorrelation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levinson_durbin_reflection</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levinson_durbin_denominator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">levinson_durbin_error</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burg_reflection</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burg_denominator</span></code></p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/burg_levinson_ar_tools.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/ar_spectral_estimation.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/adaptive_prediction_ar.py</span></code></p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<p>See <a class="reference internal" href="../references.html"><span class="doc">References and further reading</span></a> for Burg maximum-entropy spectral analysis, Durbin’s
+Toeplitz recursion, and adaptive-filtering books.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/ar_estimators.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Why direct-form adaptive IIR updates can become unstable &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OpenMP batch processing for independent streams" href="openmp_batch_processing.html" />
+    <link rel="prev" title="Reflection coefficients as a stability coordinate system" href="reflection_coefficients_stability_demo.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="reflection_coefficients_stability_demo.html" title="previous chapter">Reflection coefficients as a stability coordinate system</a></li>
+      <li>Next: <a href="openmp_batch_processing.html" title="next chapter">OpenMP batch processing for independent streams</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="why-direct-form-adaptive-iir-updates-can-become-unstable">
+<h1>Why direct-form adaptive IIR updates can become unstable<a class="headerlink" href="#why-direct-form-adaptive-iir-updates-can-become-unstable" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Compare an unconstrained denominator update with bounded reflection-parameterized adaptation.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>FIR LMS already has a real learning-rate problem: the step size controls convergence,
+misadjustment, and divergence.  Adaptive IIR keeps that tuning issue and adds a structural
+one, because denominator coefficients move the poles.  This tutorial intentionally uses a
+simple aggressive direct-form update to show the failure mode, then compares it with an
+adaptive lattice model whose reflection coefficients remain bounded.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>FIR LMS uses</p>
+<div class="math notranslate nohighlight">
+\[w[n+1] = w[n] + \mu x_n e[n],\]</div>
+<p>so step-size selection is already part of the design.  Direct-form IIR adaptation also
+requires all poles of <code class="docutils literal notranslate"><span class="pre">A(z)</span></code> to stay inside the unit circle.  In reflection form, the
+scalar sufficient condition is simply</p>
+<div class="math notranslate nohighlight">
+\[|k_i| &lt; 1-\epsilon.\]</div>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Look at the pole-radius figure.  Values above 1 indicate instability in the direct denominator update; the lattice path enforces stability by construction.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/stability_vs_direct_iir.py
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>target denominator: [1.0, 0.369, -0.55]
+target max pole radius: 0.94873
+
+direct-form max pole radius: 1.01772
+direct-form final finite MSE: 5.42434811044316e-23
+
+lattice learned reflection: [0.74967, -0.65528]
+lattice learned denominator: [1.0, 0.25842, -0.65528]
+lattice max pole radius: 0.94896
+lattice final MSE: 0.012732257568221895
+
+Takeaway: the lattice path may still need tuning, but denominator stability
+is enforced by the reflection parameterization instead of hoped for after
+a direct coefficient update.
+A low finite-window MSE is not itself a stability certificate.
+</pre></div>
+</div>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/stability_vs_direct_iir.png"><img alt="stability vs direct iir" src="../../_images/stability_vs_direct_iir.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">stability_vs_direct_iir.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Why reflection-parameterized adaptive IIR is useful.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">This example compares two toy adaptive IIR identifiers:</span>
+<span class="linenos">  4</span>
+<span class="linenos">  5</span><span class="sd">1. a deliberately simple direct-form denominator update; and</span>
+<span class="linenos">  6</span><span class="sd">2. `AdaptiveLatticeLadderNLMS`, whose denominator is represented by bounded</span>
+<span class="linenos">  7</span><span class="sd">   reflection/PARCOR coefficients.</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="sd">The direct-form update is intentionally aggressive so the pole radius can drift</span>
+<span class="linenos"> 10</span><span class="sd">outside the unit circle.  This illustrates that the direct denominator</span>
+<span class="linenos"> 11</span><span class="sd">coefficients are numerically awkward stability coordinates: stability is a root</span>
+<span class="linenos"> 12</span><span class="sd">location condition, not a per-coefficient box constraint.</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span><span class="sd">Even FIR LMS requires careful learning-rate selection: `mu` controls convergence</span>
+<span class="linenos"> 15</span><span class="sd">speed, misadjustment, and possible divergence.  Adaptive IIR keeps that tuning</span>
+<span class="linenos"> 16</span><span class="sd">problem and adds a structural stability problem because denominator updates move</span>
+<span class="linenos"> 17</span><span class="sd">poles.</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="sd">The lattice update keeps `|k_i| &lt; 1 - margin` by construction.  The example is</span>
+<span class="linenos"> 20</span><span class="sd">therefore about parameterization and stability enforcement, not about claiming</span>
+<span class="linenos"> 21</span><span class="sd">that this specific toy adaptation always has the lowest MSE.</span>
+<span class="linenos"> 22</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 27</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 28</span>
+<span class="linenos"> 29</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="kn">from</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">,</span> <span class="n">LatticeIIR</span><span class="p">,</span> <span class="n">reflection_to_denominator</span>
+<span class="linenos"> 32</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="k">def</span><span class="w"> </span><span class="nf">max_pole_radius</span><span class="p">(</span><span class="n">denominator</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos"> 35</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return max absolute pole radius for A(z)=1+a1 z^-1+...+aN z^-N.&quot;&quot;&quot;</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span>    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">denominator</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 38</span>    <span class="k">if</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+<span class="linenos"> 39</span>        <span class="k">return</span> <span class="mf">0.0</span>
+<span class="linenos"> 40</span>    <span class="n">roots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roots</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+<span class="linenos"> 41</span>    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">roots</span><span class="p">)))</span> <span class="k">if</span> <span class="n">roots</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span>
+<span class="linenos"> 42</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span><span class="k">def</span><span class="w"> </span><span class="nf">direct_form_identifier</span><span class="p">(</span>
+<span class="linenos"> 45</span>    <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="linenos"> 46</span>    <span class="n">desired</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="linenos"> 47</span>    <span class="o">*</span><span class="p">,</span>
+<span class="linenos"> 48</span>    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+<span class="linenos"> 49</span>    <span class="n">mu_num</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">,</span>
+<span class="linenos"> 50</span>    <span class="n">mu_den</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.08</span><span class="p">,</span>
+<span class="linenos"> 51</span>    <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+<span class="linenos"> 52</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="linenos"> 53</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Tiny approximate-gradient adaptive direct-form IIR identifier.</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span><span class="sd">    This is not a recommended algorithm.  It exists to show why unconstrained</span>
+<span class="linenos"> 56</span><span class="sd">    denominator updates are dangerous in adaptive IIR examples.</span>
+<span class="linenos"> 57</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 58</span>
+<span class="linenos"> 59</span>    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 60</span>    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># denominator is [1, a1, a2, ...]</span>
+<span class="linenos"> 61</span>    <span class="n">x_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 62</span>    <span class="n">y_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 63</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 64</span>    <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 65</span>    <span class="n">pole_radii</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span>    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="linenos"> 68</span>        <span class="n">x_hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">x_hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos"> 69</span>        <span class="n">x_hist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span>
+<span class="linenos"> 70</span>        <span class="n">y_n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">y_hist</span><span class="p">))</span>
+<span class="linenos"> 71</span>        <span class="n">e_n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">desired</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_n</span><span class="p">)</span>
+<span class="linenos"> 72</span>
+<span class="linenos"> 73</span>        <span class="n">norm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_hist</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_hist</span><span class="p">,</span> <span class="n">y_hist</span><span class="p">)</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">)</span>
+<span class="linenos"> 74</span>        <span class="n">b</span> <span class="o">+=</span> <span class="p">(</span><span class="n">mu_num</span> <span class="o">*</span> <span class="n">e_n</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_hist</span>
+<span class="linenos"> 75</span>        <span class="c1"># Frozen-gradient update for y = b*x - a*y_history.</span>
+<span class="linenos"> 76</span>        <span class="c1"># This can move the denominator outside the stability region.</span>
+<span class="linenos"> 77</span>        <span class="n">a</span> <span class="o">-=</span> <span class="p">(</span><span class="n">mu_den</span> <span class="o">*</span> <span class="n">e_n</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_hist</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span>        <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_n</span>
+<span class="linenos"> 80</span>        <span class="n">error</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_n</span>
+<span class="linenos"> 81</span>        <span class="n">y_hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">y_hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos"> 82</span>        <span class="n">y_hist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_n</span>
+<span class="linenos"> 83</span>        <span class="n">pole_radii</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_pole_radius</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="p">]))</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">y_n</span><span class="p">)</span> <span class="ow">or</span> <span class="n">pole_radii</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.25</span><span class="p">:</span>
+<span class="linenos"> 86</span>            <span class="n">error</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="linenos"> 87</span>            <span class="n">pole_radii</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">pole_radii</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+<span class="linenos"> 88</span>            <span class="k">break</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">pole_radii</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span><span class="k">def</span><span class="w"> </span><span class="nf">artifact_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="linenos"> 94</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the directory for generated figures/data.&quot;&quot;&quot;</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LATTICE_DSP_ARTIFACT_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/example-artifacts&quot;</span><span class="p">))</span>
+<span class="linenos"> 97</span>    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 98</span>    <span class="k">return</span> <span class="n">path</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">102</span>    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="linenos">103</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10_000</span><span class="p">)</span>
+<span class="linenos">104</span>
+<span class="linenos">105</span>    <span class="n">target_reflection</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.82</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.55</span><span class="p">]</span>
+<span class="linenos">106</span>    <span class="n">target_numerator</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.35</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+<span class="linenos">107</span>    <span class="n">desired</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">LatticeIIR</span><span class="p">(</span><span class="n">target_reflection</span><span class="p">,</span> <span class="n">target_numerator</span><span class="p">)</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>    <span class="n">target_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reflection_to_denominator</span><span class="p">(</span><span class="n">target_reflection</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">110</span>    <span class="n">target_radius</span> <span class="o">=</span> <span class="n">max_pole_radius</span><span class="p">(</span><span class="n">target_den</span><span class="p">)</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span>    <span class="n">_</span><span class="p">,</span> <span class="n">direct_error</span><span class="p">,</span> <span class="n">direct_radii</span> <span class="o">=</span> <span class="n">direct_form_identifier</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">desired</span><span class="p">)</span>
+<span class="linenos">113</span>
+<span class="linenos">114</span>    <span class="n">lattice</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+<span class="linenos">115</span>        <span class="n">initial_reflection</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="linenos">116</span>        <span class="n">initial_taps</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="linenos">117</span>        <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span>
+<span class="linenos">118</span>        <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.0015</span><span class="p">,</span>
+<span class="linenos">119</span>        <span class="n">margin</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+<span class="linenos">120</span>    <span class="p">)</span>
+<span class="linenos">121</span>    <span class="n">lattice_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lattice</span><span class="o">.</span><span class="n">adapt_block</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">desired</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">122</span>    <span class="n">learned_den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lattice</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos">123</span>
+<span class="linenos">124</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;target denominator:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">target_den</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos">125</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;target max pole radius:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">target_radius</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="linenos">126</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">127</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;direct-form max pole radius:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">direct_radii</span><span class="p">)),</span> <span class="mi">5</span><span class="p">))</span>
+<span class="linenos">128</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;direct-form final finite MSE:&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">direct_error</span><span class="p">[</span><span class="o">-</span><span class="mi">1000</span><span class="p">:]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="linenos">129</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">130</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lattice learned reflection:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">lattice</span><span class="o">.</span><span class="n">reflection</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos">131</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lattice learned denominator:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">learned_den</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos">132</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lattice max pole radius:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">max_pole_radius</span><span class="p">(</span><span class="n">learned_den</span><span class="p">),</span> <span class="mi">5</span><span class="p">))</span>
+<span class="linenos">133</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lattice final MSE:&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lattice_error</span><span class="p">[</span><span class="o">-</span><span class="mi">1000</span><span class="p">:]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="linenos">134</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">135</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Takeaway: the lattice path may still need tuning, but denominator stability&quot;</span><span class="p">)</span>
+<span class="linenos">136</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;is enforced by the reflection parameterization instead of hoped for after&quot;</span><span class="p">)</span>
+<span class="linenos">137</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a direct coefficient update.&quot;</span><span class="p">)</span>
+<span class="linenos">138</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A low finite-window MSE is not itself a stability certificate.&quot;</span><span class="p">)</span>
+<span class="linenos">139</span>
+<span class="linenos">140</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos">141</span>        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos">142</span>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="linenos">143</span>        <span class="k">return</span>
+<span class="linenos">144</span>
+<span class="linenos">145</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="linenos">146</span>    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">direct_radii</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;direct-form adaptive denominator&quot;</span><span class="p">)</span>
+<span class="linenos">147</span>    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;unit circle&quot;</span><span class="p">)</span>
+<span class="linenos">148</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Direct denominator update can cross the stability boundary&quot;</span><span class="p">)</span>
+<span class="linenos">149</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">)</span>
+<span class="linenos">150</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;max pole radius&quot;</span><span class="p">)</span>
+<span class="linenos">151</span>    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">152</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">153</span>    <span class="n">out</span> <span class="o">=</span> <span class="n">artifact_dir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;stability_vs_direct_iir.png&quot;</span>
+<span class="linenos">154</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="linenos">155</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">156</span>
+<span class="linenos">157</span>
+<span class="linenos">158</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">159</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/stability_vs_direct_iir.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LMS as a minimax robust filter &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AR estimation: autocorrelation, Levinson-Durbin, and Burg" href="ar_estimators.html" />
+    <link rel="prev" title="Adaptive lattice filters: NLMS and RLS" href="adaptive_filters.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Algorithms overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concept_map.html">The lattice DSP concept map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lattice_filters.html">Scalar lattice and lattice-ladder IIR filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_filters.html">Adaptive lattice filters: NLMS and RLS</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">LMS as a minimax robust filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ar_estimators.html">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_diagnostics.html">Spectral diagnostics: periodogram, AR, Burg, and Capon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction_hankel_aak.html">Model reduction, Hankel operators, Nehari, and AAK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multichannel_ar.html">Multichannel AR and block Levinson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice.html">Matrix lattice all-pass filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur and J-inner diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_verification.html">Tangential Schur verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_verification_map.html">MIMO verification map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="streaming_blocks.html">Streaming and block processing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Algorithms</a><ul>
+      <li>Previous: <a href="adaptive_filters.html" title="previous chapter">Adaptive lattice filters: NLMS and RLS</a></li>
+      <li>Next: <a href="ar_estimators.html" title="next chapter">AR estimation: autocorrelation, Levinson-Durbin, and Burg</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="lms-as-a-minimax-robust-filter">
+<h1>LMS as a minimax robust filter<a class="headerlink" href="#lms-as-a-minimax-robust-filter" title="Link to this heading">¶</a></h1>
+<p>This page gives the conceptual background for the tutorial
+<code class="docutils literal notranslate"><span class="pre">examples/hinf_lms_reproduction.py</span></code>.  The purpose is not to replace the
+original paper, but to make one of its most useful messages visible in a small
+reproducible experiment.</p>
+<section id="the-historical-surprise">
+<h2>The historical surprise<a class="headerlink" href="#the-historical-surprise" title="Link to this heading">¶</a></h2>
+<p>LMS is often introduced as a cheap stochastic-gradient approximation to a
+least-squares problem.  RLS, by contrast, is presented as the recursion that
+solves a recursive least-squares objective exactly.  That story is correct, but
+it is incomplete.</p>
+<p>The historical timing makes the result memorable.  The LMS/delta-rule idea goes
+back to Widrow and Hoff’s 1960 adaptive switching work.  For more than three
+decades, LMS was mainly taught as the simple, inexpensive member of the
+least-squares family: useful, robust in practice, but approximate.  Hassibi,
+Sayed, and Kailath then showed in their 1996 paper <em>H∞ Optimality of the LMS
+Algorithm</em> that LMS also has a deterministic robust-filtering interpretation.</p>
+<p>From this viewpoint, LMS is tied to an H∞ minimax problem: it controls a
+worst-case energy gain from disturbances to estimation errors.  The same
+recursion can therefore look like a crude least-squares approximation from one
+angle, and like a central robust filter from another.  That is the flagship
+lesson of the tutorial: the algorithm did not change, but the performance lens
+did.</p>
+<p>This also connects to a practical point emphasized in classical adaptive-filter
+texts, including Odile Macchi’s LMS-focused treatment: even FIR LMS is not
+“automatic.”  The learning rate controls convergence speed, misadjustment, and
+divergence.  Recursive/IIR adaptation keeps that step-size problem and adds a
+structural one: denominator updates move the poles of the filter.</p>
+</section>
+<section id="adaptive-filter-model">
+<h2>Adaptive-filter model<a class="headerlink" href="#adaptive-filter-model" title="Link to this heading">¶</a></h2>
+<p>The tutorial uses the standard linear adaptive-filtering model</p>
+<div class="math notranslate nohighlight">
+\[d_i = u_i^T w_\star + v_i,\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">u_i</span></code> is the input/regressor, <code class="docutils literal notranslate"><span class="pre">w_*</span></code> is the unknown parameter vector,
+and <code class="docutils literal notranslate"><span class="pre">v_i</span></code> is a disturbance.  The estimator produces <code class="docutils literal notranslate"><span class="pre">w_i</span></code> and the prediction
+error is</p>
+<div class="math notranslate nohighlight">
+\[e_i = d_i - u_i^T w_i.\]</div>
+<p>The least-squares viewpoint asks for small accumulated squared error, often
+under statistical assumptions on the disturbance.  The robust viewpoint asks a
+different question: how much can an arbitrary disturbance sequence amplify the
+error sequence?</p>
+</section>
+<section id="finite-horizon-gain-diagnostic">
+<h2>Finite-horizon gain diagnostic<a class="headerlink" href="#finite-horizon-gain-diagnostic" title="Link to this heading">¶</a></h2>
+<p>For fixed regressors and a fixed adaptive algorithm, the map from disturbance
+samples to noise-induced prediction errors is linear after subtracting the
+zero-disturbance trajectory.  The tutorial forms this finite-horizon sensitivity
+matrix <code class="docutils literal notranslate"><span class="pre">M</span></code> numerically and estimates</p>
+<div class="math notranslate nohighlight">
+\[\gamma^2 = \sup_{v\ne0}\frac{\|M v\|_2^2}{\|v\|_2^2}
+         = \sigma_{\max}(M)^2.\]</div>
+<p>The right singular vector associated with <code class="docutils literal notranslate"><span class="pre">σ_max</span></code> is the finite-horizon
+worst-case disturbance direction for that algorithm and regressor sequence.
+This is not a full proof of H∞ optimality.  It is a visual diagnostic that makes
+the H∞ question concrete.</p>
+</section>
+<section id="how-to-read-the-tutorial">
+<h2>How to read the tutorial<a class="headerlink" href="#how-to-read-the-tutorial" title="Link to this heading">¶</a></h2>
+<p>The generated page compares LMS, NLMS, and RLS in two ways.</p>
+<ul class="simple">
+<li><p>Under benign random disturbance, RLS usually converges fastest.  This is the
+classical least-squares story.</p></li>
+<li><p>Under a worst-case disturbance direction, an estimator that looks excellent
+on random noise can show a larger disturbance-to-error gain.  This is the
+minimax robustness story.</p></li>
+</ul>
+<p>The point is not that LMS is always better than RLS.  The point is that the
+algorithmic objective being emphasized has changed.  Average-case and worst-case
+views can rank algorithms differently.</p>
+</section>
+<section id="connection-to-lattice-filters">
+<h2>Connection to lattice filters<a class="headerlink" href="#connection-to-lattice-filters" title="Link to this heading">¶</a></h2>
+<p>This package focuses on stable recursive DSP.  The H∞ tutorial belongs here
+because it explains another form of robustness.  Lattice parameterizations
+control stability by working in reflection-coefficient coordinates; the
+H∞ viewpoint controls worst-case disturbance amplification.  Both are part of
+the same practical theme: recursive adaptive filters should not be judged only
+by their behavior under friendly stochastic assumptions.</p>
+</section>
+<section id="run-the-tutorial">
+<h2>Run the tutorial<a class="headerlink" href="#run-the-tutorial" title="Link to this heading">¶</a></h2>
+<p>Build the generated Sphinx tutorial pages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/build_docs_with_results.sh
+</pre></div>
+</div>
+<p>Then open the examples gallery and select <strong>LMS through the H-infinity lens</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xdg-open<span class="w"> </span>docs/_build/html/examples/index.html
+</pre></div>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>B. Widrow and M. E. Hoff, Jr., “Adaptive Switching Circuits,” 1960 IRE
+WESCON Convention Record, 1960.</p></li>
+<li><p>Odile Macchi, <em>Adaptive Processing: The Least Mean Squares Approach with
+Applications in Transmission</em>, Wiley, 1995.</p></li>
+<li><p>B. Hassibi, A. H. Sayed, and T. Kailath, “H∞ Optimality of the LMS
+Algorithm,” <em>IEEE Transactions on Signal Processing</em>, 44(2), 1996.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/algorithms/robust_lms_hinf.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

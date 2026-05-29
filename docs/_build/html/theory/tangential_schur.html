@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tangential Schur, Pick matrices, and J-inner factors &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Algorithms" href="../algorithms/index.html" />
+    <link rel="prev" title="Interpolation, Schur stability, and why lattice coordinates help" href="interpolation_schur_motivation.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="package_positioning.html">Package positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing_algorithms.html">Choosing an algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="causality_and_data_use.html">Causality, data use, and signal roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering_relationships.html">Filtering relationships and signal-processing vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardy_hankel_state_space.html">Hardy, Hankel, reachability, and observability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interpolation_schur_motivation.html">Interpolation, Schur stability, and why lattice coordinates help</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tangential Schur, Pick matrices, and J-inner factors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Theory guide</a><ul>
+      <li>Previous: <a href="interpolation_schur_motivation.html" title="previous chapter">Interpolation, Schur stability, and why lattice coordinates help</a></li>
+      <li>Next: <a href="../algorithms/index.html" title="next chapter">Algorithms</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="tangential-schur-pick-matrices-and-j-inner-factors">
+<h1>Tangential Schur, Pick matrices, and J-inner factors<a class="headerlink" href="#tangential-schur-pick-matrices-and-j-inner-factors" title="Link to this heading">¶</a></h1>
+<p>This page describes the experimental tangential-Schur layer in <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code>.
+It is deliberately finite-dimensional and definite.  The goal is to give the
+matrix/MIMO lattice examples a transparent interpolation-theory baseline without
+claiming a complete generalized indefinite Schur solver or the full manifold
+parametrization algorithms used in the Hanzon–Olivi–Peeters/Marmorat line of
+work.</p>
+<section id="schur-functions-and-the-rkhs-pick-viewpoint">
+<h2>Schur functions and the RKHS/Pick viewpoint<a class="headerlink" href="#schur-functions-and-the-rkhs-pick-viewpoint" title="Link to this heading">¶</a></h2>
+<p>A matrix-valued Schur function is an analytic transfer matrix
+<span class="math notranslate nohighlight">\(S(z)\in\mathbb{C}^{p\times q}\)</span> on the unit disk with</p>
+<div class="math notranslate nohighlight">
+\[\lVert S\rVert_\infty \le 1.\]</div>
+<p>Equivalently, the de Branges–Rovnyak kernel</p>
+<div class="math notranslate nohighlight">
+\[K_S(z,w)
+=
+\frac{I_q-S(z)^H S(w)}{1-\overline z w}\]</div>
+<p>is positive.  Right tangential interpolation prescribes only selected input
+directions:</p>
+<div class="math notranslate nohighlight">
+\[S(z_i)U_i = V_i,
+\qquad |z_i|&lt;1.\]</div>
+<p>Here <span class="math notranslate nohighlight">\(U_i\in\mathbb{C}^{q\times r_i}\)</span> contains input directions and
+<span class="math notranslate nohighlight">\(V_i\in\mathbb{C}^{p\times r_i}\)</span> contains the desired output vectors.  A
+rank-one condition uses a single vector <span class="math notranslate nohighlight">\(u_i\)</span> and value <span class="math notranslate nohighlight">\(v_i\)</span>.</p>
+<p>The finite Pick matrix implemented by the package is exactly the Gram matrix of
+this kernel tested on the tangential columns:</p>
+<div class="math notranslate nohighlight">
+\[P_{ij}
+=
+U_i^H K_S(z_i,z_j) U_j
+=
+\frac{U_i^H U_j - V_i^H V_j}
+     {1-\overline{z_i}z_j}.\]</div>
+<p>The definite Schur-class feasibility condition is</p>
+<div class="math notranslate nohighlight">
+\[P\succeq 0.\]</div>
+<p>This is the RKHS reason that the Pick matrix appears: feasible interpolation
+data must make the finite kernel Gram matrix positive semidefinite.  In the
+implemented module this is used as a finite certificate and conditioning
+diagnostic, not as a black-box synthesis of all rational solutions.</p>
+</section>
+<section id="constant-schur-solution-helper">
+<h2>Constant Schur solution helper<a class="headerlink" href="#constant-schur-solution-helper" title="Link to this heading">¶</a></h2>
+<p>The package includes <code class="docutils literal notranslate"><span class="pre">constant_schur_solution</span></code> for the special case where the
+data are compatible with a constant matrix contraction.  It solves</p>
+<div class="math notranslate nohighlight">
+\[S_0 [U_1\;\cdots\;U_n] = [V_1\;\cdots\;V_n]\]</div>
+<p>by a pseudoinverse and then checks both interpolation residual and contractivity.
+This is not a general Schur-synthesis routine.  It is a useful sanity check for
+examples because the exact solution is known.</p>
+</section>
+<section id="lossless-all-pass-functions-and-j-inner-matrices">
+<h2>Lossless/all-pass functions and J-inner matrices<a class="headerlink" href="#lossless-all-pass-functions-and-j-inner-matrices" title="Link to this heading">¶</a></h2>
+<p>For a square transfer matrix <span class="math notranslate nohighlight">\(Q(z)\in\mathbb{C}^{p\times p}\)</span>, a stable
+lossless or inner all-pass function satisfies</p>
+<div class="math notranslate nohighlight">
+\[Q(e^{j\omega})^H Q(e^{j\omega}) = I_p\]</div>
+<p>for almost every point on the unit circle.  In state-space/DSP language this is
+an energy-preserving stable all-pass system.  The package has a causal runtime
+for such forward matrix-lattice all-pass filters through
+<code class="docutils literal notranslate"><span class="pre">OnlineMatrixLatticeAllPass</span></code>.</p>
+<p>Tangential Schur theory often works with a larger signature matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}J=
+\begin{bmatrix}
+   I_p &amp; 0 \\
+   0 &amp; -I_q
+\end{bmatrix}\end{split}\]</div>
+<p>and with <span class="math notranslate nohighlight">\(J\)</span>-inner transfer matrices <span class="math notranslate nohighlight">\(\Theta(z)\)</span> satisfying</p>
+<div class="math notranslate nohighlight">
+\[\Theta(e^{j\omega})^H J \Theta(e^{j\omega}) = J.\]</div>
+<p>These <span class="math notranslate nohighlight">\(J\)</span>-inner matrices are the natural objects in linear-fractional
+Schur transformations.  They are related to, but not identical with, the square
+all-pass runtime filters in the package: the runtime filters act on physical
+signals, while the <span class="math notranslate nohighlight">\(J\)</span>-inner factors act on graph vectors
+<span class="math notranslate nohighlight">\([v;u]\)</span> and parameterize interpolation transformations.</p>
+</section>
+<section id="potapov-blaschke-factors">
+<h2>Potapov–Blaschke factors<a class="headerlink" href="#potapov-blaschke-factors" title="Link to this heading">¶</a></h2>
+<p>A scalar Blaschke factor for a point <span class="math notranslate nohighlight">\(a\)</span> in the unit disk is</p>
+<div class="math notranslate nohighlight">
+\[b_a(z)=\frac{z-a}{1-\overline a z},
+\qquad |b_a(e^{j\omega})|=1.\]</div>
+<p>A Potapov–Blaschke factor is the matrix/signature analogue.  For strict
+rank-one data <span class="math notranslate nohighlight">\(S(a)u=v\)</span>, define the graph vector</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\xi=\begin{bmatrix}v\\u\end{bmatrix},
+\qquad
+\xi^H J\xi=\lVert v\rVert_2^2-\lVert u\rVert_2^2&lt;0.\end{split}\]</div>
+<p>The package forms the <span class="math notranslate nohighlight">\(J\)</span>-orthogonal projection</p>
+<div class="math notranslate nohighlight">
+\[P_\xi = \xi(\xi^H J\xi)^{-1}\xi^H J\]</div>
+<p>and the elementary factor</p>
+<div class="math notranslate nohighlight">
+\[\Theta_a(z)=I+(b_a(z)-1)P_\xi.\]</div>
+<p>The two identities checked in code are</p>
+<div class="math notranslate nohighlight">
+\[\Theta_a(e^{j\omega})^H J\Theta_a(e^{j\omega}) = J,
+\qquad
+\Theta_a(a)\xi=0.\]</div>
+<p>Products of such factors remain <span class="math notranslate nohighlight">\(J\)</span>-inner on the unit circle.  In the
+package, <code class="docutils literal notranslate"><span class="pre">TangentialPotapovFactor</span></code> and <code class="docutils literal notranslate"><span class="pre">PotapovProduct</span></code> are used as
+inspectable diagnostics: they expose the same algebraic invariants that underlie
+matrix lossless/lattice theory, without claiming full generalized Schur
+synthesis.</p>
+</section>
+<section id="schur-parameters">
+<h2>Schur parameters<a class="headerlink" href="#schur-parameters" title="Link to this heading">¶</a></h2>
+<p>In the scalar lattice/AR part of the package, Schur parameters are the familiar
+reflection/PARCOR coefficients.  Bounded scalar Schur parameters
+<span class="math notranslate nohighlight">\(|k_i|&lt;1\)</span> give a stable all-pole lattice denominator.</p>
+<p>In multivariable tangential-Schur theory, a chart is usually described by chosen
+interpolation points and directions together with contractive interpolation
+values.  Informally, the values <span class="math notranslate nohighlight">\(v_i\)</span> in</p>
+<div class="math notranslate nohighlight">
+\[Q_i(w_i)u_i = v_i,
+\qquad \lVert v_i\rVert &lt; 1,\]</div>
+<p>play the role of Schur parameters in that chart.  The Hanzon–Olivi–Peeters and
+Marmorat literature uses such parameters to build overlapping local
+parametrizations of fixed-degree stable all-pass/lossless systems and to connect
+them with balanced state-space realizations.</p>
+<p>The current package does <strong>not</strong> implement that full recursive chart algorithm.
+It implements the finite Pick matrix, constant-solution checks, and elementary
+rank-one <span class="math notranslate nohighlight">\(J\)</span>-inner/Potapov factors that make the surrounding algebra
+visible and testable.</p>
+</section>
+<section id="relation-to-hanzon-olivi-peeters-marmorat-algorithms">
+<h2>Relation to Hanzon–Olivi–Peeters/Marmorat algorithms<a class="headerlink" href="#relation-to-hanzon-olivi-peeters-marmorat-algorithms" title="Link to this heading">¶</a></h2>
+<p>The implemented utilities are in the same mathematical ecosystem as the
+real/complex tangential Schur algorithms used for manifolds of multivariable
+stable all-pass systems, but they are not the same algorithm.</p>
+<p>What those works use, in broad terms, is a recursive tangential-Schur procedure:
+chosen chart data define interpolation conditions; each step applies a
+linear-fractional transformation associated with a degree-one <span class="math notranslate nohighlight">\(J\)</span>-inner
+factor; the resulting Schur parameters provide local coordinates on a manifold
+of fixed-degree lossless/all-pass systems, often with associated balanced
+state-space realizations and chart-selection strategies.</p>
+<p>What <code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> implements in this release is narrower:</p>
+<ul class="simple">
+<li><p>finite right-tangential data containers;</p></li>
+<li><p>the definite Pick/RKHS Gram matrix <span class="math notranslate nohighlight">\(P\succeq0\)</span>;</p></li>
+<li><p>residual checks for candidate transfer matrices;</p></li>
+<li><p>constant contractive solutions when the data are compatible with one;</p></li>
+<li><p>elementary rank-one Potapov–Blaschke/<span class="math notranslate nohighlight">\(J\)</span>-inner factors;</p></li>
+<li><p>dense-grid <span class="math notranslate nohighlight">\(J\)</span>-inner residual diagnostics.</p></li>
+</ul>
+<p>Not implemented here:</p>
+<ul class="simple">
+<li><p>recursive extraction of Schur parameters from an arbitrary matrix inner
+function;</p></li>
+<li><p>an atlas of overlapping charts for fixed McMillan-degree lossless systems;</p></li>
+<li><p>balanced canonical state-space forms generated by the tangential-Schur
+recursion;</p></li>
+<li><p>manifold optimization for matrix <span class="math notranslate nohighlight">\(H_2\)</span> approximation;</p></li>
+<li><p>generalized indefinite or singular tangential interpolation.</p></li>
+</ul>
+<p>So the precise statement is: this module provides a tested finite definite
+Pick/Potapov baseline that is compatible with the language used in that
+literature, but it should not be described as the full Marmorat–Hanzon–Olivi–
+Peeters tangential-Schur manifold algorithm.</p>
+</section>
+<section id="verification-philosophy">
+<h2>Verification philosophy<a class="headerlink" href="#verification-philosophy" title="Link to this heading">¶</a></h2>
+<p>The tangential-Schur implementation is tested through identities that are known
+mathematically, rather than through one visually pleasing example.  The core
+verification cases are:</p>
+<ul class="simple">
+<li><p>scalar data reduce to the classical Nevanlinna–Pick matrix;</p></li>
+<li><p>one-node rank-one data reduce to the norm condition
+<span class="math notranslate nohighlight">\(\lVert v\rVert_2\le\lVert u\rVert_2\)</span>;</p></li>
+<li><p>data generated by a known constant contraction <span class="math notranslate nohighlight">\(S_0\)</span> have
+<span class="math notranslate nohighlight">\(P\succeq0\)</span> and recover <span class="math notranslate nohighlight">\(S_0\)</span> when the tangential directions span
+the input space;</p></li>
+<li><p>diagonal MIMO data with coordinate directions decompose into independent
+scalar Pick blocks;</p></li>
+<li><p>feasible nonconstant scalar Schur data, for example
+<span class="math notranslate nohighlight">\(S(z)=c b_a(z)\)</span>, pass the Pick test but are rejected by the
+constant-solution helper;</p></li>
+<li><p>tangential-column changes <span class="math notranslate nohighlight">\(U_i\mapsto U_iQ_i\)</span>,
+<span class="math notranslate nohighlight">\(V_i\mapsto V_iQ_i\)</span> transform the Pick matrix by a block-unitary
+congruence and preserve its eigenvalues;</p></li>
+<li><p>Potapov projections satisfy <span class="math notranslate nohighlight">\(P_\xi^2=P_\xi\)</span> and
+<span class="math notranslate nohighlight">\(P_\xi^HJ=JP_\xi\)</span>;</p></li>
+<li><p>elementary Potapov factors and their products satisfy the boundary identity
+<span class="math notranslate nohighlight">\(\Theta(e^{j\omega})^HJ\Theta(e^{j\omega})=J\)</span> on dense frequency grids.</p></li>
+</ul>
+<p>These tests are documented in <a class="reference internal" href="../algorithms/tangential_schur_verification.html"><span class="doc">Tangential Schur verification map</span></a>.
+They are meant to make the finite definite baseline credible while still keeping
+clear that full generalized Schur synthesis is outside the release scope.</p>
+</section>
+<section id="causality-and-data-use">
+<h2>Causality and data use<a class="headerlink" href="#causality-and-data-use" title="Link to this heading">¶</a></h2>
+<p>Tangential Schur/Pick routines operate on finite interpolation data.  They are
+not online time-series predictors and do not consume samples one at a time.  They
+are best understood as <strong>offline certificates and construction diagnostics</strong>.</p>
+<p>This is different from <code class="docutils literal notranslate"><span class="pre">MIMOLatticePredictor</span></code> or <code class="docutils literal notranslate"><span class="pre">OnlineMatrixLatticeAllPass</span></code>:
+those objects are causal runtimes.  Tangential Schur utilities explain part of
+the mathematical background for matrix-lattice/all-pass structures, while the
+online classes implement sample-by-sample DSP behavior.</p>
+</section>
+<section id="scope-boundary">
+<h2>Scope boundary<a class="headerlink" href="#scope-boundary" title="Link to this heading">¶</a></h2>
+<p>Implemented in this release:</p>
+<ul class="simple">
+<li><p>right tangential data containers;</p></li>
+<li><p>definite tangential Pick matrices and PSD checks;</p></li>
+<li><p>residual checks for candidate transfer matrices;</p></li>
+<li><p>constant contractive solutions when the data are compatible with one;</p></li>
+<li><p>elementary rank-one Potapov/J-inner factors;</p></li>
+<li><p>J-inner residual checks for individual factors and products.</p></li>
+</ul>
+<p>Not claimed in this release:</p>
+<ul class="simple">
+<li><p>full generalized indefinite Schur interpolation;</p></li>
+<li><p>automatic synthesis of all rational Schur solutions from arbitrary Pick data;</p></li>
+<li><p>boundary interpolation and singular cases;</p></li>
+<li><p>complete MIMO inner–outer factorization.</p></li>
+</ul>
+<p>The module is therefore a careful baseline rather than a black-box matrix-valued
+interpolation solver.</p>
+</section>
+<section id="related-tutorials">
+<h2>Related tutorials<a class="headerlink" href="#related-tutorials" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../examples/generated/tangential_schur_pick_jinner.html"><span class="doc">Tangential Schur Pick and J-inner diagnostics</span></a></p></li>
+<li><p><a class="reference internal" href="../examples/generated/diagonal_tangential_schur_equals_scalar.html"><span class="doc">Diagonal tangential Schur equals independent scalar Pick problems</span></a></p></li>
+<li><p><a class="reference internal" href="../examples/generated/matrix_lattice_allpass.html"><span class="doc">Matrix lattice all-pass response</span></a></p></li>
+<li><p><a class="reference internal" href="../examples/generated/mimo_diagonal_equals_independent_siso.html"><span class="doc">Diagonal MIMO equals independent SISO</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/theory/tangential_schur.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

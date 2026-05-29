@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: lattice-dsp
+message: If you use lattice-dsp in research or demos, please cite the repository version you used.
+type: software
+authors:
+  - name: Shohruh Miryusupov
+version: 0.1.0
+license: Apache-2.0
+repository-code: https://github.com/smiryusupov/lattice-dsp
+keywords:
+  - adaptive filtering
+  - lattice filters
+  - matrix lattice
+  - MIMO DSP
+  - IIR filters
+  - signal processing
+  - pybind11

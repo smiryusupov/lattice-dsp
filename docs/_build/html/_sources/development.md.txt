@@ -1,0 +1,49 @@
+# Development guide
+
+## Install
+
+```bash
+python -m pip install -e .[dev,examples,benchmark]
+pytest
+pre-commit install
+```
+
+The package is built with scikit-build-core, CMake, pybind11, and an optional
+OpenMP dependency. If OpenMP is unavailable, the package builds and falls back to serial batch processing.
+
+## Linting
+
+```bash
+ruff check .
+ruff format .
+```
+
+The repository also includes `.pre-commit-config.yaml` for automatic Ruff checks.
+
+## Recommended workflow
+
+1. Add or update C++ APIs in `include/lattice_dsp/lattice.hpp`.
+2. Implement them in `src/lattice.cpp`.
+3. Bind them in `src/bindings.cpp`.
+4. Add Python tests in `tests/`.
+5. Add a small example or benchmark when the feature affects user behavior.
+
+## Stability policy
+
+For adaptive IIR work, unstable intermediate filters can make examples and tests
+hard to reason about. The public API uses these approaches:
+
+- reflection/PARCOR coefficients with `|k| < 1`,
+- unconstrained raw parameters mapped through `tanh`, or
+- explicit projection policies for algorithms that update denominator-like
+  parameters directly.
+
+## OpenMP policy
+
+Use OpenMP for independent rows or independent filter instances. A single recursive IIR stream is described as sample-parallel only when a specific algorithmic transformation supports that statement.
+
+## Clean-room rule
+
+Do not copy third-party code unless a compatible license or permission is
+available. Implement algorithms from public descriptions, papers, books, and
+independent tests.

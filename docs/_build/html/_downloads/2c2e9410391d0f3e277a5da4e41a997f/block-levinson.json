@@ -1,0 +1,11 @@
+{
+  "channels": 4,
+  "order": 8,
+  "samples": 20000,
+  "repeats": 3,
+  "direct_dense_seconds_median": 8.619413711130619e-05,
+  "block_levinson_seconds_median": 0.00023443694226443768,
+  "speedup_direct_over_levinson": 0.36766448273362073,
+  "coefficient_difference_norm": 3.8238397130721637e-17,
+  "max_reflection_spectral_norm": 0.0990205139092247
+}

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Core filtering and OpenMP batch benchmark &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Model reduction speed/accuracy benchmark" href="model_reduction.html" />
+    <link rel="prev" title="Benchmark tutorials" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Benchmark tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Core filtering and OpenMP batch benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_reduction.html">Model reduction speed/accuracy benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hankel_reduction_speedup.html">Finite Hankel reduction amortization benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finite_aak_iir_reduction_speedup.html">Finite-section AAK/Nehari IIR reduction benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mimo_hankel_reduction_speedup.html">Coupled MIMO finite-Hankel reduction benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_lattice_runtime.html">Matrix-lattice all-pass runtime benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur_mimo.html">MIMO tangential-Schur/Pick and J-inner benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_mimo_matrix_lattice_realization_sweep.html">Experimental MIMO matrix-lattice realization sweep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finite_nehari_rank_sweep.html">Finite Nehari/AAK rank-sweep benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="block_levinson.html">Block Levinson versus dense block-Toeplitz solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adaptive_period_sweep.html">Adaptive reflection update-period sweep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="echo_metric.html">Synthetic echo metric benchmark</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Benchmark tutorials</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Benchmark tutorials</a></li>
+      <li>Next: <a href="model_reduction.html" title="next chapter">Model reduction speed/accuracy benchmark</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="core-filtering-and-openmp-batch-benchmark">
+<h1>Core filtering and OpenMP batch benchmark<a class="headerlink" href="#core-filtering-and-openmp-batch-benchmark" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Compare scalar/batch lattice filtering against SciPy lfilter baselines.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>This benchmark measures the core C++ filtering paths.  It is most meaningful for many
+independent streams because the batch path can amortize Python overhead and use OpenMP.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>The speedup reported in the JSON is computed from median runtimes:</p>
+<div class="math notranslate nohighlight">
+\[\text{speedup} = \frac{t_{\text{baseline}}}{t_{\text{method}}}.\]</div>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Single-stream SciPy may remain competitive.  The important comparison is batch C++/OpenMP versus batch SciPy for many channels.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--channels<span class="w"> </span><span class="m">32</span><span class="w"> </span>--samples<span class="w"> </span><span class="m">20000</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span><span class="w"> </span>--output<span class="w"> </span>docs/benchmarks/generated/_artifacts/core_filtering/core-filtering.json
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="visual-and-data-readout">
+<h2>Visual and data readout<a class="headerlink" href="#visual-and-data-readout" title="Link to this heading">¶</a></h2>
+<p>When the benchmark gallery is built with results, this page embeds PNG summaries generated from the same JSON/CSV artifacts.  The raw data stay available below as downloads so exact numbers remain reproducible without making the public page read like console output.</p>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/core_filtering_runtime_summary.png"><img alt="core filtering runtime summary" src="../../_images/core_filtering_runtime_summary.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">core_filtering_runtime_summary.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="generated-data-files">
+<h2>Generated data files<a class="headerlink" href="#generated-data-files" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/8e5fbd21fbd9e8703c9aafc6a0c47bf6/core-filtering.json"><code class="xref download docutils literal notranslate"><span class="pre">core-filtering.json</span></code></a></p></li>
+</ul>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;Run small performance benchmarks for lattice-dsp.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">The benchmark intentionally measures three different things:</span>
+<span class="linenos">  4</span>
+<span class="linenos">  5</span><span class="sd">1. A pure-Python reference loop, which shows the cost avoided by the C++ core.</span>
+<span class="linenos">  6</span><span class="sd">2. SciPy&#39;s lfilter, when SciPy is installed, as a mature static-filter baseline.</span>
+<span class="linenos">  7</span><span class="sd">3. lattice-dsp&#39;s C++ pybind11 path, including OpenMP over independent rows.</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="sd">This is not a scientific paper benchmark. It is a reproducible sanity benchmark</span>
+<span class="linenos"> 10</span><span class="sd">that can be run locally or in CI to catch performance regressions and produce a</span>
+<span class="linenos"> 11</span><span class="sd">JSON artifact for comparison.</span>
+<span class="linenos"> 12</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 15</span>
+<span class="linenos"> 16</span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="linenos"> 17</span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="linenos"> 18</span><span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="linenos"> 19</span><span class="kn">import</span><span class="w"> </span><span class="nn">statistics</span>
+<span class="linenos"> 20</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 21</span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="linenos"> 22</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="kn">from</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 27</span>    <span class="n">HAS_OPENMP</span><span class="p">,</span>
+<span class="linenos"> 28</span>    <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">,</span>
+<span class="linenos"> 29</span>    <span class="n">adaptive_process_batch</span><span class="p">,</span>
+<span class="linenos"> 30</span>    <span class="n">LatticeIIR</span><span class="p">,</span>
+<span class="linenos"> 31</span>    <span class="n">LatticeLadderIIR</span><span class="p">,</span>
+<span class="linenos"> 32</span>    <span class="n">numerator_to_ladder</span><span class="p">,</span>
+<span class="linenos"> 33</span>    <span class="n">process_batch</span><span class="p">,</span>
+<span class="linenos"> 34</span>    <span class="n">reflection_to_denominator</span><span class="p">,</span>
+<span class="linenos"> 35</span><span class="p">)</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span><span class="k">try</span><span class="p">:</span>  <span class="c1"># pragma: no cover - optional benchmark dependency</span>
+<span class="linenos"> 38</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">lfilter</span>
+<span class="linenos"> 39</span><span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+<span class="linenos"> 40</span>    <span class="n">lfilter</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos"> 41</span>
+<span class="linenos"> 42</span>
+<span class="linenos"> 43</span><span class="k">def</span><span class="w"> </span><span class="nf">pure_python_lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="linenos"> 44</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple direct-form reference for one stream. Kept deliberately unoptimized.&quot;&quot;&quot;</span>
+<span class="linenos"> 45</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 46</span>    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+<span class="linenos"> 47</span>        <span class="n">acc</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="linenos"> 48</span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coeff</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+<span class="linenos"> 49</span>            <span class="k">if</span> <span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 50</span>                <span class="n">acc</span> <span class="o">+=</span> <span class="n">coeff</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="n">i</span><span class="p">])</span>
+<span class="linenos"> 51</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+<span class="linenos"> 52</span>            <span class="k">if</span> <span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 53</span>                <span class="n">acc</span> <span class="o">-=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="n">i</span><span class="p">])</span>
+<span class="linenos"> 54</span>        <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 55</span>    <span class="k">return</span> <span class="n">y</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span>
+<span class="linenos"> 58</span><span class="k">def</span><span class="w"> </span><span class="nf">time_call</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">object</span><span class="p">],</span> <span class="n">repeats</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="linenos"> 59</span>    <span class="n">timings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 60</span>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">repeats</span><span class="p">):</span>
+<span class="linenos"> 61</span>        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="linenos"> 62</span>        <span class="n">fn</span><span class="p">()</span>
+<span class="linenos"> 63</span>        <span class="n">timings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+<span class="linenos"> 64</span>    <span class="k">return</span> <span class="p">{</span>
+<span class="linenos"> 65</span>        <span class="s2">&quot;min_s&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">timings</span><span class="p">),</span>
+<span class="linenos"> 66</span>        <span class="s2">&quot;median_s&quot;</span><span class="p">:</span> <span class="n">statistics</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">timings</span><span class="p">),</span>
+<span class="linenos"> 67</span>        <span class="s2">&quot;max_s&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">timings</span><span class="p">),</span>
+<span class="linenos"> 68</span>    <span class="p">}</span>
+<span class="linenos"> 69</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span><span class="k">def</span><span class="w"> </span><span class="nf">benchmark</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="linenos"> 72</span>    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+<span class="linenos"> 73</span>    <span class="n">x_batch</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos"> 74</span>    <span class="n">x_one</span> <span class="o">=</span> <span class="n">x_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="linenos"> 75</span>
+<span class="linenos"> 76</span>    <span class="n">reflection</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.35</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">]</span>
+<span class="linenos"> 77</span>    <span class="n">taps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]</span>
+<span class="linenos"> 78</span>    <span class="n">denominator</span> <span class="o">=</span> <span class="n">reflection_to_denominator</span><span class="p">(</span><span class="n">reflection</span><span class="p">)</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span>    <span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos"> 81</span>        <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos"> 82</span>            <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">(),</span>
+<span class="linenos"> 83</span>            <span class="s2">&quot;platform&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(),</span>
+<span class="linenos"> 84</span>            <span class="s2">&quot;channels&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span>
+<span class="linenos"> 85</span>            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span>
+<span class="linenos"> 86</span>            <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos"> 87</span>            <span class="s2">&quot;has_openmp&quot;</span><span class="p">:</span> <span class="n">HAS_OPENMP</span><span class="p">,</span>
+<span class="linenos"> 88</span>            <span class="s2">&quot;reflection_update_period&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos"> 89</span>            <span class="s2">&quot;scale_reflection_mu_by_period&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos"> 90</span>        <span class="p">},</span>
+<span class="linenos"> 91</span>        <span class="s2">&quot;benchmarks&quot;</span><span class="p">:</span> <span class="p">{},</span>
+<span class="linenos"> 92</span>    <span class="p">}</span>
+<span class="linenos"> 93</span>
+<span class="linenos"> 94</span>    <span class="n">one_filter</span> <span class="o">=</span> <span class="n">LatticeIIR</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">)</span>
+<span class="linenos"> 95</span>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;lattice_direct_cpp_one_stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos"> 96</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">one_filter</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x_one</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">repeats</span>
+<span class="linenos"> 97</span>    <span class="p">)</span>
+<span class="linenos"> 98</span>
+<span class="linenos"> 99</span>    <span class="n">ladder</span> <span class="o">=</span> <span class="n">numerator_to_ladder</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">)</span>
+<span class="linenos">100</span>    <span class="n">one_ladder_filter</span> <span class="o">=</span> <span class="n">LatticeLadderIIR</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">ladder</span><span class="p">)</span>
+<span class="linenos">101</span>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;lattice_ladder_cpp_one_stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">102</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">one_ladder_filter</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x_one</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">repeats</span>
+<span class="linenos">103</span>    <span class="p">)</span>
+<span class="linenos">104</span>
+<span class="linenos">105</span>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;lattice_direct_cpp_batch_default_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">106</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">process_batch</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">,</span> <span class="n">x_batch</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">realization</span><span class="o">=</span><span class="s2">&quot;direct&quot;</span><span class="p">),</span>
+<span class="linenos">107</span>        <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos">108</span>    <span class="p">)</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;lattice_direct_cpp_batch_one_thread&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">111</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">process_batch</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">,</span> <span class="n">x_batch</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">realization</span><span class="o">=</span><span class="s2">&quot;direct&quot;</span><span class="p">),</span>
+<span class="linenos">112</span>        <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos">113</span>    <span class="p">)</span>
+<span class="linenos">114</span>
+<span class="linenos">115</span>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;lattice_ladder_cpp_batch_default_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">116</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">process_batch</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">,</span> <span class="n">x_batch</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">realization</span><span class="o">=</span><span class="s2">&quot;lattice&quot;</span><span class="p">),</span>
+<span class="linenos">117</span>        <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos">118</span>    <span class="p">)</span>
+<span class="linenos">119</span>
+<span class="linenos">120</span>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;lattice_ladder_cpp_batch_one_thread&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">121</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">process_batch</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">,</span> <span class="n">x_batch</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">realization</span><span class="o">=</span><span class="s2">&quot;lattice&quot;</span><span class="p">),</span>
+<span class="linenos">122</span>        <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos">123</span>    <span class="p">)</span>
+<span class="linenos">124</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_adaptive</span><span class="p">:</span>
+<span class="linenos">127</span>        <span class="n">target</span> <span class="o">=</span> <span class="n">LatticeIIR</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">)</span>
+<span class="linenos">128</span>        <span class="n">desired</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">x_one</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">129</span>
+<span class="linenos">130</span>        <span class="k">def</span><span class="w"> </span><span class="nf">run_adaptive_analytic_numpy_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">131</span>            <span class="n">adaptive</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+<span class="linenos">132</span>                <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span>
+<span class="linenos">133</span>                <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">),</span>
+<span class="linenos">134</span>                <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">135</span>                <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+<span class="linenos">136</span>                <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">137</span>                <span class="n">gradient_mode</span><span class="o">=</span><span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+<span class="linenos">138</span>                <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos">139</span>                <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos">140</span>            <span class="p">)</span>
+<span class="linenos">141</span>            <span class="n">adaptive</span><span class="o">.</span><span class="n">process_adapt</span><span class="p">(</span><span class="n">x_one</span><span class="p">,</span> <span class="n">desired</span><span class="p">)</span>
+<span class="linenos">142</span>
+<span class="linenos">143</span>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_lattice_ladder_nlms_analytic_numpy_block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">144</span>            <span class="n">run_adaptive_analytic_numpy_block</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="linenos">145</span>        <span class="p">)</span>
+<span class="linenos">146</span>
+<span class="linenos">147</span>        <span class="k">def</span><span class="w"> </span><span class="nf">run_adaptive_analytic_list_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">148</span>            <span class="n">adaptive</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+<span class="linenos">149</span>                <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span>
+<span class="linenos">150</span>                <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">),</span>
+<span class="linenos">151</span>                <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">152</span>                <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+<span class="linenos">153</span>                <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">154</span>                <span class="n">gradient_mode</span><span class="o">=</span><span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+<span class="linenos">155</span>                <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos">156</span>                <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos">157</span>            <span class="p">)</span>
+<span class="linenos">158</span>            <span class="n">adaptive</span><span class="o">.</span><span class="n">adapt_block</span><span class="p">(</span><span class="n">x_one</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">desired</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="linenos">159</span>
+<span class="linenos">160</span>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_lattice_ladder_nlms_analytic_list_block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">161</span>            <span class="n">run_adaptive_analytic_list_block</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="linenos">162</span>        <span class="p">)</span>
+<span class="linenos">163</span>
+<span class="linenos">164</span>        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_adaptive_sample_loop</span><span class="p">:</span>
+<span class="linenos">165</span>            <span class="k">def</span><span class="w"> </span><span class="nf">run_adaptive_analytic_sample_loop</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">166</span>                <span class="n">adaptive</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+<span class="linenos">167</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span>
+<span class="linenos">168</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">),</span>
+<span class="linenos">169</span>                    <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">170</span>                    <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+<span class="linenos">171</span>                    <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">172</span>                    <span class="n">gradient_mode</span><span class="o">=</span><span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+<span class="linenos">173</span>                    <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos">174</span>                    <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos">175</span>                <span class="p">)</span>
+<span class="linenos">176</span>                <span class="k">for</span> <span class="n">xn</span><span class="p">,</span> <span class="n">dn</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_one</span><span class="p">,</span> <span class="n">desired</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="linenos">177</span>                    <span class="n">adaptive</span><span class="o">.</span><span class="n">adapt_sample</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">xn</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">dn</span><span class="p">))</span>
+<span class="linenos">178</span>
+<span class="linenos">179</span>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_lattice_ladder_nlms_analytic_sample_loop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">180</span>                <span class="n">run_adaptive_analytic_sample_loop</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="linenos">181</span>            <span class="p">)</span>
+<span class="linenos">182</span>
+<span class="linenos">183</span>        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_finite_difference_adaptive</span><span class="p">:</span>
+<span class="linenos">184</span>            <span class="k">def</span><span class="w"> </span><span class="nf">run_adaptive_finite_difference_numpy_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">185</span>                <span class="n">adaptive</span> <span class="o">=</span> <span class="n">AdaptiveLatticeLadderNLMS</span><span class="p">(</span>
+<span class="linenos">186</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span>
+<span class="linenos">187</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">),</span>
+<span class="linenos">188</span>                    <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">189</span>                    <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+<span class="linenos">190</span>                    <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">191</span>                    <span class="n">gradient_mode</span><span class="o">=</span><span class="s2">&quot;finite_difference&quot;</span><span class="p">,</span>
+<span class="linenos">192</span>                    <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos">193</span>                    <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos">194</span>                <span class="p">)</span>
+<span class="linenos">195</span>                <span class="n">adaptive</span><span class="o">.</span><span class="n">process_adapt</span><span class="p">(</span><span class="n">x_one</span><span class="p">,</span> <span class="n">desired</span><span class="p">)</span>
+<span class="linenos">196</span>
+<span class="linenos">197</span>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_lattice_ladder_nlms_finite_difference_numpy_block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">198</span>                <span class="n">run_adaptive_finite_difference_numpy_block</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="linenos">199</span>            <span class="p">)</span>
+<span class="linenos">200</span>
+<span class="linenos">201</span>        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_adaptive_batch</span><span class="p">:</span>
+<span class="linenos">202</span>            <span class="n">batch_channels</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">adaptive_batch_channels</span><span class="p">)</span>
+<span class="linenos">203</span>            <span class="n">x_adapt_batch</span> <span class="o">=</span> <span class="n">x_batch</span><span class="p">[:</span><span class="n">batch_channels</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="linenos">204</span>            <span class="n">desired_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+<span class="linenos">205</span>                <span class="n">process_batch</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="n">taps</span><span class="p">,</span> <span class="n">x_adapt_batch</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">realization</span><span class="o">=</span><span class="s2">&quot;direct&quot;</span><span class="p">),</span>
+<span class="linenos">206</span>                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+<span class="linenos">207</span>            <span class="p">)</span>
+<span class="linenos">208</span>
+<span class="linenos">209</span>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_batch_channels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_channels</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">210</span>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_lattice_ladder_nlms_analytic_batch_default_threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">211</span>                <span class="k">lambda</span><span class="p">:</span> <span class="n">adaptive_process_batch</span><span class="p">(</span>
+<span class="linenos">212</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span>
+<span class="linenos">213</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">),</span>
+<span class="linenos">214</span>                    <span class="n">x_adapt_batch</span><span class="p">,</span>
+<span class="linenos">215</span>                    <span class="n">desired_batch</span><span class="p">,</span>
+<span class="linenos">216</span>                    <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">217</span>                    <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+<span class="linenos">218</span>                    <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">219</span>                    <span class="n">gradient_mode</span><span class="o">=</span><span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+<span class="linenos">220</span>                    <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos">221</span>                    <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos">222</span>                    <span class="n">n_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="linenos">223</span>                <span class="p">),</span>
+<span class="linenos">224</span>                <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="linenos">225</span>            <span class="p">)</span>
+<span class="linenos">226</span>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;adaptive_lattice_ladder_nlms_analytic_batch_one_thread&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">227</span>                <span class="k">lambda</span><span class="p">:</span> <span class="n">adaptive_process_batch</span><span class="p">(</span>
+<span class="linenos">228</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span>
+<span class="linenos">229</span>                    <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">taps</span><span class="p">),</span>
+<span class="linenos">230</span>                    <span class="n">x_adapt_batch</span><span class="p">,</span>
+<span class="linenos">231</span>                    <span class="n">desired_batch</span><span class="p">,</span>
+<span class="linenos">232</span>                    <span class="n">mu_taps</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">233</span>                    <span class="n">mu_reflection</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+<span class="linenos">234</span>                    <span class="n">freeze_reflection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">235</span>                    <span class="n">gradient_mode</span><span class="o">=</span><span class="s2">&quot;analytic&quot;</span><span class="p">,</span>
+<span class="linenos">236</span>                    <span class="n">reflection_update_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span><span class="p">,</span>
+<span class="linenos">237</span>                    <span class="n">scale_reflection_mu_by_period</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale_reflection_mu_by_period</span><span class="p">,</span>
+<span class="linenos">238</span>                    <span class="n">n_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="linenos">239</span>                <span class="p">),</span>
+<span class="linenos">240</span>                <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="linenos">241</span>            <span class="p">)</span>
+<span class="linenos">242</span>
+<span class="linenos">243</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">include_python_reference</span><span class="p">:</span>
+<span class="linenos">244</span>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;pure_python_one_stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">245</span>            <span class="k">lambda</span><span class="p">:</span> <span class="n">pure_python_lfilter</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="n">denominator</span><span class="p">,</span> <span class="n">x_one</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="linenos">246</span>        <span class="p">)</span>
+<span class="linenos">247</span>
+<span class="linenos">248</span>    <span class="k">if</span> <span class="n">lfilter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">249</span>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;scipy_lfilter_one_stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">250</span>            <span class="k">lambda</span><span class="p">:</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="n">denominator</span><span class="p">,</span> <span class="n">x_one</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">repeats</span>
+<span class="linenos">251</span>        <span class="p">)</span>
+<span class="linenos">252</span>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;scipy_lfilter_batch_axis1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_call</span><span class="p">(</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">253</span>            <span class="k">lambda</span><span class="p">:</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="n">denominator</span><span class="p">,</span> <span class="n">x_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">repeats</span>
+<span class="linenos">254</span>        <span class="p">)</span>
+<span class="linenos">255</span>    <span class="k">else</span><span class="p">:</span>
+<span class="linenos">256</span>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;benchmarks&quot;</span><span class="p">][</span><span class="s2">&quot;scipy_lfilter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;skipped&quot;</span><span class="p">:</span> <span class="s2">&quot;SciPy is not installed&quot;</span><span class="p">}</span>  <span class="c1"># type: ignore[index]</span>
+<span class="linenos">257</span>
+<span class="linenos">258</span>    <span class="k">return</span> <span class="n">results</span>
+<span class="linenos">259</span>
+<span class="linenos">260</span>
+<span class="linenos">261</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">262</span>    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="linenos">263</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--channels&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="linenos">264</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--samples&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50_000</span><span class="p">)</span>
+<span class="linenos">265</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--repeats&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="linenos">266</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+<span class="linenos">267</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;reports/benchmark-results.json&quot;</span><span class="p">))</span>
+<span class="linenos">268</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">269</span>        <span class="s2">&quot;--include-python-reference&quot;</span><span class="p">,</span>
+<span class="linenos">270</span>        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+<span class="linenos">271</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include a deliberately slow pure-Python direct-form reference.&quot;</span><span class="p">,</span>
+<span class="linenos">272</span>    <span class="p">)</span>
+<span class="linenos">273</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">274</span>        <span class="s2">&quot;--include-adaptive&quot;</span><span class="p">,</span>
+<span class="linenos">275</span>        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+<span class="linenos">276</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include the experimental adaptive IIR update path. Slower than static filtering.&quot;</span><span class="p">,</span>
+<span class="linenos">277</span>    <span class="p">)</span>
+<span class="linenos">278</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">279</span>        <span class="s2">&quot;--include-adaptive-sample-loop&quot;</span><span class="p">,</span>
+<span class="linenos">280</span>        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+<span class="linenos">281</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Also benchmark the slow Python-level per-sample adapt_sample loop.&quot;</span><span class="p">,</span>
+<span class="linenos">282</span>    <span class="p">)</span>
+<span class="linenos">283</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">284</span>        <span class="s2">&quot;--include-adaptive-batch&quot;</span><span class="p">,</span>
+<span class="linenos">285</span>        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+<span class="linenos">286</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Also benchmark independent adaptive problems over a 2-D batch.&quot;</span><span class="p">,</span>
+<span class="linenos">287</span>    <span class="p">)</span>
+<span class="linenos">288</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">289</span>        <span class="s2">&quot;--adaptive-batch-channels&quot;</span><span class="p">,</span>
+<span class="linenos">290</span>        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+<span class="linenos">291</span>        <span class="n">default</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+<span class="linenos">292</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of channels used by the adaptive batch benchmark.&quot;</span><span class="p">,</span>
+<span class="linenos">293</span>    <span class="p">)</span>
+<span class="linenos">294</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">295</span>        <span class="s2">&quot;--reflection-update-period&quot;</span><span class="p">,</span>
+<span class="linenos">296</span>        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+<span class="linenos">297</span>        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="linenos">298</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Update reflection/raw denominator parameters every K samples in adaptive benchmarks.&quot;</span><span class="p">,</span>
+<span class="linenos">299</span>    <span class="p">)</span>
+<span class="linenos">300</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">301</span>        <span class="s2">&quot;--scale-reflection-mu-by-period&quot;</span><span class="p">,</span>
+<span class="linenos">302</span>        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+<span class="linenos">303</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use mu_reflection * reflection_update_period on denominator-update samples. Useful for fair period sweeps.&quot;</span><span class="p">,</span>
+<span class="linenos">304</span>    <span class="p">)</span>
+<span class="linenos">305</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+<span class="linenos">306</span>        <span class="s2">&quot;--include-finite-difference-adaptive&quot;</span><span class="p">,</span>
+<span class="linenos">307</span>        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+<span class="linenos">308</span>        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Also benchmark the slow finite-difference adaptive gradient reference.&quot;</span><span class="p">,</span>
+<span class="linenos">309</span>    <span class="p">)</span>
+<span class="linenos">310</span>    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="linenos">311</span>
+<span class="linenos">312</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">channels</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">repeats</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">313</span>        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s2">&quot;channels, samples, and repeats must all be positive&quot;</span><span class="p">)</span>
+<span class="linenos">314</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">adaptive_batch_channels</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">315</span>        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s2">&quot;adaptive-batch-channels must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">316</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">reflection_update_period</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">317</span>        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s2">&quot;reflection-update-period must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">318</span>
+<span class="linenos">319</span>    <span class="n">results</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="linenos">320</span>    <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">321</span>    <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+<span class="linenos">322</span>    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="linenos">323</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Wrote </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">324</span>
+<span class="linenos">325</span>
+<span class="linenos">326</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">327</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/benchmarks/generated/core_filtering.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

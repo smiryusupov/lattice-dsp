@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Benchmarking strategy &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=460238d4" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="benchmarking-strategy">
+<h1>Benchmarking strategy<a class="headerlink" href="#benchmarking-strategy" title="Link to this heading">¶</a></h1>
+<p>The benchmark suite makes the package niche measurable by comparing the
+compiled C++/pybind11 implementation against two baselines:</p>
+<ol class="arabic simple">
+<li><p>a deliberately simple pure-Python direct-form reference, and</p></li>
+<li><p>SciPy <code class="docutils literal notranslate"><span class="pre">scipy.signal.lfilter</span></code> when SciPy is installed.</p></li>
+</ol>
+<p>It also compares the package’s own direct-form reference realization against the
+true synthesis lattice-ladder realization.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lattice-dsp</span></code> does not replace SciPy for static filtering.
+SciPy is mature, heavily optimized, and broad. The goal is to show the value of
+this project for workflows that combine stable reflection-parameterized IIR
+filters, streaming APIs, adaptive algorithms, and batched independent streams.</p>
+<section id="run-locally">
+<h2>Run locally<a class="headerlink" href="#run-locally" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>benchmark<span class="o">]</span>
+python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--channels<span class="w"> </span><span class="m">64</span><span class="w"> </span>--samples<span class="w"> </span><span class="m">50000</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">5</span><span class="w"> </span>--output<span class="w"> </span>benchmark-results.json
+</pre></div>
+</div>
+<p>To include the slow pure-Python reference:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-python-reference
+</pre></div>
+</div>
+<p>To include the experimental adaptive IIR update path:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-adaptive
+</pre></div>
+</div>
+<p>To compare the analytic adaptive gradient against the slow finite-difference
+reference:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-adaptive<span class="w"> </span>--include-finite-difference-adaptive
+</pre></div>
+</div>
+</section>
+<section id="what-to-expect">
+<h2>What to expect<a class="headerlink" href="#what-to-expect" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>A single IIR stream is sequential because recursive filters depend on previous
+state.</p></li>
+<li><p>OpenMP helps when there are many independent rows: channels, filter-bank
+members, Monte Carlo trials, or parameter sweeps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">process_batch(...,</span> <span class="pre">n_threads=1)</span></code> is useful as a baseline for OpenMP overhead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">process_batch(...,</span> <span class="pre">n_threads=0)</span></code> lets OpenMP choose the default number of
+threads.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">realization=&quot;direct&quot;</span></code> benchmarks the reference direct-form path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">realization=&quot;lattice&quot;</span></code> benchmarks the synthesis lattice-ladder path after
+converting direct numerator taps to ladder taps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--include-adaptive</span></code> is intentionally separate because adaptive denominator
+updates are much more expensive than static filtering.</p></li>
+</ul>
+</section>
+<section id="json-output">
+<h2>JSON output<a class="headerlink" href="#json-output" title="Link to this heading">¶</a></h2>
+<p>The benchmark script writes a JSON file with metadata and timing summaries:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;samples&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;has_openmp&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;benchmarks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;lattice_cpp_batch_default_threads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;min_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;median_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.02</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;max_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.03</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Actual numbers are machine-dependent, so compare results on the same machine or
+inside the same CI runner.</p>
+</section>
+<section id="adaptive-block-benchmarks">
+<h2>Adaptive block benchmarks<a class="headerlink" href="#adaptive-block-benchmarks" title="Link to this heading">¶</a></h2>
+<p>Adaptive filtering is recursive within each stream, so one adaptive problem is
+not parallelized over samples. The benchmark suite separates several costs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_lattice_ladder_nlms_analytic_numpy_block</span></code>: one C++ call over a
+NumPy vector, returning output and error arrays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_lattice_ladder_nlms_analytic_list_block</span></code>: legacy list/vector API,
+useful to show Python conversion overhead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_lattice_ladder_nlms_analytic_sample_loop</span></code>: optional slow baseline
+that crosses the Python/C++ boundary once per sample.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_lattice_ladder_nlms_analytic_batch_*</span></code>: optional independent
+channel-by-sample adaptation with OpenMP over rows.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-adaptive<span class="w"> </span>--samples<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span>
+python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-adaptive<span class="w"> </span>--include-adaptive-sample-loop<span class="w"> </span>--samples<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span>
+python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-adaptive<span class="w"> </span>--include-adaptive-batch<span class="w"> </span>--adaptive-batch-channels<span class="w"> </span><span class="m">8</span><span class="w"> </span>--samples<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span>
+python<span class="w"> </span>benchmarks/run_benchmarks.py<span class="w"> </span>--include-adaptive<span class="w"> </span>--reflection-update-period<span class="w"> </span><span class="m">8</span><span class="w"> </span>--samples<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--reflection-update-period</span> <span class="pre">K</span></code> keeps numerator/tap updates sample-by-sample but
+updates reflection/raw denominator parameters only every <code class="docutils literal notranslate"><span class="pre">K</span></code> samples. This is a
+practical control for adaptive IIR work because denominator updates are both
+more expensive and more sensitive than numerator updates.</p>
+</section>
+<section id="adaptive-reflection-update-period-sweep">
+<h2>Adaptive reflection-update period sweep<a class="headerlink" href="#adaptive-reflection-update-period-sweep" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">reflection_update_period</span></code> is a speed/quality control for stable adaptive IIR
+identification. Numerator/tap updates still run every sample, while the more
+expensive denominator/reflection update runs every <code class="docutils literal notranslate"><span class="pre">K</span></code> samples. The sweep script
+uses period-scaled reflection steps by default, so period <code class="docutils literal notranslate"><span class="pre">K</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">mu_reflection</span> <span class="pre">*</span> <span class="pre">K</span></code> on update samples. This avoids unfairly under-training longer
+periods. Add <code class="docutils literal notranslate"><span class="pre">--no-scale-reflection-mu-by-period</span></code> to inspect the fixed-step
+behavior.</p>
+<p>Run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/adaptive_period_sweep.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--periods<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--samples<span class="w"> </span><span class="m">20000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repeats<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>adaptive-period-sweep.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>adaptive-period-sweep.csv
+</pre></div>
+</div>
+<p>Important fields in the JSON/CSV output:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">median_s</span></code>: median runtime for one adaptive identification run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">speedup_vs_first_period</span></code>: runtime improvement relative to the first period.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mse_tail</span></code>: mean squared error over the final <code class="docutils literal notranslate"><span class="pre">tail</span></code> samples.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tail_mse_ratio_vs_first_period</span></code>: convergence-quality change relative to period <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reflection_l2_error</span></code> and <code class="docutils literal notranslate"><span class="pre">taps_l2_error</span></code>: final coefficient errors against
+the synthetic target used by the benchmark.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stability_margin</span></code>: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">max(abs(reflection))</span></code>; positive values confirm the
+bounded reflection parameterization remains stable.</p></li>
+</ul>
+<p>Use this sweep to report adaptive performance under a stated data distribution. A larger period can be much faster, and the tail MSE plus coefficient errors show whether that period is acceptable for the application.</p>
+</section>
+<section id="adaptive-period-reports">
+<h2>Adaptive period reports<a class="headerlink" href="#adaptive-period-reports" title="Link to this heading">¶</a></h2>
+<p>After running <code class="docutils literal notranslate"><span class="pre">benchmarks/adaptive_period_sweep.py</span></code>, generate a compact report:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/adaptive_period_report.py<span class="w"> </span>adaptive-period-sweep-scaled.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--markdown-output<span class="w"> </span>adaptive-period-report.md<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>adaptive-period-pareto.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--plot-output<span class="w"> </span>adaptive-period-tradeoff.png<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--max-tail-mse-ratio<span class="w"> </span><span class="m">1</span>.5
+</pre></div>
+</div>
+<p>The report marks the recommended <code class="docutils literal notranslate"><span class="pre">reflection_update_period</span></code> according to a
+quality threshold and writes the Pareto frontier.  Use this to distinguish a
+speedup without also reporting the convergence/quality cost.</p>
+</section>
+<section id="multi-seed-adaptive-period-validation">
+<h2>Multi-seed adaptive-period validation<a class="headerlink" href="#multi-seed-adaptive-period-validation" title="Link to this heading">¶</a></h2>
+<p>Use the multi-seed sweep when selecting a default <code class="docutils literal notranslate"><span class="pre">reflection_update_period</span></code> for
+examples or documentation.  It aggregates each period across several random
+inputs and reports median and worst-case quality ratios.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/adaptive_multiseed_sweep.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--seeds<span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="m">101</span><span class="w"> </span><span class="m">102</span><span class="w"> </span><span class="m">103</span><span class="w"> </span><span class="m">104</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--periods<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--samples<span class="w"> </span><span class="m">20000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repeats<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>adaptive-multiseed-sweep.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>adaptive-multiseed-aggregate.csv
+
+python<span class="w"> </span>benchmarks/adaptive_multiseed_report.py<span class="w"> </span>adaptive-multiseed-sweep.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--markdown-output<span class="w"> </span>adaptive-multiseed-report.md<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>adaptive-multiseed-pareto.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--max-tail-mse-ratio-median<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--max-tail-mse-ratio-worst<span class="w"> </span><span class="m">2</span>.0
+</pre></div>
+</div>
+<p>Prefer a conservative period if the fastest period has a high worst-case
+tail-MSE ratio, even when its median ratio looks acceptable.</p>
+</section>
+<section id="api-level-tuning">
+<h2>API-level tuning<a class="headerlink" href="#api-level-tuning" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">lattice_dsp.tune_reflection_update_period</span></code> when you already have validation data in memory and want a programmatic recommendation instead of a CLI report. The helper supports 1-D data and 2-D trial-by-sample matrices. A 1-D run returns a valid signal-specific recommendation and includes a warning in <code class="docutils literal notranslate"><span class="pre">result[&quot;warnings&quot;]</span></code>; a 2-D run can be labelled robust when it meets <code class="docutils literal notranslate"><span class="pre">min_trials_for_robust</span></code>.</p>
+</section>
+<section id="echo-noise-cancellation-benchmark">
+<h2>Echo/noise cancellation benchmark<a class="headerlink" href="#echo-noise-cancellation-benchmark" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">benchmarks/echo_cancellation_benchmark.py</span></code> validates the application-facing
+hybrid direction: stable lattice/IIR linear modelling plus optional residual
+suppression. It writes a JSON file with ERLE, MSE improvement, residual power,
+and timing for no cancellation, FIR/NLMS, lattice/IIR, residual-only, and
+hybrid cases.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/echo_cancellation_benchmark.py<span class="w"> </span>--samples<span class="w"> </span><span class="m">64000</span><span class="w"> </span>--output<span class="w"> </span>echo-benchmark.json
+</pre></div>
+</div>
+<p>The included residual suppressors are simple dependency-free baselines for making ERLE/MSE behavior visible; they are not production AEC quality metrics.</p>
+</section>
+<section id="multi-seed-echo-validation">
+<h2>Multi-seed echo validation<a class="headerlink" href="#multi-seed-echo-validation" title="Link to this heading">¶</a></h2>
+<p>Robust echo/noise-cancellation validation is available with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>benchmarks/echo_multiseed_benchmark.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--seeds<span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="m">101</span><span class="w"> </span><span class="m">102</span><span class="w"> </span><span class="m">103</span><span class="w"> </span><span class="m">104</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nonlinear-strengths<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span><span class="m">0</span>.08<span class="w"> </span><span class="m">0</span>.16<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--noise-snr-dbs<span class="w"> </span><span class="m">40</span><span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--near-end-power-ratios<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span><span class="m">0</span>.02<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>echo-multiseed-benchmark.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>echo-multiseed-summary-raw.csv
+
+python<span class="w"> </span>benchmarks/echo_multiseed_report.py<span class="w"> </span>echo-multiseed-benchmark.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--markdown-output<span class="w"> </span>echo-multiseed-report.md<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--csv-output<span class="w"> </span>echo-multiseed-summary.csv
+</pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">docs/echo_multiseed_validation.md</span></code> for interpretation guidance.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="_sources/benchmarks.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

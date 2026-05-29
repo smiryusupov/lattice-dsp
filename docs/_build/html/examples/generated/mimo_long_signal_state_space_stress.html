@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MIMO long-signal state-space stress &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Reachability, observability, and Hankel singular values" href="reachability_observability_hankel_demo.html" />
+    <link rel="prev" title="Large echo-scale recursive model stress" href="large_order_echo_stress.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="large_order_echo_stress.html" title="previous chapter">Large echo-scale recursive model stress</a></li>
+      <li>Next: <a href="reachability_observability_hankel_demo.html" title="next chapter">Reachability, observability, and Hankel singular values</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="mimo-long-signal-state-space-stress">
+<h1>MIMO long-signal state-space stress<a class="headerlink" href="#mimo-long-signal-state-space-stress" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Reduce a coupled MIMO state-space model with the finite block-Hankel workflow, then process long batched multichannel signals through the compiled C++ runtime.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>This is the multichannel counterpart to the scalar long-signal stress examples.  A
+coupled MIMO system is converted to Markov parameters, reduced with
+<code class="docutils literal notranslate"><span class="pre">finite_hankel_reduce_mimo</span></code>, and then reused on a long batched input through
+<code class="docutils literal notranslate"><span class="pre">mimo_state_space_process_batch</span></code>.  The printed comparison numbers are scale
+diagnostics for MIMO echo-style paths, not claims of accuracy equivalence to every
+long FIR model and not a matrix-valued AAK/Nehari solver claim.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>A MIMO state-space model uses</p>
+<div class="math notranslate nohighlight">
+\[x_s[n+1] = A x_s[n] + B u[n], \qquad
+y[n] = C x_s[n] + D u[n].\]</div>
+<p>Its Markov matrices <code class="docutils literal notranslate"><span class="pre">M_k</span></code> map input channels to output channels at lag <code class="docutils literal notranslate"><span class="pre">k</span></code>.
+The finite MIMO block-Hankel reducer builds a matrix whose blocks are these
+Markov matrices and returns a lower-order state-space realization.  For comparison,
+a direct MIMO FIR echo model with <code class="docutils literal notranslate"><span class="pre">L</span></code> taps per input-output path has scale</p>
+<div class="math notranslate nohighlight">
+\[N \, L \, m \, p,\]</div>
+<p>for <code class="docutils literal notranslate"><span class="pre">N</span></code> samples, <code class="docutils literal notranslate"><span class="pre">m</span></code> inputs, and <code class="docutils literal notranslate"><span class="pre">p</span></code> outputs.  The state-space runtime has a
+dense recursive scale tied to the chosen state order instead of the FIR tap count.</p>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>Inspect the finite block-Hankel reduction time, retained energy, reduced runtime, output-channel throughput, and the printed direct MIMO FIR tap-visit scale.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/mimo_long_signal_state_space_stress.py
+</pre></div>
+</div>
+</section>
+<section id="representative-local-output">
+<h2>Representative local output<a class="headerlink" href="#representative-local-output" title="Link to this heading">¶</a></h2>
+<p>The following output is from one local run of the default 8-by-8 stress command.
+Exact timings are machine-dependent, but the scale relationship is the point:
+the finite MIMO reduction produced a stable order-16 model that processed one
+million multichannel samples while the equivalent direct MIMO FIR tap-visit
+count was orders of magnitude larger.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MIMO long-signal finite-Hankel/state-space stress
+================================================================
+batch streams: 1
+samples per stream: 1,000,000
+inputs x outputs: 8 x 8
+full MIMO state order: 64
+dominant full-model pole radius target: 0.985000
+full-model spectral radius: 0.985000
+Markov samples for reduction: 320
+block-Hankel matrix: 192 x 192
+reduced order: 16
+Markov generation time: 0.004333 s
+finite MIMO block-Hankel reduction time: 0.332755 s
+retained Hankel energy: 0.999787
+relative Markov error: 1.963e-03
+reduced model stable: True
+reduced spectral radius: 0.983021
+
+compiled reduced MIMO runtime
+----------------------------------------------------------------
+median reduced state-space time: 0.151889 s
+throughput: 6.58 million multichannel samples/s
+output-channel throughput: 52.67 million output samples/s
+dense reduced state-space visits: 576,000,000
+dense visit rate: 3.79 billion visits/s
+output RMS: 1.914513
+
+MIMO echo-scale comparison numbers
+----------------------------------------------------------------
+reference MIMO FIR taps per input-output path: 131,072
+FIR taps / reduced state order: 8192.0x
+full dense state-space visits at same signal size: 5,184,000,000
+reduced dense state-space visits: 576,000,000
+direct MIMO FIR filter visits: 8,388,608,000,000
+direct MIMO FIR LMS filter+update visits, rough scale: 16,777,216,000,000
+note: these are scale diagnostics, not an accuracy equivalence claim
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MIMO long-signal finite-Hankel/state-space stress
+================================================================
+batch streams: 1
+samples per stream: 1,000,000
+inputs x outputs: 8 x 8
+full MIMO state order: 64
+dominant full-model pole radius target: 0.985000
+full-model spectral radius: 0.985000
+Markov samples for reduction: 320
+block-Hankel matrix: 192 x 192
+reduced order: 16
+Markov generation time: 0.003546 s
+finite MIMO block-Hankel reduction time: 0.305258 s
+retained Hankel energy: 0.999787
+relative Markov error: 1.963e-03
+reduced model stable: True
+reduced spectral radius: 0.983021
+
+compiled reduced MIMO runtime
+----------------------------------------------------------------
+median reduced state-space time: 0.150431 s
+throughput: 6.65 million multichannel samples/s
+output-channel throughput: 53.18 million output samples/s
+dense reduced state-space visits: 576,000,000
+dense visit rate: 3.83 billion visits/s
+output RMS: 1.914513
+
+MIMO echo-scale comparison numbers
+----------------------------------------------------------------
+reference MIMO FIR taps per input-output path: 131,072
+FIR taps / reduced state order: 8192.0x
+full dense state-space visits at same signal size: 5,184,000,000
+reduced dense state-space visits: 576,000,000
+direct MIMO FIR filter visits: 8,388,608,000,000
+direct MIMO FIR LMS filter+update visits, rough scale: 16,777,216,000,000
+note: these are scale diagnostics, not an accuracy equivalence claim
+</pre></div>
+</div>
+</section>
+<section id="generated-data-files">
+<h2>Generated data files<a class="headerlink" href="#generated-data-files" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../../_downloads/d0e1bb7cc50107a8d9d906a7626a5091/mimo_long_signal_state_space_stress.csv"><code class="xref download docutils literal notranslate"><span class="pre">mimo_long_signal_state_space_stress.csv</span></code></a></p></li>
+</ul>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;MIMO long-signal stress for finite block-Hankel reduction and compiled state-space runtime.</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">This example complements the scalar long-signal and echo-scale stress tutorials.</span>
+<span class="linenos">  4</span><span class="sd">It focuses on the multichannel niche: a coupled MIMO system is reduced with the</span>
+<span class="linenos">  5</span><span class="sd">finite block-Hankel workflow, then the reduced state-space model is reused on a</span>
+<span class="linenos">  6</span><span class="sd">long batched multichannel signal through the compiled C++ runtime.</span>
+<span class="linenos">  7</span>
+<span class="linenos">  8</span><span class="sd">The comparison numbers are deliberately scale diagnostics.  They show the cost</span>
+<span class="linenos">  9</span><span class="sd">profile of a dense recursive MIMO state-space model against a long direct-form</span>
+<span class="linenos"> 10</span><span class="sd">MIMO FIR echo model.  They are not an accuracy-equivalence claim and they are not</span>
+<span class="linenos"> 11</span><span class="sd">a matrix-valued AAK/Nehari solver claim.</span>
+<span class="linenos"> 12</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 15</span>
+<span class="linenos"> 16</span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="linenos"> 17</span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="linenos"> 18</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 19</span><span class="kn">import</span><span class="w"> </span><span class="nn">statistics</span>
+<span class="linenos"> 20</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="linenos"> 21</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span><span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+<span class="linenos"> 26</span>
+<span class="linenos"> 27</span>
+<span class="linenos"> 28</span><span class="k">def</span><span class="w"> </span><span class="nf">artifact_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="linenos"> 29</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LATTICE_DSP_ARTIFACT_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/example-artifacts&quot;</span><span class="p">))</span>
+<span class="linenos"> 30</span>    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 31</span>    <span class="k">return</span> <span class="n">path</span>
+<span class="linenos"> 32</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="k">def</span><span class="w"> </span><span class="nf">median_time</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">repeats</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="linenos"> 35</span>    <span class="n">times</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 36</span>    <span class="n">result</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos"> 37</span>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">)):</span>
+<span class="linenos"> 38</span>        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="linenos"> 39</span>        <span class="n">result</span> <span class="o">=</span> <span class="n">fn</span><span class="p">()</span>
+<span class="linenos"> 40</span>        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span>
+<span class="linenos"> 41</span>    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="linenos"> 42</span>    <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="n">result</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span>
+<span class="linenos"> 45</span><span class="k">def</span><span class="w"> </span><span class="nf">stable_coupled_state_space</span><span class="p">(</span>
+<span class="linenos"> 46</span>    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 47</span>    <span class="n">outputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 48</span>    <span class="n">inputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 49</span>    <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="linenos"> 50</span>    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 51</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="linenos"> 52</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Construct a deterministic stable dense MIMO state-space model.&quot;&quot;&quot;</span>
+<span class="linenos"> 53</span>    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span>    <span class="c1"># A random orthogonal similarity keeps the system coupled while making the</span>
+<span class="linenos"> 56</span>    <span class="c1"># spectral radius explicit.  The descending radii create a long but stable</span>
+<span class="linenos"> 57</span>    <span class="c1"># memory profile.</span>
+<span class="linenos"> 58</span>    <span class="n">q</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">)))</span>
+<span class="linenos"> 59</span>    <span class="n">radii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos"> 60</span>    <span class="n">A</span> <span class="o">=</span> <span class="n">q</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">radii</span><span class="p">)</span> <span class="o">@</span> <span class="n">q</span><span class="o">.</span><span class="n">T</span>
+<span class="linenos"> 61</span>
+<span class="linenos"> 62</span>    <span class="c1"># Scale B and C by sqrt(order) so the output RMS remains controlled when the</span>
+<span class="linenos"> 63</span>    <span class="c1"># state dimension changes.</span>
+<span class="linenos"> 64</span>    <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">order</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="linenos"> 65</span>    <span class="n">B</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span> <span class="o">/</span> <span class="n">scale</span>
+<span class="linenos"> 66</span>    <span class="n">C</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">order</span><span class="p">))</span> <span class="o">/</span> <span class="n">scale</span>
+<span class="linenos"> 67</span>    <span class="n">D</span> <span class="o">=</span> <span class="mf">0.015</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
+<span class="linenos"> 68</span>    <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">D</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos"> 69</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span><span class="k">def</span><span class="w"> </span><span class="nf">colored_multichannel_input</span><span class="p">(</span>
+<span class="linenos"> 72</span>    <span class="n">batch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 73</span>    <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 74</span>    <span class="n">inputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 75</span>    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 76</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="linenos"> 77</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate dependency-free multichannel input with light temporal coloring.&quot;&quot;&quot;</span>
+<span class="linenos"> 78</span>    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="linenos"> 79</span>    <span class="n">white</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos"> 80</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">white</span><span class="p">)</span>
+<span class="linenos"> 81</span>    <span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch</span><span class="p">,</span> <span class="n">inputs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos"> 82</span>    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+<span class="linenos"> 83</span>        <span class="n">state</span> <span class="o">=</span> <span class="mf">0.88</span> <span class="o">*</span> <span class="n">state</span> <span class="o">+</span> <span class="mf">0.12</span> <span class="o">*</span> <span class="n">white</span><span class="p">[:,</span> <span class="n">n</span><span class="p">,</span> <span class="p">:]</span>
+<span class="linenos"> 84</span>        <span class="n">x</span><span class="p">[:,</span> <span class="n">n</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">state</span>
+<span class="linenos"> 85</span>    <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="linenos"> 86</span>    <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">rms</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span>
+<span class="linenos"> 89</span><span class="k">def</span><span class="w"> </span><span class="nf">dense_state_space_visit_scale</span><span class="p">(</span>
+<span class="linenos"> 90</span>    <span class="n">batch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 91</span>    <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 92</span>    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 93</span>    <span class="n">inputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 94</span>    <span class="n">outputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos"> 95</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Approximate dense multiply-add visits for a batched MIMO state-space pass.&quot;&quot;&quot;</span>
+<span class="linenos"> 97</span>    <span class="n">per_sample</span> <span class="o">=</span> <span class="n">order</span> <span class="o">*</span> <span class="n">order</span> <span class="o">+</span> <span class="n">order</span> <span class="o">*</span> <span class="n">inputs</span> <span class="o">+</span> <span class="n">outputs</span> <span class="o">*</span> <span class="n">order</span> <span class="o">+</span> <span class="n">outputs</span> <span class="o">*</span> <span class="n">inputs</span>
+<span class="linenos"> 98</span>    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">per_sample</span><span class="p">)</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span><span class="k">def</span><span class="w"> </span><span class="nf">direct_mimo_fir_visit_scale</span><span class="p">(</span>
+<span class="linenos">102</span>    <span class="n">batch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos">103</span>    <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos">104</span>    <span class="n">taps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos">105</span>    <span class="n">inputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos">106</span>    <span class="n">outputs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="linenos">107</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="linenos">108</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Approximate direct-form MIMO FIR multiply-add visits.&quot;&quot;&quot;</span>
+<span class="linenos">109</span>    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">taps</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span><span class="k">def</span><span class="w"> </span><span class="nf">spectral_radius</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="linenos">113</span>    <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">114</span>        <span class="k">return</span> <span class="mf">0.0</span>
+<span class="linenos">115</span>    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">))))</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">119</span>    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="linenos">120</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--samples&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of time samples per stream&quot;</span><span class="p">)</span>
+<span class="linenos">121</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--batch&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of independent multichannel streams&quot;</span><span class="p">)</span>
+<span class="linenos">122</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--inputs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;input channels&quot;</span><span class="p">)</span>
+<span class="linenos">123</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--outputs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output channels&quot;</span><span class="p">)</span>
+<span class="linenos">124</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--full-order&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;order of the synthetic full MIMO state-space model&quot;</span><span class="p">)</span>
+<span class="linenos">125</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--reduced-order&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;finite block-Hankel reduced order used for long-signal processing&quot;</span><span class="p">)</span>
+<span class="linenos">126</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--markov-samples&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">320</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of MIMO Markov parameters used for reduction&quot;</span><span class="p">)</span>
+<span class="linenos">127</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--block-rows&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;block rows in the finite block-Hankel matrix&quot;</span><span class="p">)</span>
+<span class="linenos">128</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--block-cols&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;block columns in the finite block-Hankel matrix&quot;</span><span class="p">)</span>
+<span class="linenos">129</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--fir-taps&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">131_072</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;reference MIMO FIR echo-tap count for scale estimates&quot;</span><span class="p">)</span>
+<span class="linenos">130</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--radius&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.985</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;dominant stable pole radius of the generated full model&quot;</span><span class="p">)</span>
+<span class="linenos">131</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--repeats&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;median timing repeats&quot;</span><span class="p">)</span>
+<span class="linenos">132</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2028</span><span class="p">)</span>
+<span class="linenos">133</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--n-threads&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;threads for the compiled state-space runtime; 0 uses backend default&quot;</span><span class="p">)</span>
+<span class="linenos">134</span>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--time-full&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;also time the unreduced full-order state-space model&quot;</span><span class="p">)</span>
+<span class="linenos">135</span>    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="linenos">136</span>
+<span class="linenos">137</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">138</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--samples must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">139</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">140</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--batch must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">141</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">142</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--inputs and --outputs must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">143</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">full_order</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">144</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--full-order and --reduced-order must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">145</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span> <span class="o">&gt;</span> <span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="p">:</span>
+<span class="linenos">146</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--reduced-order must not exceed --full-order&quot;</span><span class="p">)</span>
+<span class="linenos">147</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">markov_samples</span> <span class="o">&lt;=</span> <span class="n">args</span><span class="o">.</span><span class="n">block_rows</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">block_cols</span><span class="p">:</span>
+<span class="linenos">148</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--markov-samples must exceed --block-rows + --block-cols&quot;</span><span class="p">)</span>
+<span class="linenos">149</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">150</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--fir-taps must be positive&quot;</span><span class="p">)</span>
+<span class="linenos">151</span>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">args</span><span class="o">.</span><span class="n">radius</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
+<span class="linenos">152</span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;--radius must satisfy 0 &lt; radius &lt; 1&quot;</span><span class="p">)</span>
+<span class="linenos">153</span>
+<span class="linenos">154</span>    <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">stable_coupled_state_space</span><span class="p">(</span>
+<span class="linenos">155</span>        <span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="p">,</span>
+<span class="linenos">156</span>        <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+<span class="linenos">157</span>        <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
+<span class="linenos">158</span>        <span class="n">args</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span>
+<span class="linenos">159</span>        <span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+<span class="linenos">160</span>    <span class="p">)</span>
+<span class="linenos">161</span>
+<span class="linenos">162</span>    <span class="n">markov_time</span><span class="p">,</span> <span class="n">markov_obj</span> <span class="o">=</span> <span class="n">median_time</span><span class="p">(</span>
+<span class="linenos">163</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">ld</span><span class="o">.</span><span class="n">mimo_state_space_markov_response</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">markov_samples</span><span class="p">),</span>
+<span class="linenos">164</span>        <span class="mi">1</span><span class="p">,</span>
+<span class="linenos">165</span>    <span class="p">)</span>
+<span class="linenos">166</span>    <span class="n">markov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">markov_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">167</span>
+<span class="linenos">168</span>    <span class="n">reduce_time</span><span class="p">,</span> <span class="n">result_obj</span> <span class="o">=</span> <span class="n">median_time</span><span class="p">(</span>
+<span class="linenos">169</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">ld</span><span class="o">.</span><span class="n">finite_hankel_reduce_mimo</span><span class="p">(</span>
+<span class="linenos">170</span>            <span class="n">markov</span><span class="p">,</span>
+<span class="linenos">171</span>            <span class="n">reduced_order</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="p">,</span>
+<span class="linenos">172</span>            <span class="n">block_rows</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">block_rows</span><span class="p">,</span>
+<span class="linenos">173</span>            <span class="n">block_cols</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">block_cols</span><span class="p">,</span>
+<span class="linenos">174</span>        <span class="p">),</span>
+<span class="linenos">175</span>        <span class="mi">1</span><span class="p">,</span>
+<span class="linenos">176</span>    <span class="p">)</span>
+<span class="linenos">177</span>    <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+<span class="linenos">178</span>    <span class="n">Ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">179</span>    <span class="n">Br</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">180</span>    <span class="n">Cr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">181</span>    <span class="n">Dr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">182</span>
+<span class="linenos">183</span>    <span class="n">approx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ld</span><span class="o">.</span><span class="n">mimo_state_space_markov_response</span><span class="p">(</span><span class="n">Ar</span><span class="p">,</span> <span class="n">Br</span><span class="p">,</span> <span class="n">Cr</span><span class="p">,</span> <span class="n">Dr</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">markov_samples</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">184</span>    <span class="n">relative_markov_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">markov</span> <span class="o">-</span> <span class="n">approx</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">markov</span> <span class="o">*</span> <span class="n">markov</span><span class="p">),</span> <span class="mf">1e-30</span><span class="p">))</span>
+<span class="linenos">185</span>
+<span class="linenos">186</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">colored_multichannel_input</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">seed</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">187</span>
+<span class="linenos">188</span>    <span class="n">reduced_time</span><span class="p">,</span> <span class="n">y_obj</span> <span class="o">=</span> <span class="n">median_time</span><span class="p">(</span>
+<span class="linenos">189</span>        <span class="k">lambda</span><span class="p">:</span> <span class="n">ld</span><span class="o">.</span><span class="n">mimo_state_space_process_batch</span><span class="p">(</span><span class="n">Ar</span><span class="p">,</span> <span class="n">Br</span><span class="p">,</span> <span class="n">Cr</span><span class="p">,</span> <span class="n">Dr</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">n_threads</span><span class="p">),</span>
+<span class="linenos">190</span>        <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos">191</span>    <span class="p">)</span>
+<span class="linenos">192</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">193</span>
+<span class="linenos">194</span>    <span class="n">reduced_throughput_streams</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">reduced_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span>
+<span class="linenos">195</span>    <span class="n">reduced_channel_throughput</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">reduced_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span>
+<span class="linenos">196</span>    <span class="n">reduced_visits</span> <span class="o">=</span> <span class="n">dense_state_space_visit_scale</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
+<span class="linenos">197</span>    <span class="n">full_visits</span> <span class="o">=</span> <span class="n">dense_state_space_visit_scale</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
+<span class="linenos">198</span>    <span class="n">fir_visits</span> <span class="o">=</span> <span class="n">direct_mimo_fir_visit_scale</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
+<span class="linenos">199</span>    <span class="n">fir_lms_visits</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fir_visits</span>
+<span class="linenos">200</span>    <span class="n">hankel_rows</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">block_rows</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span>
+<span class="linenos">201</span>    <span class="n">hankel_cols</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">block_cols</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span>
+<span class="linenos">202</span>
+<span class="linenos">203</span>    <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">204</span>        <span class="p">{</span>
+<span class="linenos">205</span>            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;mimo_markov_generation_cpp&quot;</span><span class="p">,</span>
+<span class="linenos">206</span>            <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="n">markov_time</span><span class="p">,</span>
+<span class="linenos">207</span>            <span class="s2">&quot;markov_samples&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">markov_samples</span><span class="p">,</span>
+<span class="linenos">208</span>            <span class="s2">&quot;full_order&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="p">,</span>
+<span class="linenos">209</span>            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
+<span class="linenos">210</span>            <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+<span class="linenos">211</span>        <span class="p">},</span>
+<span class="linenos">212</span>        <span class="p">{</span>
+<span class="linenos">213</span>            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;finite_block_hankel_reduce_mimo_cpp&quot;</span><span class="p">,</span>
+<span class="linenos">214</span>            <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="n">reduce_time</span><span class="p">,</span>
+<span class="linenos">215</span>            <span class="s2">&quot;full_order&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="p">,</span>
+<span class="linenos">216</span>            <span class="s2">&quot;reduced_order&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="p">,</span>
+<span class="linenos">217</span>            <span class="s2">&quot;block_hankel_rows&quot;</span><span class="p">:</span> <span class="n">hankel_rows</span><span class="p">,</span>
+<span class="linenos">218</span>            <span class="s2">&quot;block_hankel_cols&quot;</span><span class="p">:</span> <span class="n">hankel_cols</span><span class="p">,</span>
+<span class="linenos">219</span>            <span class="s2">&quot;retained_hankel_energy&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retained_hankel_energy&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)),</span>
+<span class="linenos">220</span>            <span class="s2">&quot;relative_markov_error&quot;</span><span class="p">:</span> <span class="n">relative_markov_error</span><span class="p">,</span>
+<span class="linenos">221</span>            <span class="s2">&quot;reduced_stable&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+<span class="linenos">222</span>        <span class="p">},</span>
+<span class="linenos">223</span>        <span class="p">{</span>
+<span class="linenos">224</span>            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;mimo_state_space_process_batch_reduced_cpp&quot;</span><span class="p">,</span>
+<span class="linenos">225</span>            <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="n">reduced_time</span><span class="p">,</span>
+<span class="linenos">226</span>            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span>
+<span class="linenos">227</span>            <span class="s2">&quot;batch&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span>
+<span class="linenos">228</span>            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
+<span class="linenos">229</span>            <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+<span class="linenos">230</span>            <span class="s2">&quot;reduced_order&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="p">,</span>
+<span class="linenos">231</span>            <span class="s2">&quot;throughput_mstreams_per_s&quot;</span><span class="p">:</span> <span class="n">reduced_throughput_streams</span><span class="p">,</span>
+<span class="linenos">232</span>            <span class="s2">&quot;throughput_moutput_channels_per_s&quot;</span><span class="p">:</span> <span class="n">reduced_channel_throughput</span><span class="p">,</span>
+<span class="linenos">233</span>            <span class="s2">&quot;dense_state_space_visits&quot;</span><span class="p">:</span> <span class="n">reduced_visits</span><span class="p">,</span>
+<span class="linenos">234</span>            <span class="s2">&quot;dense_state_space_visit_rate_giga_per_s&quot;</span><span class="p">:</span> <span class="n">reduced_visits</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">reduced_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+<span class="linenos">235</span>            <span class="s2">&quot;output_rms&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">y</span><span class="p">))),</span>
+<span class="linenos">236</span>            <span class="s2">&quot;reduced_spectral_radius&quot;</span><span class="p">:</span> <span class="n">spectral_radius</span><span class="p">(</span><span class="n">Ar</span><span class="p">),</span>
+<span class="linenos">237</span>        <span class="p">},</span>
+<span class="linenos">238</span>        <span class="p">{</span>
+<span class="linenos">239</span>            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;direct_mimo_fir_echo_scale_estimate_filter_only&quot;</span><span class="p">,</span>
+<span class="linenos">240</span>            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span>
+<span class="linenos">241</span>            <span class="s2">&quot;batch&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span>
+<span class="linenos">242</span>            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
+<span class="linenos">243</span>            <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+<span class="linenos">244</span>            <span class="s2">&quot;fir_taps&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span><span class="p">,</span>
+<span class="linenos">245</span>            <span class="s2">&quot;direct_fir_visits&quot;</span><span class="p">:</span> <span class="n">fir_visits</span><span class="p">,</span>
+<span class="linenos">246</span>            <span class="s2">&quot;fir_taps_per_reduced_state&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span> <span class="o">/</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="p">,</span>
+<span class="linenos">247</span>        <span class="p">},</span>
+<span class="linenos">248</span>        <span class="p">{</span>
+<span class="linenos">249</span>            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;direct_mimo_fir_lms_scale_estimate_filter_plus_update&quot;</span><span class="p">,</span>
+<span class="linenos">250</span>            <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span>
+<span class="linenos">251</span>            <span class="s2">&quot;batch&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span>
+<span class="linenos">252</span>            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
+<span class="linenos">253</span>            <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+<span class="linenos">254</span>            <span class="s2">&quot;fir_taps&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span><span class="p">,</span>
+<span class="linenos">255</span>            <span class="s2">&quot;direct_fir_lms_visits&quot;</span><span class="p">:</span> <span class="n">fir_lms_visits</span><span class="p">,</span>
+<span class="linenos">256</span>            <span class="s2">&quot;fir_taps_per_reduced_state&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span> <span class="o">/</span> <span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="p">,</span>
+<span class="linenos">257</span>        <span class="p">},</span>
+<span class="linenos">258</span>    <span class="p">]</span>
+<span class="linenos">259</span>
+<span class="linenos">260</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MIMO long-signal finite-Hankel/state-space stress&quot;</span><span class="p">)</span>
+<span class="linenos">261</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)</span>
+<span class="linenos">262</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;batch streams: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">263</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;samples per stream: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">264</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;inputs x outputs: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">265</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;full MIMO state order: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">266</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dominant full-model pole radius target: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">radius</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">267</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;full-model spectral radius: </span><span class="si">{</span><span class="n">spectral_radius</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">268</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Markov samples for reduction: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">markov_samples</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">269</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;block-Hankel matrix: </span><span class="si">{</span><span class="n">hankel_rows</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">hankel_cols</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">270</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reduced order: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">271</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Markov generation time: </span><span class="si">{</span><span class="n">markov_time</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+<span class="linenos">272</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finite MIMO block-Hankel reduction time: </span><span class="si">{</span><span class="n">reduce_time</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+<span class="linenos">273</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;retained Hankel energy: </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retained_hankel_energy&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">274</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;relative Markov error: </span><span class="si">{</span><span class="n">relative_markov_error</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">275</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reduced model stable: </span><span class="si">{</span><span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stable&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">False</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">276</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reduced spectral radius: </span><span class="si">{</span><span class="n">spectral_radius</span><span class="p">(</span><span class="n">Ar</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">277</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">278</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;compiled reduced MIMO runtime&quot;</span><span class="p">)</span>
+<span class="linenos">279</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)</span>
+<span class="linenos">280</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median reduced state-space time: </span><span class="si">{</span><span class="n">reduced_time</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+<span class="linenos">281</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;throughput: </span><span class="si">{</span><span class="n">reduced_throughput_streams</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> million multichannel samples/s&quot;</span><span class="p">)</span>
+<span class="linenos">282</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output-channel throughput: </span><span class="si">{</span><span class="n">reduced_channel_throughput</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> million output samples/s&quot;</span><span class="p">)</span>
+<span class="linenos">283</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dense reduced state-space visits: </span><span class="si">{</span><span class="n">reduced_visits</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">284</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dense visit rate: </span><span class="si">{</span><span class="n">reduced_visits</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="n">reduced_time</span><span class="p">,</span><span class="w"> </span><span class="mf">1e-30</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> billion visits/s&quot;</span><span class="p">)</span>
+<span class="linenos">285</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output RMS: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">286</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">287</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MIMO echo-scale comparison numbers&quot;</span><span class="p">)</span>
+<span class="linenos">288</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)</span>
+<span class="linenos">289</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reference MIMO FIR taps per input-output path: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">290</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FIR taps / reduced state order: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">fir_taps</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">args</span><span class="o">.</span><span class="n">reduced_order</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+<span class="linenos">291</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;full dense state-space visits at same signal size: </span><span class="si">{</span><span class="n">full_visits</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">292</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reduced dense state-space visits: </span><span class="si">{</span><span class="n">reduced_visits</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">293</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;direct MIMO FIR filter visits: </span><span class="si">{</span><span class="n">fir_visits</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">294</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;direct MIMO FIR LMS filter+update visits, rough scale: </span><span class="si">{</span><span class="n">fir_lms_visits</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">295</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;note: these are scale diagnostics, not an accuracy equivalence claim&quot;</span><span class="p">)</span>
+<span class="linenos">296</span>
+<span class="linenos">297</span>    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">time_full</span><span class="p">:</span>
+<span class="linenos">298</span>        <span class="n">full_time</span><span class="p">,</span> <span class="n">y_full_obj</span> <span class="o">=</span> <span class="n">median_time</span><span class="p">(</span>
+<span class="linenos">299</span>            <span class="k">lambda</span><span class="p">:</span> <span class="n">ld</span><span class="o">.</span><span class="n">mimo_state_space_process_batch</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">n_threads</span><span class="p">),</span>
+<span class="linenos">300</span>            <span class="n">args</span><span class="o">.</span><span class="n">repeats</span><span class="p">,</span>
+<span class="linenos">301</span>        <span class="p">)</span>
+<span class="linenos">302</span>        <span class="n">y_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_full_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="linenos">303</span>        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<span class="linenos">304</span>            <span class="p">{</span>
+<span class="linenos">305</span>                <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;mimo_state_space_process_batch_full_cpp&quot;</span><span class="p">,</span>
+<span class="linenos">306</span>                <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="n">full_time</span><span class="p">,</span>
+<span class="linenos">307</span>                <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span>
+<span class="linenos">308</span>                <span class="s2">&quot;batch&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span>
+<span class="linenos">309</span>                <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
+<span class="linenos">310</span>                <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+<span class="linenos">311</span>                <span class="s2">&quot;full_order&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">full_order</span><span class="p">,</span>
+<span class="linenos">312</span>                <span class="s2">&quot;throughput_mstreams_per_s&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">full_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span>
+<span class="linenos">313</span>                <span class="s2">&quot;throughput_moutput_channels_per_s&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">batch</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">samples</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">outputs</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">full_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span>
+<span class="linenos">314</span>                <span class="s2">&quot;dense_state_space_visits&quot;</span><span class="p">:</span> <span class="n">full_visits</span><span class="p">,</span>
+<span class="linenos">315</span>                <span class="s2">&quot;dense_state_space_visit_rate_giga_per_s&quot;</span><span class="p">:</span> <span class="n">full_visits</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">full_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">,</span>
+<span class="linenos">316</span>                <span class="s2">&quot;output_rms&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_full</span> <span class="o">*</span> <span class="n">y_full</span><span class="p">))),</span>
+<span class="linenos">317</span>                <span class="s2">&quot;speedup_reduced_vs_full&quot;</span><span class="p">:</span> <span class="n">full_time</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">reduced_time</span><span class="p">,</span> <span class="mf">1e-30</span><span class="p">),</span>
+<span class="linenos">318</span>            <span class="p">}</span>
+<span class="linenos">319</span>        <span class="p">)</span>
+<span class="linenos">320</span>        <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">321</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;optional full-order runtime&quot;</span><span class="p">)</span>
+<span class="linenos">322</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)</span>
+<span class="linenos">323</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;median full state-space time: </span><span class="si">{</span><span class="n">full_time</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+<span class="linenos">324</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reduced/full runtime speedup: </span><span class="si">{</span><span class="n">full_time</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">max</span><span class="p">(</span><span class="n">reduced_time</span><span class="p">,</span><span class="w"> </span><span class="mf">1e-30</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+<span class="linenos">325</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;full output RMS: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_full</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y_full</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">326</span>
+<span class="linenos">327</span>    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">artifact_dir</span><span class="p">()</span>
+<span class="linenos">328</span>    <span class="n">csv_path</span> <span class="o">=</span> <span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;mimo_long_signal_state_space_stress.csv&quot;</span>
+<span class="linenos">329</span>    <span class="n">fieldnames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">key</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">row</span><span class="p">})</span>
+<span class="linenos">330</span>    <span class="k">with</span> <span class="n">csv_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">331</span>        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">fieldnames</span><span class="p">)</span>
+<span class="linenos">332</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+<span class="linenos">333</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="linenos">334</span>    <span class="nb">print</span><span class="p">()</span>
+<span class="linenos">335</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;wrote </span><span class="si">{</span><span class="n">csv_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">336</span>
+<span class="linenos">337</span>
+<span class="linenos">338</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">339</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/mimo_long_signal_state_space_stress.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

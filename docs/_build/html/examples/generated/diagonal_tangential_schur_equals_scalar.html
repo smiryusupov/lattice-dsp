@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Diagonal tangential Schur equals independent scalar Pick problems &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=460238d4" />
+    <script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Synthetic ERLE metric demo" href="echo_cancellation_erle_demo.html" />
+    <link rel="prev" title="Tangential Schur Pick and J-inner diagnostics" href="tangential_schur_pick_jinner.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#orientation-tutorials">Orientation tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#interoperability-recipes">Interoperability recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#core-scalar-lattice-tutorials">Core scalar lattice tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#model-reduction-tutorials">Model-reduction tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-ar-tutorials">Adaptive and AR tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#applications-and-signal-model-tutorials">Applications and signal-model tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#spectral-diagnostic-tutorials">Spectral diagnostic tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#adaptive-and-robust-filtering-tutorials">Adaptive and robust filtering tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#multichannel-and-matrix-tutorials">Multichannel and matrix tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#tangential-schur-and-j-inner-tutorials">Tangential Schur and J-inner tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#synthetic-metric-tutorials">Synthetic metric tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples tutorials</a><ul>
+      <li>Previous: <a href="tangential_schur_pick_jinner.html" title="previous chapter">Tangential Schur Pick and J-inner diagnostics</a></li>
+      <li>Next: <a href="echo_cancellation_erle_demo.html" title="next chapter">Synthetic ERLE metric demo</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="diagonal-tangential-schur-equals-independent-scalar-pick-problems">
+<h1>Diagonal tangential Schur equals independent scalar Pick problems<a class="headerlink" href="#diagonal-tangential-schur-equals-independent-scalar-pick-problems" title="Link to this heading">¶</a></h1>
+<div class="admonition-tutorial-goal admonition">
+<p class="admonition-title">Tutorial goal</p>
+<p>Show that diagonal MIMO tangential data decompose into independent scalar Schur/Pick checks.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New to the terminology? See the <a class="reference internal" href="../../algorithms/concept_map.html"><span class="doc">lattice DSP concept map</span></a> and the <a class="reference internal" href="../../theory/causality_and_data_use.html"><span class="doc">causality/data-use guide</span></a> for how online, offline, block, and MIMO examples should be read.</p>
+</div>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>This tutorial mirrors the diagonal-MIMO-equals-SISO runtime check in the
+interpolation setting.  If tangential directions are coordinate vectors and
+the Schur function is diagonal, the MIMO Pick matrix splits into independent
+scalar Pick blocks.  This gives a simple sanity check for the matrix-valued
+tangential machinery.</p>
+</section>
+<section id="key-idea-and-equations">
+<h2>Key idea and equations<a class="headerlink" href="#key-idea-and-equations" title="Link to this heading">¶</a></h2>
+<p>For a diagonal matrix Schur function</p>
+<div class="math notranslate nohighlight">
+\[S(z)=\operatorname{diag}(s_1(z),\ldots,s_c(z)),\]</div>
+<p>coordinate tangential data satisfy</p>
+<div class="math notranslate nohighlight">
+\[S(z_i)e_k = s_k(z_i)e_k.\]</div>
+<p>If the data are grouped by channel, the full Pick matrix is block diagonal,
+and each block is the scalar Pick matrix for one <span class="math notranslate nohighlight">\(s_k\)</span>.</p>
+</section>
+<section id="causality-and-data-use">
+<h2>Causality and data use<a class="headerlink" href="#causality-and-data-use" title="Link to this heading">¶</a></h2>
+<p>This is an offline interpolation diagnostic.  It does not filter a time stream; it checks that the MIMO Schur/Pick machinery reduces to independent scalar problems when there is no channel coupling.</p>
+</section>
+<section id="what-this-example-verifies">
+<h2>What this example verifies<a class="headerlink" href="#what-this-example-verifies" title="Link to this heading">¶</a></h2>
+<p>This verifies the reduction-to-scalar sanity check for interpolation data.
+When tangential directions are coordinate vectors and the Schur function is
+diagonal, the full MIMO Pick matrix should split into independent scalar
+Pick blocks with roundoff-level off-block error.</p>
+</section>
+<section id="how-to-read-the-result">
+<h2>How to read the result<a class="headerlink" href="#how-to-read-the-result" title="Link to this heading">¶</a></h2>
+<p>The full MIMO Pick matrix should match the scalar block-diagonal Pick matrix up to roundoff, and the diagonal constant solution should interpolate exactly.</p>
+</section>
+<section id="run-command">
+<h2>Run command<a class="headerlink" href="#run-command" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/diagonal_tangential_schur_equals_scalar.py
+</pre></div>
+</div>
+</section>
+<section id="run-status">
+<h2>Run status<a class="headerlink" href="#run-status" title="Link to this heading">¶</a></h2>
+<p>Return code: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</section>
+<section id="captured-stdout">
+<h2>Captured stdout<a class="headerlink" href="#captured-stdout" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>channels: 3
+points per channel: 3
+total tangential conditions: 9
+diagonal Schur max singular value: 0.403113
+full Pick min eigenvalue: 1.071818e-03
+max |full Pick - scalar block diagonal Pick|: 0.000e+00
+constant diagonal interpolation residual: 0.000e+00
+scalar channel min eigenvalues: [0.001072 0.001265 0.00446 ]
+interpretation: diagonal MIMO tangential data decompose into independent scalar Schur/Pick problems
+</pre></div>
+</div>
+</section>
+<section id="figures">
+<h2>Figures<a class="headerlink" href="#figures" title="Link to this heading">¶</a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/diagonal_scalar_pick_min_eigenvalues.png"><img alt="diagonal scalar pick min eigenvalues" src="../../_images/diagonal_scalar_pick_min_eigenvalues.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">diagonal_scalar_pick_min_eigenvalues.png</span></code></span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="../../_images/diagonal_tangential_pick_matrix.png"><img alt="diagonal tangential pick matrix" src="../../_images/diagonal_tangential_pick_matrix.png" style="width: 95%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">diagonal_tangential_pick_matrix.png</span></code></span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot;Diagonal tangential Schur data reduce to independent scalar Pick tests.&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="kn">import</span><span class="w"> </span><span class="nn">lattice_dsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ld</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="k">def</span><span class="w"> </span><span class="nf">_artifact_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="linenos">14</span>    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LATTICE_DSP_ARTIFACT_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/example-artifacts&quot;</span><span class="p">))</span>
+<span class="linenos">15</span>    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">16</span>    <span class="k">return</span> <span class="n">path</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">def</span><span class="w"> </span><span class="nf">_save_figures</span><span class="p">(</span><span class="n">full_pick</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">block_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">channel_min_eigs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">20</span>    <span class="k">try</span><span class="p">:</span>
+<span class="linenos">21</span>        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos">22</span>    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover - optional plotting dependency</span>
+<span class="linenos">23</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matplotlib is not installed; skipped figures&quot;</span><span class="p">)</span>
+<span class="linenos">24</span>        <span class="k">return</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">_artifact_dir</span><span class="p">()</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.2</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="linenos">29</span>    <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_pick</span><span class="p">))</span>
+<span class="linenos">30</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;condition&quot;</span><span class="p">)</span>
+<span class="linenos">31</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;condition&quot;</span><span class="p">)</span>
+<span class="linenos">32</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Diagonal tangential data produce a block Pick matrix&quot;</span><span class="p">)</span>
+<span class="linenos">33</span>    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.82</span><span class="p">)</span>
+<span class="linenos">34</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">35</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;diagonal_tangential_pick_matrix.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">36</span>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.4</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">))</span>
+<span class="linenos">39</span>    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">channel_min_eigs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">channel_min_eigs</span><span class="p">)</span>
+<span class="linenos">40</span>    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="linenos">41</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+<span class="linenos">42</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;minimum scalar Pick eigenvalue&quot;</span><span class="p">)</span>
+<span class="linenos">43</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Independent scalar feasibility checks; off-block max=</span><span class="si">{</span><span class="n">block_error</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">44</span>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="linenos">45</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_dir</span> <span class="o">/</span> <span class="s2">&quot;diagonal_scalar_pick_min_eigenvalues.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+<span class="linenos">46</span>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span><span class="n">channels</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos">50</span><span class="n">points_per_channel</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos">51</span><span class="n">gains</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.40</span> <span class="o">+</span> <span class="mf">0.05</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.35</span><span class="n">j</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+<span class="linenos">52</span><span class="n">points_by_channel</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">53</span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.05</span> <span class="o">+</span> <span class="mf">0.10</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.26</span><span class="n">j</span><span class="p">]),</span>
+<span class="linenos">54</span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.18</span> <span class="o">-</span> <span class="mf">0.12</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.30</span><span class="n">j</span><span class="p">]),</span>
+<span class="linenos">55</span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.22</span> <span class="o">+</span> <span class="mf">0.05</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.32</span><span class="n">j</span><span class="p">]),</span>
+<span class="linenos">56</span><span class="p">]</span>
+<span class="linenos">57</span>
+<span class="linenos">58</span><span class="n">points</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">complex</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">59</span><span class="n">directions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">60</span><span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">61</span><span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+<span class="linenos">62</span>    <span class="n">basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)[</span><span class="n">channel</span><span class="p">]</span>
+<span class="linenos">63</span>    <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">points_by_channel</span><span class="p">[</span><span class="n">channel</span><span class="p">]:</span>
+<span class="linenos">64</span>        <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+<span class="linenos">65</span>        <span class="n">directions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+<span class="linenos">66</span>        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gains</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="n">basis</span><span class="p">)</span>
+<span class="linenos">67</span>
+<span class="linenos">68</span><span class="n">full_data</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">RightTangentialSchurData</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">directions</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+<span class="linenos">69</span><span class="n">full_pick</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">right_tangential_pick_matrix</span><span class="p">(</span><span class="n">full_data</span><span class="p">)</span>
+<span class="linenos">70</span>
+<span class="linenos">71</span><span class="c1"># Since the conditions are ordered by channel and directions are coordinate</span>
+<span class="linenos">72</span><span class="c1"># vectors, the full Pick matrix should be block diagonal with scalar Pick blocks.</span>
+<span class="linenos">73</span><span class="n">channel_min_eigs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">74</span><span class="n">block_diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">full_pick</span><span class="p">)</span>
+<span class="linenos">75</span><span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+<span class="linenos">76</span>    <span class="n">sl</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">channel</span> <span class="o">*</span> <span class="n">points_per_channel</span><span class="p">,</span> <span class="p">(</span><span class="n">channel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">points_per_channel</span><span class="p">)</span>
+<span class="linenos">77</span>    <span class="n">scalar_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">points_per_channel</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">gains</span><span class="p">[</span><span class="n">channel</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+<span class="linenos">78</span>    <span class="n">scalar_data</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">RightTangentialSchurData</span><span class="p">(</span><span class="n">points_by_channel</span><span class="p">[</span><span class="n">channel</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">points_per_channel</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">scalar_values</span><span class="p">)</span>
+<span class="linenos">79</span>    <span class="n">scalar_pick</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">right_tangential_pick_matrix</span><span class="p">(</span><span class="n">scalar_data</span><span class="p">)</span>
+<span class="linenos">80</span>    <span class="n">block_diag</span><span class="p">[</span><span class="n">sl</span><span class="p">,</span> <span class="n">sl</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_pick</span>
+<span class="linenos">81</span>    <span class="n">channel_min_eigs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ld</span><span class="o">.</span><span class="n">pick_matrix_eigenvalues</span><span class="p">(</span><span class="n">scalar_pick</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="linenos">82</span>
+<span class="linenos">83</span><span class="n">block_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_pick</span> <span class="o">-</span> <span class="n">block_diag</span><span class="p">)))</span>
+<span class="linenos">84</span><span class="n">constant_solution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">gains</span><span class="p">)</span>
+<span class="linenos">85</span><span class="n">residual</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">max_tangential_residual</span><span class="p">(</span><span class="n">full_data</span><span class="p">,</span> <span class="n">constant_solution</span><span class="p">)</span>
+<span class="linenos">86</span>
+<span class="linenos">87</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;channels:&quot;</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+<span class="linenos">88</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;points per channel:&quot;</span><span class="p">,</span> <span class="n">points_per_channel</span><span class="p">)</span>
+<span class="linenos">89</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total tangential conditions:&quot;</span><span class="p">,</span> <span class="n">full_data</span><span class="o">.</span><span class="n">total_conditions</span><span class="p">)</span>
+<span class="linenos">90</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;diagonal Schur max singular value:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">gains</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">91</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;full Pick min eigenvalue:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ld</span><span class="o">.</span><span class="n">pick_matrix_eigenvalues</span><span class="p">(</span><span class="n">full_pick</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">92</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max |full Pick - scalar block diagonal Pick|:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">block_error</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">93</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;constant diagonal interpolation residual:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">94</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scalar channel min eigenvalues:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">channel_min_eigs</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="linenos">95</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;interpretation: diagonal MIMO tangential data decompose into independent scalar Schur/Pick problems&quot;</span><span class="p">)</span>
+<span class="linenos">96</span>
+<span class="linenos">97</span><span class="n">_save_figures</span><span class="p">(</span><span class="n">full_pick</span><span class="p">,</span> <span class="n">block_error</span><span class="p">,</span> <span class="n">channel_min_eigs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../../_sources/examples/generated/diagonal_tangential_schur_equals_scalar.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Causality, data use, and signal roles &#8212; lattice-dsp documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=f6a572b4" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=460238d4" />
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Filtering relationships and signal-processing vocabulary" href="filtering_relationships.html" />
+    <link rel="prev" title="Choosing an algorithm" href="choosing_algorithms.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">lattice-dsp</a></h1>
+
+
+
+<p class="blurb">Efficient stable IIR lattice filters and matrix/MIMO lattice DSP</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=smiryusupov&repo=lattice-dsp&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../learning_path.html">Recommended learning path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interoperability.html">Interoperability recipes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory overview</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="package_positioning.html">Package positioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="choosing_algorithms.html">Choosing an algorithm</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Causality, data use, and signal roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering_relationships.html">Filtering relationships and signal-processing vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardy_hankel_state_space.html">Hardy, Hankel, reachability, and observability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interpolation_schur_motivation.html">Interpolation, Schur stability, and why lattice coordinates help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangential_schur.html">Tangential Schur, Pick matrices, and J-inner factors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Algorithms</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../algorithms/index.html">Algorithms overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and benchmarks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmark tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_status.html">Project scope and release validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes_0_1.html">Release notes for the 0.1 public alpha</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References and further reading</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Theory guide</a><ul>
+      <li>Previous: <a href="choosing_algorithms.html" title="previous chapter">Choosing an algorithm</a></li>
+      <li>Next: <a href="filtering_relationships.html" title="next chapter">Filtering relationships and signal-processing vocabulary</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="causality-data-use-and-signal-roles">
+<h1>Causality, data use, and signal roles<a class="headerlink" href="#causality-data-use-and-signal-roles" title="Link to this heading">¶</a></h1>
+<p>This page fixes the vocabulary used throughout the examples.  The package
+contains runtime filters, batch estimators, offline diagnostics, and finite-block
+transforms.  They can all be useful, but they make different promises about
+what data are available when an output or prediction is formed.</p>
+<section id="causal-one-step-prediction">
+<h2>Causal one-step prediction<a class="headerlink" href="#causal-one-step-prediction" title="Link to this heading">¶</a></h2>
+<p>In the prediction examples, causal means that a prediction for the current sample
+or vector is made before the current value is observed.  For a scalar signal,</p>
+<div class="math notranslate nohighlight">
+\[\widehat y[n]
+   = g\bigl(y[n-1], y[n-2], \ldots\bigr).\]</div>
+<p>For a multichannel signal <span class="math notranslate nohighlight">\(y[n]\in\mathbb{R}^c\)</span>, causal MIMO prediction
+allows cross-channel history but still forbids future samples:</p>
+<div class="math notranslate nohighlight">
+\[\widehat y[n]
+   = g\bigl(y[n-1], y[n-2], \ldots\bigr),
+   \qquad y[n-k]\in\mathbb{R}^c,\ k\ge 1.\]</div>
+<p>Equivalently, a vector AR predictor has</p>
+<div class="math notranslate nohighlight">
+\[\widehat y[n] = -\sum_{k=1}^p A_k y[n-k],
+\qquad A_k\in\mathbb{R}^{c\times c}.\]</div>
+<p>The matrices <span class="math notranslate nohighlight">\(A_k\)</span> may mix channels, so channel <code class="docutils literal notranslate"><span class="pre">0</span></code> at time <code class="docutils literal notranslate"><span class="pre">n</span></code> may
+use channel <code class="docutils literal notranslate"><span class="pre">2</span></code> at time <code class="docutils literal notranslate"><span class="pre">n-1</span></code>.  It may not use channel <code class="docutils literal notranslate"><span class="pre">2</span></code> at time
+<code class="docutils literal notranslate"><span class="pre">n</span></code> or any future time unless the task is explicitly noncausal/offline.</p>
+</section>
+<section id="causal-filtering">
+<h2>Causal filtering<a class="headerlink" href="#causal-filtering" title="Link to this heading">¶</a></h2>
+<p>For input-output filtering, causal means the output at time <code class="docutils literal notranslate"><span class="pre">n</span></code> uses only the
+current input, previous inputs, and previous state:</p>
+<div class="math notranslate nohighlight">
+\[y[n] = \sum_{i=0}^{q} b_i x[n-i]
+       - \sum_{j=1}^{p} a_j y[n-j].\]</div>
+<p>With the impulse-response convention</p>
+<div class="math notranslate nohighlight">
+\[y[n] = \sum_{k\in\mathbb{Z}} h[k] x[n-k],\]</div>
+<p>causality means <span class="math notranslate nohighlight">\(h[k]=0\)</span> for <span class="math notranslate nohighlight">\(k&lt;0\)</span>, because negative <code class="docutils literal notranslate"><span class="pre">k</span></code> would
+use future input samples <span class="math notranslate nohighlight">\(x[n+|k|]\)</span>.</p>
+<p>The scalar lattice filters, lattice-ladder filters, streaming block processor,
+state-space simulator, online MIMO lattice predictor, and online matrix-lattice
+all-pass runtime are causal in this sense.</p>
+</section>
+<section id="batch-estimation-versus-causal-use">
+<h2>Batch estimation versus causal use<a class="headerlink" href="#batch-estimation-versus-causal-use" title="Link to this heading">¶</a></h2>
+<p>An estimator may use a full finite training record and still produce a model
+that is later used causally.  This is the case for Burg, Levinson-Durbin, block
+Levinson-Durbin, and finite-Hankel/model-reduction routines.</p>
+<p>The distinction is:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Data-use promise</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Coefficient estimation</p></td>
+<td><p>May use a complete training record, covariance sequence, impulse response, or Markov tensor.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Held-out prediction/filtering</p></td>
+<td><p>Uses the fitted coefficients with no lookahead on the held-out stream.</p></td>
+</tr>
+<tr class="row-even"><td><p>Frequency-response or Hankel diagnostics</p></td>
+<td><p>Offline analysis of a finite object; useful for inspection, not a streaming runtime by itself.</p></td>
+</tr>
+</tbody>
+</table>
+<p>In docs language, <code class="docutils literal notranslate"><span class="pre">batch</span></code> or <code class="docutils literal notranslate"><span class="pre">offline</span></code> describes the estimation/diagnostic
+step.  <code class="docutils literal notranslate"><span class="pre">Causal</span></code> describes the runtime or prediction step.</p>
+</section>
+<section id="noncausal-and-finite-block-transforms">
+<h2>Noncausal and finite-block transforms<a class="headerlink" href="#noncausal-and-finite-block-transforms" title="Link to this heading">¶</a></h2>
+<p>Some examples intentionally use finite blocks or frequency-domain multiplication:</p>
+<div class="math notranslate nohighlight">
+\[Y[\ell] = H(e^{j\omega_\ell}) X[\ell].\]</div>
+<p>This is a circular/block operation unless embedded in an overlap-add or
+state-space runtime.  It is useful for checking unitarity, adjoint identities,
+perfect-reconstruction diagnostics, and compression of frequency-dependent
+responses.  It should not be read as a sample-by-sample streaming filter unless
+the page explicitly uses a streaming runtime such as
+<code class="docutils literal notranslate"><span class="pre">OnlineMatrixLatticeAllPass</span></code>.</p>
+<p>For all-pass systems there is also an important inverse distinction.  The
+forward all-pass can be causal and stable.  Its time-domain impulse response has</p>
+<div class="math notranslate nohighlight">
+\[y[n] = \sum_{k\ge 0} H_k x[n-k].\]</div>
+<p>The finite-record adjoint used for reconstruction diagnostics is</p>
+<div class="math notranslate nohighlight">
+\[x_{adj}[n] = \sum_{k\ge 0} H_k^H y[n+k].\]</div>
+<p>That adjoint is time-domain but noncausal as an online inverse because it needs
+future transformed samples.  The docs therefore separate <code class="docutils literal notranslate"><span class="pre">causal</span> <span class="pre">forward</span>
+<span class="pre">runtime</span></code> from <code class="docutils literal notranslate"><span class="pre">finite-record</span> <span class="pre">adjoint/perfect-reconstruction</span> <span class="pre">diagnostic</span></code>.</p>
+</section>
+<section id="transductive-inductive-and-held-out-language">
+<h2>Transductive, inductive, and held-out language<a class="headerlink" href="#transductive-inductive-and-held-out-language" title="Link to this heading">¶</a></h2>
+<p>The examples avoid using future samples of the held-out test record when they
+claim online prediction.  A useful vocabulary is:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 78.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="head"><p>Meaning in these docs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Online causal</p></td>
+<td><p>Output or prediction is produced left-to-right with no future samples from the same stream.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Inductive evaluation</p></td>
+<td><p>Fit coefficients on a training record, then run causally on a separate held-out record.</p></td>
+</tr>
+<tr class="row-even"><td><p>Transductive/offline evaluation</p></td>
+<td><p>Use the whole record being evaluated to choose coefficients or a transform before reporting results on that same record.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Block/circular</p></td>
+<td><p>Process a complete finite block, usually through an FFT or dense matrix operator.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Transductive experiments can be valid diagnostics, especially for response
+compression or finite-block unitary layers, but they are not the same claim as
+online prediction on a held-out stream.</p>
+</section>
+<section id="single-signal-prediction-versus-two-signal-filtering">
+<h2>Single-signal prediction versus two-signal filtering<a class="headerlink" href="#single-signal-prediction-versus-two-signal-filtering" title="Link to this heading">¶</a></h2>
+<p>Prediction uses one observed signal.  At time <code class="docutils literal notranslate"><span class="pre">n</span></code> the model predicts the
+current sample from its own past:</p>
+<div class="math notranslate nohighlight">
+\[\widehat y[n] = g(y[n-1], y[n-2], \ldots),
+\qquad e[n]=y[n]-\widehat y[n].\]</div>
+<p>Echo cancellation and system identification use two signals with different
+physical roles.  A reference or far-end signal <span class="math notranslate nohighlight">\(x[n]\)</span> drives an unknown
+path, and the microphone or desired signal <span class="math notranslate nohighlight">\(m[n]\)</span> contains the echo plus
+other content:</p>
+<div class="math notranslate nohighlight">
+\[\widehat e_{echo}[n] = h_\theta(x)[n],
+\qquad r[n] = m[n] - \widehat e_{echo}[n].\]</div>
+<p>A causal echo-path filter may use current and past reference samples
+<span class="math notranslate nohighlight">\(x[n],x[n-1],\ldots\)</span>.  It should not use future reference samples or
+future microphone samples.  In real double-talk conditions, near-end speech and
+nonstationarity add control logic beyond the package’s synthetic metric demos;
+those examples are therefore presented as controlled DSP tests, not production
+echo cancellers.</p>
+</section>
+<section id="package-examples-by-data-use-type">
+<h2>Package examples by data-use type<a class="headerlink" href="#package-examples-by-data-use-type" title="Link to this heading">¶</a></h2>
+<p>The detailed MIMO verification map in <a class="reference internal" href="../algorithms/mimo_verification_map.html"><span class="doc">MIMO verification map</span></a>
+turns this vocabulary into concrete checks for the multichannel examples.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Example family</p></th>
+<th class="head"><p>Data-use status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Scalar lattice IIR, lattice-ladder, streaming block processing</p></td>
+<td><p>Causal filtering of one input stream.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Adaptive lattice/NLMS/RLS examples</p></td>
+<td><p>Causal adaptive updates from the current input/desired pair after output and error are formed.</p></td>
+</tr>
+<tr class="row-even"><td><p>Burg, Levinson, block Levinson, AR spectral estimation</p></td>
+<td><p>Batch coefficient estimation; fitted AR predictors are causal once coefficients are fixed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MIMOLatticePredictor</span></code> examples</p></td>
+<td><p>Causal online vector prediction after a batch or precomputed coefficient fit.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OnlineMatrixLatticeAllPass</span></code> examples</p></td>
+<td><p>Causal forward multichannel all-pass filtering.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Paraunitary, ML-style unitary convolution, adjoint reconstruction demos</p></td>
+<td><p>Forward analysis now uses streaming matrix-lattice runtimes where applicable; reconstruction checks use finite-record noncausal time-domain adjoints.</p></td>
+</tr>
+<tr class="row-even"><td><p>Finite-Hankel, Nehari/AAK-style, and response-compression pages</p></td>
+<td><p>Offline finite-dimensional analysis or model selection; resulting reduced models may be causal when implemented as state-space/IIR systems.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2026, Shohruh Miryusupov.
+      
+      |
+      <a href="../_sources/theory/causality_and_data_use.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

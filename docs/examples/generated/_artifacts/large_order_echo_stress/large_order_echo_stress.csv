@@ -1,0 +1,4 @@
+coefficient_touches,max_abs_reflection,median_seconds,method,order_or_taps,output_rms,samples,stage_visits_giga_per_s,tap_to_lattice_order_ratio,throughput_msamples_per_s
+,0.37238726814745465,0.7757172829005867,lattice_ladder_iir_fixed_model,512,3.1074504970360204,1000000,0.6600342821878524,,1.289129457398149
+131072000000,,,fir_echo_scale_estimate_filter_only,131072,,1000000,,256.0,
+262144000000,,,fir_lms_scale_estimate_filter_plus_update,131072,,1000000,,256.0,
