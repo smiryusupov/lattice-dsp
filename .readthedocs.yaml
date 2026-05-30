@@ -5,6 +5,8 @@ build:
   tools:
     python: "3.12"
   jobs:
+    post_install:
+      - cd /tmp && python -c "import lattice_dsp, lattice_dsp._core as core; print(lattice_dsp.__file__); print(core.__file__)"
     build:
       html:
         - LATTICE_DSP_TUTORIAL_TIMEOUT=340 bash scripts/build_docs_with_results.sh

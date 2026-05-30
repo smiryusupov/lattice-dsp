@@ -2527,7 +2527,10 @@ def run_command(
     timeout: float,
 ) -> tuple[int | None, str, str]:
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(cwd) + os.pathsep + env.get("PYTHONPATH", "")
+    # Do not put the repository root on PYTHONPATH when running examples.
+    # The package has a compiled extension; examples should import the installed
+    # package from the build environment, not the source tree.
+    env.pop("PYTHONPATH", None)
     # Use a repo-relative artifact directory so captured tutorial output does
     # not expose a contributor's local filesystem path.
     env["LATTICE_DSP_ARTIFACT_DIR"] = _repo_relative(artifact_dir, cwd)
