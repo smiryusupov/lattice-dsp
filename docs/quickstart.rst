@@ -75,10 +75,12 @@ unitary layers.
        0.2 * (rng.standard_normal((4, 4)) + 1j * rng.standard_normal((4, 4))),
        margin=1e-6,
    )
-   R = ld.unitary_polar_factor(rng.standard_normal((4, 4)) + 1j * rng.standard_normal((4, 4)))
+   R = ld.unitary_polar_factor(
+       rng.standard_normal((4, 4)) + 1j * rng.standard_normal((4, 4))
+   )
    filt = ld.MatrixLatticeAllPass([K], R)
    H = filt.frequency_response(np.linspace(0, np.pi, 128))
-   y = filt.to_online_filter().process(np.ones((64, 3)))
+   y = filt.to_online_filter().process(np.ones((64, 4)))
 
    # H[w]^H H[w] should be close to identity for every frequency.
    I = np.eye(4)
@@ -102,8 +104,8 @@ after its matrix reflection coefficients have been fitted.
    y_hat = pred.predict()       # before observing y_t
    err = pred.update(x_train[0]) # after observing y_t
 
-Flagship robustness tutorial
-----------------------------
+LMS/H∞ robustness tutorial
+--------------------------
 
 After installing the docs/examples extras, build the generated tutorials and open
 the :doc:`LMS/H∞ robustness tutorial <examples/generated/hinf_lms_reproduction>`:
