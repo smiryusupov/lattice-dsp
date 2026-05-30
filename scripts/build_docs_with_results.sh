@@ -3,8 +3,16 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+# Do not prepend the source checkout to PYTHONPATH.
+# The examples should import the installed package so the compiled
+# lattice_dsp._core extension is available on Read the Docs.
 export MPLBACKEND="${MPLBACKEND:-Agg}"
+
+# Sanity-check the installed package from outside the source tree.
+(
+  cd /tmp
+  python -c "import lattice_dsp, lattice_dsp._core as core; print(lattice_dsp.__file__); print(core.__file__)"
+)
 
 python tools/generate_sphinx_gallery.py \
   --repo-root "$PWD" \
