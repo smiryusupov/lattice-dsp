@@ -108,7 +108,7 @@ def main() -> None:
 
     print("converted shape:", markov.shape)
     print("mapping: markov[tap, microphone, source]")
-    print("reduced order:", result["order"])
+    print("reduced order:", result["state_order"])
     print("stable reduced model:", bool(result["stable"]))
     print("leading block-Hankel singular values:", np.round(hsv[:6], 6).tolist())
     print("relative Markov-response error:", f"{relative_error:.3e}")
