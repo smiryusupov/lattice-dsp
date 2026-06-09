@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Finite-dimensional Nehari/AAK helper routines.
 
 These helpers sit above the C++ finite Hankel primitives.  They are intended as

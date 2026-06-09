@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Multichannel autoregressive estimation and block Levinson utilities.
 
 The functions in this module work with vector autoregressive (VAR) models of

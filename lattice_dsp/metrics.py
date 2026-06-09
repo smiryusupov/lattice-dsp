@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Metrics for echo cancellation, noise cancellation, and system identification.
 
 The functions in this module intentionally avoid audio-specific dependencies.

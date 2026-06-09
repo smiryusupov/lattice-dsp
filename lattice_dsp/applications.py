@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Small application-layer helpers for synthetic echo/noise experiments.
 
 The core package intentionally stays dependency-light.  This module provides a

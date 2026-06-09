@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Synthetic signal generators for echo/noise-cancellation experiments."""
 
 from __future__ import annotations

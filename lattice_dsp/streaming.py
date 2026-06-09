@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Small stateful block helpers for streaming-style examples.
 
 The heavy sample loops remain in the C++ extension. These wrappers mainly make

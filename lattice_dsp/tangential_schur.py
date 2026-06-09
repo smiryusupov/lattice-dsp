@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Tangential Schur/Pick and elementary J-inner utilities.
 
 This module intentionally implements a conservative finite-dimensional subset

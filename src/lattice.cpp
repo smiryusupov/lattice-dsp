@@ -1,3 +1,6 @@
+// Copyright 2026 Shohruh Miryusupov
+// SPDX-License-Identifier: Apache-2.0
+
 #include "lattice_dsp/lattice.hpp"
 
 #include <algorithm>

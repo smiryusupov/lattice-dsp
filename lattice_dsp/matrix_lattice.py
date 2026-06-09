@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """Matrix-valued lattice/all-pass utilities.
 
 This module is intentionally a foundation layer, not a full wireless

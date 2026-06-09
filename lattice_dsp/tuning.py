@@ -1,3 +1,6 @@
+# Copyright 2026 Shohruh Miryusupov
+# SPDX-License-Identifier: Apache-2.0
+
 """User-facing tuning helpers for adaptive lattice-IIR parameters."""
 
 from __future__ import annotations
