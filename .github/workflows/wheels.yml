@@ -46,7 +46,7 @@ jobs:
         run: python -m build --sdist
 
       - name: Upload sdist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sdist
           path: dist/*.tar.gz
@@ -75,7 +75,7 @@ jobs:
           CIBW_TEST_COMMAND: python {project}/tools/wheel_smoke.py
 
       - name: Upload wheel artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
